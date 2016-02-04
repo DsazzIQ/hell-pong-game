@@ -20,11 +20,17 @@ var RemotePlayer = function(x, y, id, name) {
 
 RemotePlayer.prototype = Object.create(Phaser.Sprite.prototype);
 
-RemotePlayer.prototype.interpolate = function(lastFrameTime) {
-    if(lastFrameTime) {
-        this.position.x = this.targetPositionX;
-    }
+RemotePlayer.prototype.move = function(velocity) {
+    this.body.velocity.x = velocity;
+
+    var currentTime = new Date().getTime();
+    this.lastMoveTime = currentTime;
 };
+
+RemotePlayer.prototype.isMovementTimeExpired = function() {
+    var currentTime = new Date().getTime();
+    return this.lastMoveTime+10 <= currentTime;
+}
 
 RemotePlayer.prototype.reset = function() {
     this.x = this.spawnPoint.x;

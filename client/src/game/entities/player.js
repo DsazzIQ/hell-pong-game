@@ -53,8 +53,10 @@ Player.prototype.handleInput = function() {
 
     if (moving) {
         socket.emit("move player", {
-            x: this.position.x,
-            y: this.position.y
+            //x: this.position.x,
+            //y: this.position.y
+            x: this.body.velocity.x,
+            timeMovement: this.game.time.now
         });
     }
 };

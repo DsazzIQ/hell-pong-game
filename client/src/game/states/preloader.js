@@ -29,11 +29,6 @@ Preloader.prototype = {
     this.load.atlasJSONHash("bbo_textures", "assets/textures/bbo_textures.png", "assets/textures/bbo_textures.json");
     this.load.atlasJSONHash("pong_textures", "assets/textures/pong_textures.png", "assets/textures/pong_textures.json");
 
-    this.load.tilemap("levelOne", "assets/levels/level_one.json", null, Phaser.Tilemap.TILED_JSON);
-    this.load.tilemap("levelTwo", "assets/levels/level_two.json", null, Phaser.Tilemap.TILED_JSON);
-
-    this.load.image("tiles", "assets/tiles/tileset.png");
-
     this.load.audio("click", "assets/sounds/click.ogg");
     this.load.audio("main_theme", "assets/sounds/main_theme.ogg");
 

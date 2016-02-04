@@ -120,7 +120,7 @@ function onStartGame() {
 
 //TODO this block in method
     var ids = pendingGame.getPlayerIds();
-    
+
     var playerOneId = ids[0];
     var playerOneSpawnPoint = {
         x: GAME_WIDTH/2,
@@ -131,10 +131,10 @@ function onStartGame() {
         playerOneSpawnPoint.y,
         playerOneId
     );
-    
+
     playerOne.spawnPoint = playerOneSpawnPoint;
     game.players[playerOneId] = playerOne;
-    
+
     var playerTwoId = ids[1];
     var playerTwoSpawnPoint = {
         x: GAME_WIDTH/2,
@@ -145,7 +145,7 @@ function onStartGame() {
         playerTwoSpawnPoint.y,
         playerTwoId
     );
-    
+
     playerTwo.spawnPoint = playerTwoSpawnPoint;
     game.players[playerTwoId] = playerTwo;
 //END block
@@ -170,8 +170,11 @@ function onMovePlayer(data) {
     }
 
     movingPlayer.x = data.x;
-    movingPlayer.y = data.y;
-    movingPlayer.hasMoved = true;
+    movingPlayer.timeMovement = data.timeMovement;
+
+    //if (movingPlayer.timeMovement > )
+    io.to(this.gameId).emit("m", {id: movingPlayer.id, x: movingPlayer.x, timeMovement: data.timeMovement});
+    //movingPlayer.hasMoved = true;
 };
 
 function handlePlayerDeath(deadPlayerIds, gameId) {
@@ -246,9 +249,9 @@ function broadcastingLoop() {
         var game = games[g];
         for(var i in game.players) {
             var player = game.players[i];
-            if(player.alive && player.hasMoved) {
-                io.to(g).emit("m", {id: player.id, x: player.x, y: player.y, f: player.facing});
-                player.hasMoved = false;
+            if(player.hasMoved) {
+                //io.to(g).emit("m", {id: player.id, x: player.x});
+                //player.hasMoved = false;
             }
         }
     }
