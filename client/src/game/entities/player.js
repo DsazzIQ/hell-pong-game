@@ -10,6 +10,7 @@ var Player = function(x, y, id, name, leftKey, rightKey) {
     this.score = 0;
     this.name = name || 'Player ' + id;
     this.speed = DEFAULT_PLAYER_SPEED;
+    this.isFreezed = false;
 
     this.spawnPoint = {
         x: x,
@@ -34,6 +35,7 @@ Player.prototype.reset = function() {
     this.x = this.spawnPoint.x;
     this.y = this.spawnPoint.y;
     this.speed = DEFAULT_PLAYER_SPEED;
+    this.isFreezed = false;
 
     if (!this.alive) {
         this.revive();
@@ -51,14 +53,11 @@ Player.prototype.handleInput = function() {
         this.freeze();
     }
 
-    if (moving) {
-        socket.emit("move player", {
-            //x: this.position.x,
-            //y: this.position.y
-            x: this.body.velocity.x,
-            timeMovement: this.game.time.now
-        });
-    }
+    var currentTime = new Date().getTime();
+    socket.emit("move player", {
+        x: this.body.velocity.x,
+        timeMovement: currentTime
+    });
 };
 
 Player.prototype.freeze = function() {

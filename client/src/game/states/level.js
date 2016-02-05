@@ -134,8 +134,8 @@ Level.prototype = {
 
         //TODO change array to one entity
         for(var id in this.remotePlayers) {
-            if (this.remotePlayers[id].isMovementTimeExpired())
-                this.remotePlayers[id].move(0);
+            //if (this.remotePlayers[id].isMovementTimeExpired())
+                this.remotePlayers[id].interpolate();
         }
 
     },
@@ -178,7 +178,8 @@ Level.prototype = {
         var movingPlayer = this.remotePlayers[data.id];
 
         movingPlayer.lastMoveTime = data.timeMovement;
-        movingPlayer.move(data.x);
+        movingPlayer.velocityX = data.x;
+        movingPlayer.interpolate();
     },
 
     ballHitPaddle: function(ball, player) {

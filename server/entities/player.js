@@ -18,6 +18,6 @@ Player.prototype = {
         this.y = this.ySpawn;
         this.alive = true;
     }
-}
+};
 
 module.exports = Player;

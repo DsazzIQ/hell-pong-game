@@ -3,7 +3,7 @@ var remotePlayerUpdateInterval = 100;
 var RemotePlayer = function(x, y, id, name) {
     this.id = id;
     this.lastMoveTime = 0;
-    this.targetPositionX;
+    this.velocityX = 0;
     this.spawnPoint = {x: x, y: y};
     this.name = name || 'Player ' + id;
     this.score = 0;
@@ -20,22 +20,22 @@ var RemotePlayer = function(x, y, id, name) {
 
 RemotePlayer.prototype = Object.create(Phaser.Sprite.prototype);
 
-RemotePlayer.prototype.move = function(velocity) {
-    this.body.velocity.x = velocity;
+RemotePlayer.prototype.interpolate = function() {
+    this.body.velocity.x = this.velocityX;
 
     var currentTime = new Date().getTime();
     this.lastMoveTime = currentTime;
 };
 
-RemotePlayer.prototype.isMovementTimeExpired = function() {
-    var currentTime = new Date().getTime();
-    return this.lastMoveTime+10 <= currentTime;
-}
+//RemotePlayer.prototype.isMovementTimeExpired = function() {
+    //var currentTime = new Date().getTime();
+    //return this.lastMoveTime+10 <= currentTime;
+//}
 
 RemotePlayer.prototype.reset = function() {
     this.x = this.spawnPoint.x;
     this.y = this.spawnPoint.y;
-    this.targetPositionX = null
+    this.velocityX = 0;
     this.lastMoveTime = 0;
     this.score = 0;
 

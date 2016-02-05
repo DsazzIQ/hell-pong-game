@@ -33,5 +33,8 @@ Preloader.prototype = {
     this.load.audio("main_theme", "assets/sounds/main_theme.ogg");
 
     window.buttonClickSound = new Phaser.Sound(game, "click", .25);
+
+    //For debug
+    game.plugins.add(Phaser.Plugin.Debug);
   }
 };

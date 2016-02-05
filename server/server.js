@@ -172,7 +172,6 @@ function onMovePlayer(data) {
     movingPlayer.x = data.x;
     movingPlayer.timeMovement = data.timeMovement;
 
-    //if (movingPlayer.timeMovement > )
     io.to(this.gameId).emit("m", {id: movingPlayer.id, x: movingPlayer.x, timeMovement: data.timeMovement});
     //movingPlayer.hasMoved = true;
 };
