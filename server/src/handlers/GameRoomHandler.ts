@@ -1,24 +1,8 @@
 import { Server, Socket } from 'socket.io';
 import { v4 as uuid } from 'uuid';
-import GameRoom from "../models/GameRoom";
-import IRoomInfo from "../../../shared/dist/types/IRoomInfo";
+import GameRoom, {IRoomInfo} from "@shared/gameLogic/GameRoom";
+import showMe from "../../../shared/src/utilities/showMe";
 
-const showMe = (yourObject: any): string => {
-  function replacer(key: any, value: any) {
-    if (typeof value === 'object' && value !== null) {
-      if (seen.has(value)) {
-        return; // or return a placeholder, e.g., "[Circular]"
-      }
-      seen.add(value);
-    }
-    return value;
-  }
-
-  const seen = new Set();
-  const jsonString = JSON.stringify(yourObject, replacer);
-  seen.clear();
-  return jsonString;
-}
 export default class GameRoomHandler {
   private readonly rooms: Map<string, GameRoom>;
 
@@ -108,9 +92,20 @@ export default class GameRoomHandler {
     return undefined;
   }
 
-  removePlayerFromRoom(room: GameRoom, playerId: string): boolean {
+  removePlayerFromRoom(socket: Socket): boolean {
+    console.log(`[GameRoomHandler:removePlayerFromRoom]`);
+
+    const playerId = socket.id;
+    const room = this.findRoomByPlayerId(playerId);
+    if (!room) {
+      console.log(`   Not found player's room`);
+      return false;
+    }
+
     if (room.hasPlayer(playerId)) {
-      room.removePlayer(playerId);
+      if (room.removePlayer(playerId)) {
+        console.log(`   Player ${playerId} has left the room ${room.id}`);
+      }
 
       // Remove the room if it's empty
       if (room.isEmpty()) {
@@ -119,6 +114,41 @@ export default class GameRoomHandler {
       }
     }
 
+    return true;
+  }
+
+  // onPlayerMoved(socket: Socket, newY: number): boolean {
+  //   const playerId = socket.id;
+  //   const room = this.findRoomByPlayerId(socket.id);
+  //   if (!room) {
+  //     console.log(`[Server:playerMoved] room for player ${playerId} not found!`);
+  //     return false;
+  //   }
+  //
+  //   const player = room.findPlayer(playerId);
+  //   if (!player) {
+  //     console.log(`[Server:playerMoved] player ${playerId} in room ${room.id} not found!`);
+  //     return false;
+  //   }
+  //
+  //   player.setPaddlePosition(newY);
+  //   return true;
+  // }
+  onPlayerMoved(socket: Socket, newVelocityY: number): boolean {
+    const playerId = socket.id;
+    const room = this.findRoomByPlayerId(socket.id);
+    if (!room) {
+      console.log(`[Server:playerMoved] room for player ${playerId} not found!`);
+      return false;
+    }
+
+    const player = room.findPlayer(playerId);
+    if (!player) {
+      console.log(`[Server:playerMoved] player ${playerId} in room ${room.id} not found!`);
+      return false;
+    }
+
+    player.setPaddleVelocity(newVelocityY).movePaddle();
     return true;
   }
 

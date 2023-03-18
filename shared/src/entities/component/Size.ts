@@ -1,5 +1,9 @@
-import ISize from "@shared/types/ISize";
 import Component from "./Component";
+
+export interface ISize {
+  width: number;
+  height: number;
+}
 
 export class Size extends Component implements ISize {
   width: number;
@@ -9,6 +13,10 @@ export class Size extends Component implements ISize {
     super();
     this.width = width;
     this.height = height;
+  }
+
+  static fromJson(json: ISize): Size {
+    return new Size(json.width, json.height);
   }
 
   toJson(): ISize {

@@ -1,25 +1,16 @@
-import {Ball} from "../entities/Ball";
-import Player from "./Player";
 import {Server} from "socket.io";
-import {MAX_ROOM_PLAYERS} from "@shared/constants";
-import IPoint from "@shared/types/IPoint";
-import IPlayer, {PlayerIndex} from "@shared/types/IPlayer";
-import IRoomInfo from "@shared/types/IRoomInfo";
+import Player, {PlayerIndex} from "../gameData/Player";
+import {Ball} from "../entities/Ball";
+import {MAX_ROOM_PLAYERS, SERVER_FPS, SERVER_UPDATE_INTERVAL} from "../constants";
+import GameState, {IGameState} from "../gameData/GameState";
 
-export class GameState {
-  roomId: string;
+export interface IPlayerInfo {
+  id: string;
+}
 
-  ball: {
-    position: IPoint;
-    velocity: IPoint;
-  };
-  players: IPlayer[];
-
-  constructor(roomId: string, ball: Ball, players: Player[]) {
-    this.roomId = roomId;
-    this.ball = ball.toJson();
-    this.players = players.map((player) => player.toJson());
-  }
+export interface IRoomInfo {
+  id: string;
+  players: Array<IPlayerInfo>;
 }
 
 export default class GameRoom {
@@ -27,11 +18,12 @@ export default class GameRoom {
   private players: Player[] = [];
   private readonly ball: Ball;
 
+  private lastUpdateTime: number = 0;
   private gameStarted = false;
 
   constructor(roomId: string) {
     this.id = roomId;
-    this.ball = new Ball();
+    this.ball = new Ball(SERVER_FPS);
   }
 
   isGameStarted() {
@@ -53,7 +45,7 @@ export default class GameRoom {
 
   private addPlayer(id: string): Player {
     const playerIndex = this.players.length ? PlayerIndex.FIRST : PlayerIndex.SECOND;
-    const player = new Player(id, playerIndex);
+    const player = new Player(id, playerIndex, SERVER_FPS);
     this.players.push(player);
 
     return player;
@@ -93,23 +85,41 @@ export default class GameRoom {
     return false;
   }
 
-  update(): this {
-    this.ball
-      .move() // Update ball position
-      .updateAfterWallCollisions(); // Check for collisions with walls
+  private updateLastUpdateTime(): this {
+    this.lastUpdateTime = this.getCurrentTime();
+    return this;
+  }
 
-    // Check for collisions with paddles
-    for (const player of this.players) {
-      if (player.paddle.checkCollision(this.ball)) {
-        this.ball.invertVelocityX();
+  private getCurrentTime() {
+    return Date.now();
+  }
+
+  private calculateInterpolationDelta() {
+    return this.getCurrentTime() - this.lastUpdateTime;
+  }
+
+  update(): this {
+    // Update game state only if the time since the last update exceeds the game update interval
+    if (this.calculateInterpolationDelta() > SERVER_UPDATE_INTERVAL) {
+      this.ball
+        .move() // Update ball position
+        .updateAfterWallCollisions(); // Check for collisions with walls
+
+      // Check for collisions with paddles
+      for (const player of this.players) {
+        if (player.paddle.checkCollision(this.ball)) {
+          this.ball.invertVelocityX();
+        }
       }
+
+      this.updateLastUpdateTime();
     }
 
     return this;
   }
 
-  getGameState(): GameState {
-    return new GameState(this.id, this.ball, this.players);
+  getGameState(): IGameState {
+    return new GameState(this.id, this.ball, this.players, this.lastUpdateTime);
   }
 
   toJSON(): IRoomInfo {

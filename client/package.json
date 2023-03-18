@@ -9,8 +9,10 @@
   },
   "dependencies": {
     "phaser": "^3.55.2",
+    "phaser-plugin-inspector": "^1.9.2",
     "phaser3-rex-plugins": "^1.1.82",
-    "socket.io-client": "^4.3.2"
+    "socket.io-client": "^4.3.2",
+    "tweakpane": "^3.1.7"
   },
   "devDependencies": {
     "@babel/core": "^7.21.3",

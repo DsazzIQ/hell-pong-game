@@ -1,9 +1,14 @@
 import Phaser from 'phaser';
 import { BaseScene } from './BaseScene';
 import { Socket } from 'socket.io-client';
-import {PADDLE_SPEED} from "@shared/constants";
-import IGameState from "@shared/types/IGameState";
-import IPlayer from "@shared/types/IPlayer";
+import {GAME_HEIGHT, GAME_WIDTH, PADDLE_SPEED} from "@shared/constants";
+import GameState, {IGameState} from "@shared/gameData/GameState";
+import {IPlayer} from "@shared/gameData/Player";
+import {Position} from "@shared/entities/component/Position";
+
+const ALPHA_THRESHOLD = 1;
+const MIN_BUFFER_SIZE_INTERPOLATION = 2;
+const MAX_BUFFER_SIZE = 5;
 
 interface GamePlayer {
   id: string;
@@ -21,6 +26,9 @@ export default class GameScene extends BaseScene {
 
   private socket!: Socket;
 
+  private gameStateBuffer: GameState[] = [];
+  private lastReceivedTime: number | null = null;
+
   constructor() {
     super('Game');
   }
@@ -34,41 +42,23 @@ export default class GameScene extends BaseScene {
   }
 
   public create(): void {
-    const width = this.game.config.width as number;
-    const height = this.game.config.height as number;
-    this.physics.world.setBounds(0, 0, width, height);
+    console.log('[GameScene:create] init data', this.initData);
+
+    this.physics.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT);
+    // Set up keyboard controls
+    this.cursors = this.input.keyboard.createCursorKeys();
 
     // Add background
     this.add.tileSprite(0, 0, this.game.canvas.width, this.game.canvas.height, 'textures', 'background/background-1').setOrigin(0);
 
     // Add ball
-    this.ball = this.physics.add.image(this.centerX, this.centerY, 'textures', 'gameplay/ball')
+    this.ball = this.physics.add.sprite(this.initData.ball.position.x, this.initData.ball.position.y, 'textures', 'gameplay/ball')
       .setOrigin(0.5)
-      .setCollideWorldBounds(true)
-      .setBounce(1, 1);
-
-    // Set up keyboard controls
-    this.cursors = this.input.keyboard.createCursorKeys();
+      .setCollideWorldBounds(true);
 
     // Set up score display
     this.playersScoreText = this.add.text(this.centerX, 20, `0 - 0`, { fontFamily: 'arcade-zig', fontSize: '24px', color: '#ffffff' }).setOrigin(0.5);
 
-    // Listen for game updates from the server
-    this.socket.on('gameStateUpdate', (data: IGameState) => {
-      // Update the positions of the players and ball based on the server data
-      this.ball.x = data.ball.position.x;
-      this.ball.y = data.ball.position.y;
-
-      // Update player positions
-      data.players.forEach((playerData: IPlayer) => {
-        const player = this.findPlayer(playerData.id);
-        if (player) {
-          player.paddle.setPosition(playerData.paddle.position.x, playerData.paddle.position.y);
-        }
-      });
-    });
-
-    console.log('[GameScene:startGame] create', this.initData);
     this.players = this.initData.players.map((playerData) => {
       const paddle = this.physics.add.sprite(playerData.paddle.position.x, playerData.paddle.position.y, 'textures', 'gameplay/paddle')
         .setOrigin(0.5)
@@ -80,6 +70,12 @@ export default class GameScene extends BaseScene {
         paddle: paddle
       };
     });
+
+    // Listen for game updates from the server and handle server reconciliation
+    this.socket.on('gameStateUpdate', (gameState: IGameState) => {
+      this.onGameStateUpdate(gameState);
+    });
+
   }
 
   private getLocalPlayer(): GamePlayer | undefined {
@@ -90,21 +86,102 @@ export default class GameScene extends BaseScene {
     return this.players.find(p => p.id === id);
   }
 
-  public update(): void {
+  private handlePlayerMovement() {
     const localPlayer = this.getLocalPlayer();
     if (localPlayer) {
+      let newVelocityY = 0;
       if (this.cursors.up.isDown) {
-        localPlayer.paddle.setVelocityY(-PADDLE_SPEED);
-      } else if (this.cursors.down.isDown) {
-        localPlayer.paddle.setVelocityY(PADDLE_SPEED);
-      } else {
-        localPlayer.paddle.setVelocityY(0);
+        newVelocityY = -PADDLE_SPEED;
       }
+      if (this.cursors.down.isDown) {
+        newVelocityY = PADDLE_SPEED;
+      }
+      localPlayer.paddle.setVelocityY(newVelocityY);
 
-      this.socket.emit('playerMoved', {
-        roomId: this.roomId,
-        y: localPlayer.paddle.y,
-      });
+      // this.socket.emit('playerMoved', { y: localPlayer.paddle.y });
+      this.socket.emit('playerMoved', { newVelocityY });
     }
+  }
+
+  private getCurrentTime() {
+    return Date.now();
+  }
+
+  private onGameStateUpdate(gameState: GameState): void {
+    this.gameStateBuffer.push(gameState);
+    this.lastReceivedTime = this.getCurrentTime();
+  }
+
+  private calculateInterpolationDelta() {
+    if (!this.lastReceivedTime) return 0;
+    return (this.getCurrentTime() - this.lastReceivedTime);
+  }
+
+  private calculateInterpolationAlpha(): number {
+    if (this.gameStateBuffer.length < MIN_BUFFER_SIZE_INTERPOLATION) return 0;
+
+    const previousState = this.gameStateBuffer[0];
+    const nextState = this.gameStateBuffer[1];
+
+    const timeDifference = nextState.lastUpdateTime - previousState.lastUpdateTime;
+    return Math.min(this.calculateInterpolationDelta() / timeDifference, 1);
+  }
+
+  private calculateUpdateInterval() {
+    //return CLIENT_UPDATE_INTERVAL;// 1000 / GAME_FPS;
+    return 1000 / this.game.loop.actualFps;
+  }
+
+  handleInterpolationCompletion(alpha: number) {
+    if (alpha >= ALPHA_THRESHOLD && this.calculateInterpolationDelta() > this.calculateUpdateInterval()) {
+      this.gameStateBuffer.shift();
+      this.lastReceivedTime = this.getCurrentTime();
+    }
+  }
+
+  private clearOldGameBufferOnMaxSize() {
+    // Buffer management: remove the oldest state if the buffer size exceeds the limit
+    if (this.gameStateBuffer.length > MAX_BUFFER_SIZE) {
+      // console.log('[applyServerReconciliation]: buffer size exceeded, removing oldest state');
+      this.gameStateBuffer.shift();
+    }
+  }
+
+  private applyServerReconciliation() {
+    if (!this.lastReceivedTime || this.gameStateBuffer.length < MIN_BUFFER_SIZE_INTERPOLATION) {
+      console.log('[applyServerReconciliation]: skip');
+      return;
+    }
+
+    this.clearOldGameBufferOnMaxSize();
+
+    const previousState = this.gameStateBuffer[0];
+    const nextState = this.gameStateBuffer[1];
+
+    const interpolationAlpha = this.calculateInterpolationAlpha();
+    // console.log('applyServerReconciliation: interpolationAlpha', interpolationAlpha);
+
+    // Update the positions of the players and ball based on the server data
+    const ballPosition = Position.fromJson(previousState.ball.position).interpolateXY(nextState.ball.position.x, nextState.ball.position.y, interpolationAlpha);
+    this.ball.setPosition(ballPosition.x, ballPosition.y);
+
+    // Update player positions
+    previousState.players.forEach((playerData: IPlayer) => {
+      const player = this.findPlayer(playerData.id);
+      if (player) {
+        const nextPlayerData = nextState.players.find(p => p.id === playerData.id);
+        if (nextPlayerData) {
+          const paddlePosition = Position.fromJson(playerData.paddle.position).interpolateXY(nextPlayerData.paddle.position.x, nextPlayerData.paddle.position.y, interpolationAlpha);
+          player.paddle.setPosition(paddlePosition.x, paddlePosition.y);
+        }
+      }
+    });
+
+    this.handleInterpolationCompletion(interpolationAlpha);
+  }
+
+  public update(): void {
+    this.handlePlayerMovement();
+    this.applyServerReconciliation();
   }
 }

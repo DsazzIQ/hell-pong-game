@@ -3,7 +3,7 @@ import express from 'express';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import GameRoomHandler from './handlers/GameRoomHandler';
 import path from "path";
-import {GAME_UPDATE_INTERVAL} from "@shared/constants";
+import {SERVER_UPDATE_INTERVAL} from "@shared/constants";
 
 const app = express();
 const server = http.createServer(app);
@@ -24,14 +24,7 @@ io.on('connection', (socket: Socket) => {
 
   socket.on('disconnect', () => {
     console.log(`[Server:disconnect] Player with ID ${playerId} disconnected`);
-
-    // Find the room containing the disconnected player
-    const room = roomManager.findRoomByPlayerId(playerId);
-    if (!room) {
-      return console.log(`   Not found player's room`);
-    }
-    // Remove the player from the room
-    roomManager.removePlayerFromRoom(room, playerId);
+    roomManager.removePlayerFromRoom(socket);
   });
 
   socket.on('createRoom', () => {
@@ -47,19 +40,11 @@ io.on('connection', (socket: Socket) => {
     roomManager.joinRoom(socket, roomId);
   });
 
-
-  socket.on('playerMoved', ({ roomId, y }) => {
-    const room = roomManager.getRoom(roomId);
-    if (!room) {
-      console.log(`[Server:playerMoved] room ${roomId} not found!`);
-      return;
-    }
-
-    const playerId = socket.id;
-    const player = room.findPlayer(playerId);
-    if (!player) { return; }
-
-    player.setPaddlePosition(y);
+  // socket.on('playerMoved', (data: { y: number }) => {
+  //   roomManager.onPlayerMoved(socket, data.y);
+  // });
+  socket.on('playerMoved', (data: { newVelocityY: number }) => {
+    roomManager.onPlayerMoved(socket, data.newVelocityY);
   });
 
   // ... (Other event listeners and logic)
@@ -68,7 +53,7 @@ io.on('connection', (socket: Socket) => {
 // Game loop
 setInterval(() => {
   roomManager.updateAndEmitState(io);
-}, GAME_UPDATE_INTERVAL);
+}, SERVER_UPDATE_INTERVAL);
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));

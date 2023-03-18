@@ -1,20 +1,21 @@
 // Define the base class that extends Phaser.Scene
+import {GAME_HEIGHT, GAME_WIDTH} from "@shared/constants";
+
 export class BaseScene extends Phaser.Scene {
   protected centerX: number = 0;
   protected centerY: number = 0;
   protected scaleFactor: number = 0;
 
   init() {
-    console.log('this.game.config.width', this.game.config.width);
-    console.log('this.game.canvas.width', this.game.canvas.width);
-    console.log('this.scale.width', this.scale.width);
+    // this.centerX = this.game.canvas.width * 0.5;
+    // this.centerY = this.game.canvas.height * 0.5;
+    this.centerX = GAME_WIDTH * 0.5;
+    this.centerY = GAME_HEIGHT * 0.5;
 
-    this.centerX = this.game.canvas.width * 0.5;
-    this.centerY = this.game.canvas.height * 0.5;
     this.scaleFactor = this.scale.width / (this.game.config.width as number);
     this.scale.lockOrientation('landscape');
 
-    this.scale.on('resize', this.handleResize, this);
+    // this.scale.on('resize', this.handleResize, this);
   }
 
   // init2() {
@@ -45,13 +46,13 @@ export class BaseScene extends Phaser.Scene {
   //   });
   // }
 
-  private handleResize(gameSize: Phaser.Structs.Size) {
-    // redraw the scene after resizing the game window
-    if (this.scene.isActive() && this.scene.isVisible()) {
-      this.cameras.resize(gameSize.width, gameSize.height);
-      this.scene.restart();
-    }
-  }
+  // private handleResize(gameSize: Phaser.Structs.Size) {
+  //   // redraw the scene after resizing the game window
+  //   if (this.scene.isActive() && this.scene.isVisible()) {
+  //     this.cameras.resize(gameSize.width, gameSize.height);
+  //     this.scene.restart();
+  //   }
+  // }
 
   protected calculateScaledFontSize(fontSize: number): number {
     return Math.floor(fontSize * this.scaleFactor);

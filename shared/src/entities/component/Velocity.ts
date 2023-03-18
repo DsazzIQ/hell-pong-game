@@ -1,7 +1,10 @@
-import IPoint from "@shared/types/IPoint";
 import Component from "./Component";
 
-export class Velocity extends Component implements IPoint {
+export interface IVelocity {
+  x: number;
+  y: number;
+}
+export class Velocity extends Component implements IVelocity {
   x: number;
   y: number;
 
@@ -19,7 +22,11 @@ export class Velocity extends Component implements IPoint {
     this.y = -this.y;
   }
 
-  toJson(): IPoint {
+  static fromJson(json: IVelocity): Velocity {
+    return new Velocity(json.x, json.y);
+  }
+
+  toJson(): IVelocity {
     return {
       x: this.x,
       y: this.y
