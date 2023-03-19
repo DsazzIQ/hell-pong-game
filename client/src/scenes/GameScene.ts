@@ -1,10 +1,11 @@
 import Phaser from 'phaser';
 import { BaseScene } from './BaseScene';
 import { Socket } from 'socket.io-client';
-import {GAME_HEIGHT, GAME_WIDTH, PADDLE_SPEED} from "@shared/constants";
+import {CLIENT_UPDATE_INTERVAL, GAME_HEIGHT, GAME_WIDTH, PADDLE_SPEED} from "@shared/constants";
 import GameState, {IGameState} from "@shared/gameData/GameState";
 import {IPlayer} from "@shared/gameData/Player";
 import {Position} from "@shared/entities/component/Position";
+import { Pane } from 'tweakpane';
 
 const ALPHA_THRESHOLD = 1;
 const MIN_BUFFER_SIZE_INTERPOLATION = 2;
@@ -26,8 +27,13 @@ export default class GameScene extends BaseScene {
 
   private socket!: Socket;
 
-  private gameStateBuffer: GameState[] = [];
+  private gameStateBuffer: IGameState[] = [];
+
   private lastReceivedTime: number | null = null;
+
+  private pane!: Pane;
+
+  private isPaused: boolean = false;
 
   constructor() {
     super('Game');
@@ -38,7 +44,18 @@ export default class GameScene extends BaseScene {
     super.init();
     this.roomId = data.roomId;
     this.initData = data;
+
     this.socket = this.registry.get('socket') as Socket;
+    this.pane = new Pane({
+      title: 'GameState',
+    });
+    this.pane.addMonitor(this.game.loop, 'actualFps', {   view: 'graph' });
+    this.pane.addFolder({ title: 'Buffer Size'}).addMonitor(this.gameStateBuffer, 'length');
+  }
+
+  private handleVisibilityChange(): void {
+    console.log('[handleVisibilityChange] set game on pause', document.hidden)
+    this.isPaused = document.hidden;
   }
 
   public create(): void {
@@ -49,12 +66,22 @@ export default class GameScene extends BaseScene {
     this.cursors = this.input.keyboard.createCursorKeys();
 
     // Add background
-    this.add.tileSprite(0, 0, this.game.canvas.width, this.game.canvas.height, 'textures', 'background/background-1').setOrigin(0);
+    this.add.tileSprite(0, 0, this.game.canvas.width, this.game.canvas.height, 'textures', 'background/background-1')
+      .setOrigin(0)
+      .setName('score')
+    ;
 
     // Add ball
     this.ball = this.physics.add.sprite(this.initData.ball.position.x, this.initData.ball.position.y, 'textures', 'gameplay/ball')
       .setOrigin(0.5)
-      .setCollideWorldBounds(true);
+      .setCollideWorldBounds(true)
+      .setName('ball')
+    ;
+    const ballFolder = this.pane.addFolder({
+      title: 'Ball',
+    });
+    ballFolder.addMonitor(this.ball, 'x', { bufferSize: 100 });
+    ballFolder.addMonitor(this.ball, 'y', { bufferSize: 100 });
 
     // Set up score display
     this.playersScoreText = this.add.text(this.centerX, 20, `0 - 0`, { fontFamily: 'arcade-zig', fontSize: '24px', color: '#ffffff' }).setOrigin(0.5);
@@ -63,7 +90,14 @@ export default class GameScene extends BaseScene {
       const paddle = this.physics.add.sprite(playerData.paddle.position.x, playerData.paddle.position.y, 'textures', 'gameplay/paddle')
         .setOrigin(0.5)
         .setImmovable(true)
-        .setCollideWorldBounds(true);
+        .setCollideWorldBounds(true)
+        .setName(`paddle-${playerData.index}`)
+      ;
+      const playerFolder = this.pane.addFolder({
+        title: `Player ${playerData.index}`,
+      });
+      playerFolder.addMonitor(paddle, 'x', { bufferSize: 100 });
+      playerFolder.addMonitor(paddle, 'y', { bufferSize: 100 });
 
       return {
         id: playerData.id,
@@ -76,6 +110,8 @@ export default class GameScene extends BaseScene {
       this.onGameStateUpdate(gameState);
     });
 
+    // Add visibility change event listeners
+    document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
   }
 
   private getLocalPlayer(): GamePlayer | undefined {
@@ -88,19 +124,22 @@ export default class GameScene extends BaseScene {
 
   private handlePlayerMovement() {
     const localPlayer = this.getLocalPlayer();
-    if (localPlayer) {
-      let newVelocityY = 0;
-      if (this.cursors.up.isDown) {
-        newVelocityY = -PADDLE_SPEED;
-      }
-      if (this.cursors.down.isDown) {
-        newVelocityY = PADDLE_SPEED;
-      }
-      localPlayer.paddle.setVelocityY(newVelocityY);
-
-      // this.socket.emit('playerMoved', { y: localPlayer.paddle.y });
-      this.socket.emit('playerMoved', { newVelocityY });
+    if (!localPlayer) {
+      console.log('[handlePlayerMovement] no local player')
+      return;
     }
+
+    let newVelocityY = 0;
+    if (this.cursors.up.isDown) {
+      newVelocityY = -PADDLE_SPEED;
+    }
+    if (this.cursors.down.isDown) {
+      newVelocityY = PADDLE_SPEED;
+    }
+    localPlayer.paddle.setVelocityY(newVelocityY);
+
+    // this.socket.emit('playerMoved', { y: localPlayer.paddle.y });
+    this.socket.emit('playerMoved', { newVelocityY });
   }
 
   private getCurrentTime() {
@@ -108,6 +147,11 @@ export default class GameScene extends BaseScene {
   }
 
   private onGameStateUpdate(gameState: GameState): void {
+    if (this.isPaused) {
+      // Don't update the game loop if the game is paused
+      console.log('[onGameStateUpdate] game is on pause');
+      return;
+    }
     this.gameStateBuffer.push(gameState);
     this.lastReceivedTime = this.getCurrentTime();
   }
@@ -118,18 +162,16 @@ export default class GameScene extends BaseScene {
   }
 
   private calculateInterpolationAlpha(): number {
-    if (this.gameStateBuffer.length < MIN_BUFFER_SIZE_INTERPOLATION) return 0;
-
     const previousState = this.gameStateBuffer[0];
     const nextState = this.gameStateBuffer[1];
 
     const timeDifference = nextState.lastUpdateTime - previousState.lastUpdateTime;
-    return Math.min(this.calculateInterpolationDelta() / timeDifference, 1);
+    if (!timeDifference) { return 0; }
+    return this.calculateInterpolationDelta() / timeDifference;
   }
 
   private calculateUpdateInterval() {
-    //return CLIENT_UPDATE_INTERVAL;// 1000 / GAME_FPS;
-    return 1000 / this.game.loop.actualFps;
+    return CLIENT_UPDATE_INTERVAL;// 1000 / GAME_FPS;
   }
 
   handleInterpolationCompletion(alpha: number) {
@@ -159,7 +201,6 @@ export default class GameScene extends BaseScene {
     const nextState = this.gameStateBuffer[1];
 
     const interpolationAlpha = this.calculateInterpolationAlpha();
-    // console.log('applyServerReconciliation: interpolationAlpha', interpolationAlpha);
 
     // Update the positions of the players and ball based on the server data
     const ballPosition = Position.fromJson(previousState.ball.position).interpolateXY(nextState.ball.position.x, nextState.ball.position.y, interpolationAlpha);
@@ -181,7 +222,18 @@ export default class GameScene extends BaseScene {
   }
 
   public update(): void {
+    if (this.isPaused) {
+      // Don't update the game loop if the game is paused
+      return;
+    }
+
     this.handlePlayerMovement();
     this.applyServerReconciliation();
+  }
+
+  public destroy(): void {
+    // Remove the visibility change event listener
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
+    // ...rest of the destroy method
   }
 }

@@ -108,7 +108,8 @@ export default class GameRoom {
       // Check for collisions with paddles
       for (const player of this.players) {
         if (player.paddle.checkCollision(this.ball)) {
-          this.ball.invertVelocityX();
+          this.ball.invertVelocityX()
+            .move();
         }
       }
 

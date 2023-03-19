@@ -3,7 +3,7 @@
  * BALL_SPEED: The velocity speed
  */
 export const BALL_SIZE = 28;
-export const BALL_SPEED = 120;
+export const BALL_SPEED = 200;
 
 /**
  * PADDLE_SPEED: The velocity speed
@@ -22,9 +22,9 @@ export const GAME_WIDTH = 800;
 export const GAME_HEIGHT = 600;
 
 // export const GAME_FPS = 30;
-export const CLIENT_FPS = 40;
+export const CLIENT_FPS = 60;
 export const CLIENT_UPDATE_INTERVAL = 1000 / CLIENT_FPS;
 
-export const SERVER_FPS = 30;
+export const SERVER_FPS = 40;
 export const SERVER_UPDATE_INTERVAL = 1000 / SERVER_FPS;
 

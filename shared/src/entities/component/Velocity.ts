@@ -22,6 +22,10 @@ export class Velocity extends Component implements IVelocity {
     this.y = -this.y;
   }
 
+  stopY(): void {
+    this.y = 0;
+  }
+
   static fromJson(json: IVelocity): Velocity {
     return new Velocity(json.x, json.y);
   }

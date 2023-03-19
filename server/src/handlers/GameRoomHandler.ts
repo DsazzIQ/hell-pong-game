@@ -118,22 +118,6 @@ export default class GameRoomHandler {
   }
 
   // onPlayerMoved(socket: Socket, newY: number): boolean {
-  //   const playerId = socket.id;
-  //   const room = this.findRoomByPlayerId(socket.id);
-  //   if (!room) {
-  //     console.log(`[Server:playerMoved] room for player ${playerId} not found!`);
-  //     return false;
-  //   }
-  //
-  //   const player = room.findPlayer(playerId);
-  //   if (!player) {
-  //     console.log(`[Server:playerMoved] player ${playerId} in room ${room.id} not found!`);
-  //     return false;
-  //   }
-  //
-  //   player.setPaddlePosition(newY);
-  //   return true;
-  // }
   onPlayerMoved(socket: Socket, newVelocityY: number): boolean {
     const playerId = socket.id;
     const room = this.findRoomByPlayerId(socket.id);
@@ -148,7 +132,9 @@ export default class GameRoomHandler {
       return false;
     }
 
+    // player.setPaddlePosition(newY);
     player.setPaddleVelocity(newVelocityY).movePaddle();
+
     return true;
   }
 
@@ -156,7 +142,6 @@ export default class GameRoomHandler {
     this.rooms.forEach((room) => {
       if (room.isGameStarted()) {
         const state = room.update().getGameState();
-        // console.log('updateAndEmitState', state.ball.position)
         io.to(room.id).emit('gameStateUpdate', state);
       }
     });

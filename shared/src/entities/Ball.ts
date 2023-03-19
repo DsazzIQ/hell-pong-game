@@ -8,25 +8,29 @@ export interface IBall {
   position: IPosition;
   size: ISize;
   velocity: IVelocity;
+  fps: number;
 }
 
 export class Ball extends Entity {
+  fps: number;
+
   constructor(fps: number) {
     super();
 
     this.addComponent<Position>(new Position(GAME_WIDTH*0.5 - BALL_SIZE*0.5, GAME_HEIGHT*0.5 - BALL_SIZE*0.5, fps));
     this.addComponent<Size>(new Size(BALL_SIZE, BALL_SIZE));
     this.addComponent<Velocity>(new Velocity(BALL_SPEED, BALL_SPEED));
+    this.fps = fps;
   }
 
   updateAfterWallCollisions(): this {
     const ballPosition = this.getComponent<Position>(Position)!;
     const ballSize = this.getComponent<Size>(Size)!;
 
-    if (ballPosition.collidingWithVerticalBounds(ballSize.width, GAME_HEIGHT)) {
+    if (ballPosition.collidingWithVerticalBounds(ballSize.height*0.5)) {
       this.invertVelocityY();
     }
-    if (ballPosition.collidingWithHorizontalBounds(ballSize.width, GAME_WIDTH)) {
+    if (ballPosition.collidingWithHorizontalBounds(ballSize.width*0.5)) {
       this.invertVelocityX();
     }
 
@@ -73,7 +77,8 @@ export class Ball extends Entity {
     return {
       position: this.getComponent<Position>(Position)!.toJson(),
       velocity: this.getComponent<Velocity>(Velocity)!.toJson(),
-      size: this.getComponent<Size>(Size)!.toJson()
+      size: this.getComponent<Size>(Size)!.toJson(),
+      fps: this.fps
     }
   }
 }

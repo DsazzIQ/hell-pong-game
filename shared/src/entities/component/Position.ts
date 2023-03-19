@@ -1,5 +1,6 @@
 import {Velocity} from "./Velocity";
 import Component from "./Component";
+import {GAME_HEIGHT, GAME_WIDTH} from "../../constants";
 
 export interface IPosition {
   x: number;
@@ -18,12 +19,39 @@ export class Position extends Component implements IPosition {
     this.fps = fps;
   }
 
-  collidingWithVerticalBounds(ballSize: number, gameHeight: number): boolean {
-    return this.y <= 0 || this.y + ballSize >= gameHeight;
+  setTopY(height: number): this {
+    this.y = height;
+    return this;
   }
 
-  collidingWithHorizontalBounds(ballSize: number, gameWidth: number): boolean {
-    return this.x <= 0 || this.x + ballSize >= gameWidth;
+  setBottomY(height: number): this {
+    this.y = GAME_HEIGHT - height;
+    return this;
+  }
+
+  getTopY(height: number): number {
+    return this.y - height*0.5;
+  }
+
+  getBottomY(height: number): number {
+    return this.y + height*0.5;
+  }
+
+  collidingWithVerticalBounds(height: number): boolean {
+    // return this.y <= 0 || this.y + height >= gameHeight;
+    return this.collidingWithBottomVerticalBound(height) || this.collidingWithTopVerticalBound(height);
+  }
+
+  collidingWithTopVerticalBound(height: number): boolean {
+    return this.getTopY(height) <= 0;
+  }
+
+  collidingWithBottomVerticalBound(height: number): boolean {
+    return this.getBottomY(height) >= GAME_HEIGHT;
+  }
+
+  collidingWithHorizontalBounds(width: number): boolean {
+    return this.x - width*0.5 <= 0 || this.x + width*0.5 >= GAME_WIDTH;
   }
 
   move(velocity: Velocity): this {
