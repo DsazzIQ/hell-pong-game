@@ -18,8 +18,6 @@ export interface IBall {
 }
 
 export class Ball extends Entity {
-  readonly body: Body;
-
   constructor(position?: IPosition, velocity?: IVelocity) {
     super();
 

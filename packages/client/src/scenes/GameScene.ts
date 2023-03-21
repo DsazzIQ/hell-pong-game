@@ -7,10 +7,10 @@ import {
   GAME_HEIGHT,
   GAME_WIDTH, PADDLE_HEIGHT,
   PADDLE_WIDTH
-} from "@shared/constants";
-import GameState, {IGameState} from "@shared/gameData/GameState";
-import {IPlayer, PlayerIndex} from "@shared/gameData/Player";
-import {Position} from "@shared/entities/component/Position";
+} from "shared/constants";
+import GameState, {IGameState} from "shared/gameData/GameState";
+import {IPlayer, PlayerIndex} from "shared/gameData/Player";
+import {Position} from "shared/entities/component/Position";
 import { Pane } from 'tweakpane';
 
 const ALPHA_THRESHOLD = 1;

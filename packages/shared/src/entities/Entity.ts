@@ -10,6 +10,10 @@ export abstract class Entity {
     // You can add any shared properties or methods for all components here.
   }
 
+  getBody(): Body {
+    return this.body;
+  }
+
   get velocity(): Velocity {
     return new Velocity(this.body.velocity.x, this.body.velocity.y);
   }
@@ -24,7 +28,7 @@ export abstract class Entity {
     return new Size(width, height);
   }
 
-  public addToWorld(world: World): this {
+  public addToWorld(world: World): Entity {
     World.add(world, this.body);
     return this;
   }

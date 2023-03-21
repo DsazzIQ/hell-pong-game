@@ -5,7 +5,7 @@ import LobbyScene from "./scenes/LobbyScene";
 import PreloaderScene from "./scenes/PreloaderScene";
 import AwaitLoaderPlugin from 'phaser3-rex-plugins/plugins/awaitloader-plugin.js';
 import GameScene from "./scenes/GameScene";
-import {GAME_FPS, GAME_HEIGHT, GAME_WIDTH} from "@shared/constants";
+import {GAME_FPS, GAME_HEIGHT, GAME_WIDTH} from "shared/constants";
 
 const config: Phaser.Types.Core.GameConfig = {
     parent: 'game-container',

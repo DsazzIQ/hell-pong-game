@@ -1,27 +1,24 @@
 {
-  "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "dist",
     "rootDir": "src",
     "target": "es2021",
-    "module": "commonjs",
-    "moduleResolution": "node",
     "lib": ["es2021", "dom"],
     "strict": true,
     "allowJs": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "paths": {
-      "@shared/*": ["../shared/src/*"]
+      "shared/*": ["../shared/src/*"]
     }
   },
-  "references": [
-    {
-      "path": "../shared/tsconfig.json"
-    }
-  ],
   "include": [
     "src/**/*",
     "node_modules/phaser3-rex-plugins-types"
   ],
-  "exclude": ["node_modules", "src/index.html"]
+  "exclude": ["node_modules", "src/index.html", "dist"]
 }

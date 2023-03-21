@@ -1,4 +1,4 @@
-import {GAME_HEIGHT, GAME_WIDTH} from "@shared/constants";
+import {GAME_HEIGHT, GAME_WIDTH} from "shared/constants";
 
 export class BaseScene extends Phaser.Scene {
   protected centerX: number = 0;

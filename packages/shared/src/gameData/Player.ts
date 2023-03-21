@@ -29,6 +29,7 @@ export default class Player {
     }
   }
 }
+
 // const limitMaxSpeed = () => {
 //   let maxSpeed = 1;
 //   if (body.velocity.x > maxSpeed) {

@@ -1,20 +1,16 @@
 {
-  "name": "my-project",
-  "version": "1.0.0",
-  "description": "A multiplayer ping pong game built with Phaser 3 and Socket.IO",
+  "name": "hell-pong-root",
   "private": true,
   "workspaces": [
-    "client",
-    "server"
+    "packages/*"
   ],
   "scripts": {
-    "build:shared": "cd shared && tsc",
-    "dev": "concurrently \"yarn dev:client\" \"yarn dev:server\"",
-    "dev:client": "yarn build:shared && cd client && yarn dev",
-    "dev:server": "yarn build:shared && cd server && yarn dev"
+    "start:client": "concurrently \"yarn workspace shared watch\" \"yarn workspace client start\"",
+    "start:server": "concurrently \"yarn workspace shared watch\" \"yarn workspace server start\"",
+    "start": "concurrently \"yarn start:client\" \"yarn start:server\""
   },
-  "dependencies": {},
   "devDependencies": {
-    "concurrently": "^6.2.2"
+    "concurrently": "^7.6.0",
+    "lerna": "^6.5.1"
   }
 }

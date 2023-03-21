@@ -3,7 +3,7 @@ import express from 'express';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import GameRoomHandler from './handlers/GameRoomHandler';
 import path from "path";
-import {GAME_UPDATE_INTERVAL} from "@shared/constants";
+import {GAME_UPDATE_INTERVAL} from "shared/constants";
 
 const app = express();
 const server = http.createServer(app);

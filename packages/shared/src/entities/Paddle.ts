@@ -59,12 +59,8 @@ export class Paddle extends Entity {
     this.body.velocity.y = 0;
   }
 
-  getBody(): Body {
-    return this.body;
-  }
-
   checkCollision(ball: Ball): boolean {
-    return Collision.create(ball.body, this.body).collided;
+    return Collision.create(ball.getBody(), this.body).collided;
   }
 
   moveUp(): this {

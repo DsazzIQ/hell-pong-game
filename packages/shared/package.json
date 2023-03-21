@@ -1,0 +1,17 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "description": "Shared components and utilities",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "Stanislav Stepanenko",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.5",
+    "typescript": "^5.0.2"
+  }
+}

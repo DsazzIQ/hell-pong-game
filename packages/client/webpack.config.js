@@ -2,6 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = (env, argv) => {
     const isProduction = argv.mode === 'production';
@@ -35,8 +36,13 @@ module.exports = (env, argv) => {
             alias: {
                 // Add an alias for 'matter' module
                 'matter': 'matter-js/build/matter.js',
-                "@shared/*": "../shared/dist/*"
+                'shared': path.resolve(__dirname, '../shared/src'),
             },
+            plugins: [
+                new TsconfigPathsPlugin({
+                    configFile: path.resolve(__dirname, 'tsconfig.json')
+                })
+            ],
             extensions: ['.tsx', '.ts', '.js']
         },
         plugins: [

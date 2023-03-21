@@ -1,5 +1,4 @@
 {
-  "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "dist",
@@ -7,22 +6,19 @@
     "target": "es2021",
     "module": "commonjs",
     "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "lib": ["es2021", "dom"],
     "strict": true,
     "allowJs": true,
     "paths": {
-      "@shared/*": ["../shared/src/*"]
+      "shared/*": ["../shared/src/*"]
     }
   },
-  "references": [
-    {
-      "path": "../shared/tsconfig.json"
-    }
-  ],
-  "include": [
-    "src/**/*.ts"
-  ],
+  "include": ["src/**/*.ts"],
   "exclude": [
+    "dist",
     "node_modules",
     "**/*.test.ts"
   ]

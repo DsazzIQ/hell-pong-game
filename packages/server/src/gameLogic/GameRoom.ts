@@ -8,12 +8,12 @@ import {
   RIGHT_WALL_LABEL,
   GAME_UPDATE_INTERVAL,
   TOP_WALL_LABEL
-} from "@shared/constants";
-import GameState from "@shared/gameData/GameState";
+} from "shared/constants";
+import GameState from "shared/gameData/GameState";
 import {Body, Bodies, Engine, Events, World, Pair} from 'matter-js';
-import Player, {PlayerIndex} from "@shared/gameData/Player";
-import {Ball} from "@shared/entities/Ball";
-import {IGameState, IRoomInfo} from "@shared/gameData/GameState";
+import Player, {PlayerIndex} from "shared/gameData/Player";
+import {Ball} from "shared/entities/Ball";
+import {IGameState, IRoomInfo} from "shared/gameData/GameState";
 
 export default class GameRoom {
   readonly id: string;

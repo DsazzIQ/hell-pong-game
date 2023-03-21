@@ -1,7 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import { v4 as uuid } from 'uuid';
 import GameRoom from "../gameLogic/GameRoom";
-import {IRoomInfo} from "@shared/gameData/GameState";
+import {IRoomInfo} from "shared/gameData/GameState";
 
 export default class GameRoomHandler {
   private readonly rooms: Map<string, GameRoom>;
