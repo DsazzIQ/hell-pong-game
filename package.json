@@ -1,5 +1,5 @@
 {
-  "name": "hell-pong-root",
+  "name": "hell-pong",
   "private": true,
   "workspaces": [
     "packages/*"
