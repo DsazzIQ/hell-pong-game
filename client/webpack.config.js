@@ -32,6 +32,11 @@ module.exports = (env, argv) => {
             ],
         },
         resolve: {
+            alias: {
+                // Add an alias for 'matter' module
+                'matter': 'matter-js/build/matter.js',
+                "@shared/*": "../shared/dist/*"
+            },
             extensions: ['.tsx', '.ts', '.js']
         },
         plugins: [

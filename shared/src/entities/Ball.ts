@@ -1,85 +1,127 @@
 import {Entity} from "./Entity";
 import {IPosition, Position} from "./component/Position";
 import {IVelocity, Velocity} from "./component/Velocity";
-import {ISize, Size} from "./component/Size";
-import {BALL_SIZE, BALL_SPEED, GAME_HEIGHT, GAME_WIDTH} from "../constants";
+import {
+  BALL_LABEL, BALL_MAX_SPEED,
+  BALL_RADIUS,
+  BALL_SPEED,
+  GAME_HEIGHT,
+  GAME_WIDTH,
+  PADDLE_LABEL_ONE,
+  PADDLE_LABEL_TWO,
+} from "../constants";
+import {Bodies, Body, Pair, Vector} from "matter-js";
 
 export interface IBall {
   position: IPosition;
-  size: ISize;
   velocity: IVelocity;
-  fps: number;
 }
 
 export class Ball extends Entity {
-  fps: number;
+  readonly body: Body;
 
-  constructor(fps: number) {
+  constructor(position?: IPosition, velocity?: IVelocity) {
     super();
 
-    this.addComponent<Position>(new Position(GAME_WIDTH*0.5 - BALL_SIZE*0.5, GAME_HEIGHT*0.5 - BALL_SIZE*0.5, fps));
-    this.addComponent<Size>(new Size(BALL_SIZE, BALL_SIZE));
-    this.addComponent<Velocity>(new Velocity(BALL_SPEED, BALL_SPEED));
-    this.fps = fps;
+    const x = position ? position.x : this.initX;
+    const y = position ? position.y : this.initY;
+
+    const options = {
+      frictionAir: 0,
+      friction: 0,
+      restitution: 1,
+      label: BALL_LABEL,
+    };
+    this.body = Bodies.circle(x, y, BALL_RADIUS, options);
+    // Body.setAngularVelocity(this.body, 0);
+
+    const velocityX = velocity ? velocity.x : BALL_SPEED;
+    const velocityY = velocity ? velocity.y : BALL_SPEED;
+    this.setVelocity(new Velocity(velocityX, velocityY));
   }
 
-  updateAfterWallCollisions(): this {
-    const ballPosition = this.getComponent<Position>(Position)!;
-    const ballSize = this.getComponent<Size>(Size)!;
+  // Function to limit the ball's velocity
+  limitMaxSpeed() {
+    const { x, y } = this.body.velocity;
+    const currentSpeed = this.body.speed;
+    // Check if the ball's speed exceeds the maximum speed
+    if (currentSpeed > BALL_MAX_SPEED) {
+      // Calculate the scaling factor to limit the ball's speed
+      const scaleFactor = BALL_MAX_SPEED / currentSpeed;
 
-    if (ballPosition.collidingWithVerticalBounds(ballSize.height*0.5)) {
-      this.invertVelocityY();
+      // Set the ball's velocity to the scaled velocity
+      this.setVelocity(new Velocity(x * scaleFactor, y * scaleFactor))
     }
-    if (ballPosition.collidingWithHorizontalBounds(ballSize.width*0.5)) {
-      this.invertVelocityX();
+  }
+
+  updateAfterCollisions(pair: Pair): this {
+    if (!this.collidesInPair(pair)) {
+      return this;
+    }
+
+    if (this.collidesInPairWith(pair, PADDLE_LABEL_ONE)) {
+      console.log('BALL COLLIDED WITH', PADDLE_LABEL_ONE);
+      // const paddle = [pair.bodyA, pair.bodyB].find(b => b.label === PADDLE_LABEL_ONE)!;
+      return this.invertVelocityX();
+    }
+
+    if (this.collidesInPairWith(pair, PADDLE_LABEL_TWO)) {
+      console.log('BALL COLLIDED WITH', PADDLE_LABEL_TWO);
+      // const paddle = [pair.bodyA, pair.bodyB].find(b => b.label === PADDLE_LABEL_TWO)!;
+      return this.invertVelocityX();
+    }
+
+    if (this.collidingWithVerticalWalls(pair)) {
+      // console.log('BALL COLLIDED WITH: VERTICAL WALL');
+      // return this.invertVelocityY();
+    }
+
+    if (this.collidingWithHorizontalWalls(pair)) {
+      // console.log('BALL COLLIDED WITH: HORIZONT WALL');
+      // return this.invertVelocityX();
     }
 
     return this;
   }
 
-  move(): this {
-    const ballPosition = this.getComponent<Position>(Position)!;
-    const ballVelocity = this.getComponent<Velocity>(Velocity)!;
+  private get initX(): number {
+    return GAME_WIDTH*0.5 - BALL_RADIUS;
+  }
 
-    ballPosition.move(ballVelocity);
-    return this;
+  private get initY(): number {
+    return GAME_HEIGHT*0.5 - BALL_RADIUS;
   }
 
   invertVelocityY(): this {
-    this.getComponent<Velocity>(Velocity)!.invertY();
-    return this;
+    return this.setVelocity(this.velocity.invertY())
   }
 
   invertVelocityX(): this {
-    this.getComponent(Velocity)!.invertX();
-    return this;
-  }
-
-  interpolatePositionXY(targetX: number, targetY: number, fps: number, alpha: number) {
-    return this.interpolatePosition(new Position(targetX, targetY, fps), alpha);
+    return this.setVelocity(this.velocity.invertX())
   }
 
   interpolatePosition(target: Position, alpha: number) {
-    this.getComponent<Position>(Position)!.interpolate(target, alpha);
+    const interpolated = this.position.interpolate(target, alpha);
+    // Body.setPosition(this.body, interpolated.toJson());
+    console.log('[BALL:interpolatePosition]', interpolated.toJson());
+    Body.setPosition(this.body, Vector.create(interpolated.x, interpolated.y));
     return this;
   }
 
-  static fromJson(json: IBall): Ball {
-    const ball = new Ball(json.position.fps);
-    ball.addComponent<Position>(new Position(json.position.x, json.position.y, json.position.fps));
-    ball.addComponent<Size>(new Size(json.size.width, json.size.height));
-    ball.addComponent<Velocity>(new Velocity(json.velocity.x, json.velocity.y));
-
-    return ball;
+  private setVelocity(velocity: Velocity): this {
+    console.log('[BALL:setVelocity]', velocity.toJson());
+    Body.setVelocity(this.body, Vector.create(velocity.x, velocity.y));
+    return this;
   }
 
   toJson(): IBall {
     return {
-      position: this.getComponent<Position>(Position)!.toJson(),
-      velocity: this.getComponent<Velocity>(Velocity)!.toJson(),
-      size: this.getComponent<Size>(Size)!.toJson(),
-      fps: this.fps
-    }
+      position: this.position.toJson(),
+      velocity: this.velocity.toJson()
+    };
+  }
+
+  static fromJson({ position, velocity }: IBall): Ball {
+    return new Ball(position, velocity);
   }
 }
-

@@ -10,7 +10,7 @@
   "scripts": {
     "build:shared": "cd shared && tsc",
     "dev": "concurrently \"yarn dev:client\" \"yarn dev:server\"",
-    "dev:client": "cd client && yarn dev",
+    "dev:client": "yarn build:shared && cd client && yarn dev",
     "dev:server": "yarn build:shared && cd server && yarn dev"
   },
   "dependencies": {},

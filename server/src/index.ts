@@ -3,7 +3,7 @@ import express from 'express';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import GameRoomHandler from './handlers/GameRoomHandler';
 import path from "path";
-import {SERVER_UPDATE_INTERVAL} from "@shared/constants";
+import {GAME_UPDATE_INTERVAL} from "@shared/constants";
 
 const app = express();
 const server = http.createServer(app);
@@ -43,8 +43,8 @@ io.on('connection', (socket: Socket) => {
   // socket.on('playerMoved', (data: { y: number }) => {
   //   roomManager.onPlayerMoved(socket, data.y);
   // });
-  socket.on('playerMoved', (data: { newVelocityY: number }) => {
-    roomManager.onPlayerMoved(socket, data.newVelocityY);
+  socket.on('playerMoved', (data: { key: 'UP' | 'DOWN' | 'STOP' }) => {
+    roomManager.onPlayerMoved(socket, data.key);
   });
 
   // ... (Other event listeners and logic)
@@ -53,7 +53,7 @@ io.on('connection', (socket: Socket) => {
 // Game loop
 setInterval(() => {
   roomManager.updateAndEmitState(io);
-}, SERVER_UPDATE_INTERVAL);
+}, GAME_UPDATE_INTERVAL);
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));

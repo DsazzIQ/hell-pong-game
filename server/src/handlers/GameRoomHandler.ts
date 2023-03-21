@@ -1,7 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import { v4 as uuid } from 'uuid';
-import GameRoom, {IRoomInfo} from "@shared/gameLogic/GameRoom";
-import showMe from "../../../shared/src/utilities/showMe";
+import GameRoom from "../gameLogic/GameRoom";
+import {IRoomInfo} from "@shared/gameData/GameState";
 
 export default class GameRoomHandler {
   private readonly rooms: Map<string, GameRoom>;
@@ -25,8 +25,6 @@ export default class GameRoomHandler {
 
     const roomId = this.generateUniqueRoomId();
     const room = new GameRoom(roomId);
-    console.log('CREATED ROOM', showMe(room))
-
     this.rooms.set(roomId, room);
 
     room.tryAddPlayer(socket.id);
@@ -58,14 +56,14 @@ export default class GameRoomHandler {
 
     socket.join(roomId);
     console.log(`    Player ${socket.id} joined room ${roomId}.`);
-    socket.emit('joinedRoom', room);
+    socket.emit('joinedRoom', room.toJson());
     room.startGame(this.io);
 
     return room;
   }
 
   getRoomList(): IRoomInfo[] {
-    return Array.from(this.rooms, ([_, room]) => room.toJSON());
+    return Array.from(this.rooms, ([_, room]) => room.toJson());
   }
 
   getRoom(roomId: string): GameRoom | undefined {
@@ -118,7 +116,7 @@ export default class GameRoomHandler {
   }
 
   // onPlayerMoved(socket: Socket, newY: number): boolean {
-  onPlayerMoved(socket: Socket, newVelocityY: number): boolean {
+  onPlayerMoved(socket: Socket, key: 'UP' | 'DOWN' | 'STOP'): boolean {
     const playerId = socket.id;
     const room = this.findRoomByPlayerId(socket.id);
     if (!room) {
@@ -132,8 +130,8 @@ export default class GameRoomHandler {
       return false;
     }
 
-    // player.setPaddlePosition(newY);
-    player.setPaddleVelocity(newVelocityY).movePaddle();
+    // player.paddle.interpolateVelocity(newVelocityY);
+    player.paddle.move(key);
 
     return true;
   }

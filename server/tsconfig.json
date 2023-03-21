@@ -2,8 +2,8 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "outDir": "./dist/",
-    "rootDir": "./src",
+    "outDir": "dist",
+    "rootDir": "src",
     "target": "es2021",
     "module": "commonjs",
     "moduleResolution": "node",
@@ -11,7 +11,7 @@
     "strict": true,
     "allowJs": true,
     "paths": {
-      "@shared/*": ["../shared/dist/*"]
+      "@shared/*": ["../shared/src/*"]
     }
   },
   "references": [

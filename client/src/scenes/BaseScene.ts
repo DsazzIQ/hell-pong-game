@@ -1,4 +1,3 @@
-// Define the base class that extends Phaser.Scene
 import {GAME_HEIGHT, GAME_WIDTH} from "@shared/constants";
 
 export class BaseScene extends Phaser.Scene {
@@ -7,8 +6,6 @@ export class BaseScene extends Phaser.Scene {
   protected scaleFactor: number = 0;
 
   init() {
-    // this.centerX = this.game.canvas.width * 0.5;
-    // this.centerY = this.game.canvas.height * 0.5;
     this.centerX = GAME_WIDTH * 0.5;
     this.centerY = GAME_HEIGHT * 0.5;
 

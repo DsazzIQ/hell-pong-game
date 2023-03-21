@@ -2,13 +2,21 @@ import {Entity} from "./Entity";
 import {IPosition, Position} from "./component/Position";
 import {Ball} from "./Ball";
 import {ISize, Size} from "./component/Size";
-import {GAME_HEIGHT, GAME_WIDTH, PADDLE_HEIGHT, PADDLE_OFFSET, PADDLE_SPEED, PADDLE_WIDTH} from "../constants";
+import {
+  GAME_HEIGHT,
+  GAME_WIDTH,
+  PADDLE_HEIGHT,
+  PADDLE_LABEL_ONE, PADDLE_LABEL_TWO,
+  PADDLE_OFFSET,
+  PADDLE_SPEED,
+  PADDLE_WIDTH
+} from "../constants";
 import {PlayerIndex} from "../gameData/Player";
 import {IVelocity, Velocity} from "./component/Velocity";
+import {Bodies, Body, Collision, Vector} from "matter-js";
 
 export interface IPaddle {
   playerIndex: PlayerIndex,
-  fps: number,
   position: IPosition,
   velocity: IVelocity,
   size: ISize
@@ -16,68 +24,81 @@ export interface IPaddle {
 
 export class Paddle extends Entity {
   playerIndex: PlayerIndex;
-  fps: number;
-  constructor(playerIndex: PlayerIndex, fps: number) {
+  private readonly speed: number = PADDLE_SPEED;
+
+  constructor(playerIndex: PlayerIndex, position?: IPosition, velocity?: IVelocity, size?: ISize) {
     super();
     this.playerIndex = playerIndex;
-    this.fps = fps;
-    this.addComponent<Position>(this.calculateInitialPosition(playerIndex, fps));
-    this.addComponent<Velocity>(new Velocity(0, PADDLE_SPEED));
-    this.addComponent<Size>(new Size(PADDLE_WIDTH, PADDLE_HEIGHT));
+
+    const initialPosition = this.calculateInitialPosition(playerIndex);
+    const x = position ? position.x : initialPosition.x;
+    const y = position ? position.y : initialPosition.y;
+
+    const initialSize = new Size(PADDLE_WIDTH, PADDLE_HEIGHT);
+    const width = size ? size.width : initialSize.width;
+    const height = size ? size.height : initialSize.height;
+
+    console.log('CREATE PADDLE');
+    const options = {
+      friction: 0,
+      frictionAir: 0,
+      restitution: 0,
+      inertia: Number.MAX_SAFE_INTEGER,
+      mass: Number.MAX_SAFE_INTEGER,
+      label: playerIndex === PlayerIndex.FIRST ? PADDLE_LABEL_ONE : PADDLE_LABEL_TWO,
+    };
+    this.body = Bodies.rectangle(x, y, width, height, options);
+
+    const velocityX = velocity ? velocity.x : 0;
+    const velocityY = velocity ? velocity.y : 0;
+    this.setVelocity(new Velocity(velocityX, velocityY));
   }
 
-  move(): this {
-    const position = this.getComponent<Position>(Position)!;
-    const velocity = this.getComponent<Velocity>(Velocity)!;
+  preventMoving() {
+    this.body.position.x = Paddle.getInitialPositionX(this.playerIndex);
+    this.body.velocity.y = 0;
+  }
 
-    if (position.collidingWithTopVerticalBound(PADDLE_HEIGHT)) {
-      velocity.stopY();
-      position.setTopY(PADDLE_HEIGHT);
-      return this;
-    }
-
-    if (position.collidingWithBottomVerticalBound(PADDLE_HEIGHT)) {
-      velocity.stopY();
-      position.setBottomY(PADDLE_HEIGHT);
-      return this;
-    }
-
-    position.move(velocity);
-    return this;
+  getBody(): Body {
+    return this.body;
   }
 
   checkCollision(ball: Ball): boolean {
-    const paddlePosition = this.getComponent<Position>(Position);
-    const paddleSize = this.getComponent<Size>(Size);
-    const ballPosition = ball.getComponent<Position>(Position);
-    const ballSize = ball.getComponent<Size>(Size);
-
-    if (!paddlePosition || !paddleSize || !ballPosition || !ballSize) {
-      console.error("[Paddle:checkCollision] Paddle or ball position or size not found.");
-      return false;
-    }
-
-    const ballShiftY = ballSize.height*0.5;
-    const ballShiftX = ballSize.width*0.5;
-    const ballLeft = ballPosition.x - ballShiftX;
-    const ballRight = ballPosition.x + ballShiftX;
-    const ballTop = ballPosition.y - ballShiftY;
-    const ballBottom = ballPosition.y + ballShiftY;
-
-    const paddleShiftY = paddleSize.width*0.5;
-    const paddleShiftX = paddleSize.width*0.5;
-    const paddleLeft = paddlePosition.x - paddleShiftX;
-    const paddleRight = paddlePosition.x + paddleShiftX;
-    const paddleTop = paddlePosition.y - paddleShiftY;
-    const paddleBottom = paddlePosition.y + paddleShiftY;
-
-    const collisionX = ballRight >= paddleLeft && ballLeft <= paddleRight;
-    const collisionY = ballBottom >= paddleTop && ballTop <= paddleBottom;
-
-    return collisionX && collisionY;
+    return Collision.create(ball.body, this.body).collided;
   }
 
-  private calculateInitialPosition(playerIndex: PlayerIndex, fps: number): Position {
+  moveUp(): this {
+    console.log('MOVE UP', -this.speed);
+    return this.setVelocity(new Velocity(0, -this.speed));
+  }
+
+  moveDown(): this {
+    console.log('MOVE DOWN', this.speed);
+    return this.setVelocity(new Velocity(0, this.speed));
+  }
+
+  stop() {
+    return this.setVelocity(new Velocity(0, 0));
+  }
+
+  move(key: 'UP' | 'DOWN' | 'STOP'): this {
+    switch (key) {
+      case "UP": return this.moveUp();
+      case "DOWN": return this.moveDown();
+      case "STOP": return this.stop();
+    }
+  }
+
+  private setVelocity(velocity: Velocity): this {
+    Body.setVelocity(this.body, Vector.create(velocity.x, velocity.y));
+    return this;
+  }
+
+  // public interpolateVelocity(newY: number): this {
+  //   const interpolated = this.velocity.interpolateY(new Velocity(0, newY), this.speed);
+  //   return this.setVelocity(interpolated);
+  // }
+  static getInitialPositionX(playerIndex: PlayerIndex): number {
     let paddleX;
     switch (playerIndex) {
       case PlayerIndex.FIRST: paddleX = PADDLE_OFFSET + PADDLE_WIDTH; break;
@@ -85,27 +106,26 @@ export class Paddle extends Entity {
       case PlayerIndex.UNKNOWN: paddleX = 0; break;
       default: paddleX = 0;
     }
-
-    const paddleY = (GAME_HEIGHT - PADDLE_HEIGHT) * 0.5;
-
-    return new Position(paddleX, paddleY, fps);
+    return paddleX;
   }
 
-  fromJson(json: IPaddle): Paddle {
-    const paddle = new Paddle(json.playerIndex, json.position.fps);
-    paddle.addComponent<Position>(new Position(json.position.x, json.position.y, json.position.fps));
-    paddle.addComponent<Size>(new Size(json.size.width, json.size.height));
+  private calculateInitialPosition(playerIndex: PlayerIndex): Position {
+    const paddleX = Paddle.getInitialPositionX(playerIndex);
+    const paddleY = (GAME_HEIGHT - PADDLE_HEIGHT) * 0.5;
 
-    return paddle;
+    return new Position(paddleX, paddleY);
+  }
+
+  fromJson({ playerIndex, position, velocity, size }: IPaddle): Paddle {
+    return new Paddle(playerIndex, position, velocity, size);
   }
 
   toJson(): IPaddle {
     return {
       playerIndex: this.playerIndex,
-      fps: this.fps,
-      position: this.getComponent<Position>(Position)!.toJson(),
-      velocity: this.getComponent<Velocity>(Velocity)!.toJson(),
-      size: this.getComponent<Size>(Size)!.toJson()
+      position: this.position.toJson(),
+      velocity: this.velocity.toJson(),
+      size: this.size.toJson()
     }
   }
 }

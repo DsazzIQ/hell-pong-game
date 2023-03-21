@@ -1,9 +1,15 @@
 import Phaser from 'phaser';
 import { BaseScene } from './BaseScene';
 import { Socket } from 'socket.io-client';
-import {CLIENT_UPDATE_INTERVAL, GAME_HEIGHT, GAME_WIDTH, PADDLE_SPEED} from "@shared/constants";
+import {
+  BALL_RADIUS,
+  GAME_UPDATE_INTERVAL,
+  GAME_HEIGHT,
+  GAME_WIDTH, PADDLE_HEIGHT,
+  PADDLE_WIDTH
+} from "@shared/constants";
 import GameState, {IGameState} from "@shared/gameData/GameState";
-import {IPlayer} from "@shared/gameData/Player";
+import {IPlayer, PlayerIndex} from "@shared/gameData/Player";
 import {Position} from "@shared/entities/component/Position";
 import { Pane } from 'tweakpane';
 
@@ -13,13 +19,14 @@ const MAX_BUFFER_SIZE = 5;
 
 interface GamePlayer {
   id: string;
-  paddle: Phaser.Physics.Arcade.Sprite;
+  index: PlayerIndex;
+  paddle: Phaser.Physics.Matter.Image;
 }
-export default class GameScene extends BaseScene {
+export default class GameSceneMatter extends BaseScene {
   private roomId!: string;
   private initData!: IGameState;
 
-  private ball!: Phaser.Physics.Arcade.Image;
+  private ball!: Phaser.Physics.Matter.Image;
   private players: GamePlayer[] = [];
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
 
@@ -44,12 +51,11 @@ export default class GameScene extends BaseScene {
     super.init();
     this.roomId = data.roomId;
     this.initData = data;
-
     this.socket = this.registry.get('socket') as Socket;
     this.pane = new Pane({
       title: 'GameState',
     });
-    this.pane.addMonitor(this.game.loop, 'actualFps', {   view: 'graph' });
+    this.pane.addMonitor(this.game.loop, 'actualFps', { view: 'graph' });
     this.pane.addFolder({ title: 'Buffer Size'}).addMonitor(this.gameStateBuffer, 'length');
   }
 
@@ -58,52 +64,74 @@ export default class GameScene extends BaseScene {
     this.isPaused = document.hidden;
   }
 
-  public create(): void {
-    console.log('[GameScene:create] init data', this.initData);
+  private initBall(): void {
+    this.ball = this.matter.add.sprite(this.initData.ball.position.x, this.initData.ball.position.y, 'textures', 'gameplay/ball')
+    this.ball.setCircle(BALL_RADIUS);
 
-    this.physics.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT);
-    // Set up keyboard controls
-    this.cursors = this.input.keyboard.createCursorKeys();
+    this.ball.setFrictionAir(0);
+    this.ball.setFriction(0);
 
-    // Add background
+    this.ball.setBounce(1)
+    this.ball.setOrigin(0.5)
+    this.ball.setName('ball')
+  }
+
+  private initBackground(): void {
     this.add.tileSprite(0, 0, this.game.canvas.width, this.game.canvas.height, 'textures', 'background/background-1')
       .setOrigin(0)
-      .setName('score')
     ;
+  }
 
-    // Add ball
-    this.ball = this.physics.add.sprite(this.initData.ball.position.x, this.initData.ball.position.y, 'textures', 'gameplay/ball')
+  private initGameScore(): void {
+    this.playersScoreText = this.add.text(this.centerX, 20, `0 - 0`,
+      { fontFamily: 'arcade-zig', fontSize: '24px', color: '#ffffff' })
       .setOrigin(0.5)
-      .setCollideWorldBounds(true)
-      .setName('ball')
-    ;
+      .setName('score');
+  }
+
+  private initPlayers(): void {
+    this.players = this.initData.players.map((player) => {
+      const paddle = this.matter.add.sprite(player.paddle.position.x, player.paddle.position.y, 'textures', 'gameplay/paddle');
+      paddle.setRectangle(PADDLE_WIDTH, PADDLE_HEIGHT);
+      paddle.setStatic(true);
+      // paddle.setFrictionAir(0);
+      paddle.setBounce(1);
+      paddle.setOrigin(0.5);
+      paddle.setName(`paddle-${player.index+1}`);
+
+      return { id: player.id, index: player.index, paddle };
+    });
+  }
+
+  private initDebugMonitor(): void {
     const ballFolder = this.pane.addFolder({
       title: 'Ball',
     });
     ballFolder.addMonitor(this.ball, 'x', { bufferSize: 100 });
     ballFolder.addMonitor(this.ball, 'y', { bufferSize: 100 });
 
-    // Set up score display
-    this.playersScoreText = this.add.text(this.centerX, 20, `0 - 0`, { fontFamily: 'arcade-zig', fontSize: '24px', color: '#ffffff' }).setOrigin(0.5);
-
-    this.players = this.initData.players.map((playerData) => {
-      const paddle = this.physics.add.sprite(playerData.paddle.position.x, playerData.paddle.position.y, 'textures', 'gameplay/paddle')
-        .setOrigin(0.5)
-        .setImmovable(true)
-        .setCollideWorldBounds(true)
-        .setName(`paddle-${playerData.index}`)
-      ;
+    this.players.map((player) => {
       const playerFolder = this.pane.addFolder({
-        title: `Player ${playerData.index}`,
+        title: `Player ${player.index + 1}`,
       });
-      playerFolder.addMonitor(paddle, 'x', { bufferSize: 100 });
-      playerFolder.addMonitor(paddle, 'y', { bufferSize: 100 });
-
-      return {
-        id: playerData.id,
-        paddle: paddle
-      };
+      playerFolder.addMonitor(player.paddle, 'x', {bufferSize: 100});
+      playerFolder.addMonitor(player.paddle, 'y', {bufferSize: 100});
     });
+  }
+
+  public create(): void {
+    this.matter.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT, 1);
+
+    // Set up keyboard controls
+    this.cursors = this.input.keyboard.createCursorKeys();
+
+    this.initBackground();
+
+    this.initGameScore();
+    this.initBall();
+    this.initPlayers();
+
+    this.initDebugMonitor();
 
     // Listen for game updates from the server and handle server reconciliation
     this.socket.on('gameStateUpdate', (gameState: IGameState) => {
@@ -128,18 +156,17 @@ export default class GameScene extends BaseScene {
       console.log('[handlePlayerMovement] no local player')
       return;
     }
-
-    let newVelocityY = 0;
+    let key: 'UP' | 'DOWN' | 'STOP' = 'STOP';
     if (this.cursors.up.isDown) {
-      newVelocityY = -PADDLE_SPEED;
+      key = 'UP';
+      console.log('[handlePlayerMovement] MOVED', key);
     }
     if (this.cursors.down.isDown) {
-      newVelocityY = PADDLE_SPEED;
+      key = 'DOWN';
+      console.log('[handlePlayerMovement] MOVED', key);
     }
-    localPlayer.paddle.setVelocityY(newVelocityY);
 
-    // this.socket.emit('playerMoved', { y: localPlayer.paddle.y });
-    this.socket.emit('playerMoved', { newVelocityY });
+    this.socket.emit('playerMoved', { key });
   }
 
   private getCurrentTime() {
@@ -170,12 +197,8 @@ export default class GameScene extends BaseScene {
     return this.calculateInterpolationDelta() / timeDifference;
   }
 
-  private calculateUpdateInterval() {
-    return CLIENT_UPDATE_INTERVAL;// 1000 / GAME_FPS;
-  }
-
   handleInterpolationCompletion(alpha: number) {
-    if (alpha >= ALPHA_THRESHOLD && this.calculateInterpolationDelta() > this.calculateUpdateInterval()) {
+    if (alpha >= ALPHA_THRESHOLD && this.calculateInterpolationDelta() > GAME_UPDATE_INTERVAL) {
       this.gameStateBuffer.shift();
       this.lastReceivedTime = this.getCurrentTime();
     }
@@ -184,7 +207,6 @@ export default class GameScene extends BaseScene {
   private clearOldGameBufferOnMaxSize() {
     // Buffer management: remove the oldest state if the buffer size exceeds the limit
     if (this.gameStateBuffer.length > MAX_BUFFER_SIZE) {
-      // console.log('[applyServerReconciliation]: buffer size exceeded, removing oldest state');
       this.gameStateBuffer.shift();
     }
   }

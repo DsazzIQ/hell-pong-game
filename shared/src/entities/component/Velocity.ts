@@ -1,4 +1,5 @@
 import Component from "./Component";
+import {GAME_UPDATE_INTERVAL} from "../../constants";
 
 export interface IVelocity {
   x: number;
@@ -14,16 +15,31 @@ export class Velocity extends Component implements IVelocity {
     this.y = y;
   }
 
-  invertX(): void {
-    this.x = -this.x;
+  invertX(): this {
+    this.x = -Math.abs(this.x);
+    return this;
   }
 
-  invertY(): void {
-    this.y = -this.y;
+  invertY(): this {
+    this.y = -Math.abs(this.y);
+    return this;
   }
 
-  stopY(): void {
+  interpolateY(target: Velocity, speed: number) {
+    const newY = (target.y - this.y) / GAME_UPDATE_INTERVAL * speed;
+    return new Velocity(target.x, newY);
+  }
+  // interpolate(target: Position, alpha: number): Position {
+  //   const deltaX = target.x - this.x;
+  //   const deltaY = target.y - this.y;
+  //   const interpolatedX = this.x + deltaX * alpha;
+  //   const interpolatedY = this.y + deltaY * alpha;
+  //   return new Position(interpolatedX, interpolatedY);
+  // }
+
+  stopY(): this {
     this.y = 0;
+    return this;
   }
 
   static fromJson(json: IVelocity): Velocity {

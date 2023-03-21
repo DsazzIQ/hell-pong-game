@@ -1,8 +1,7 @@
 import Phaser from 'phaser';
 import { Socket } from 'socket.io-client';
 import {BaseScene} from "./BaseScene";
-import {IRoomInfo} from "@shared/gameLogic/GameRoom";
-import {IGameState} from "@shared/gameData/GameState";
+import {IGameState, IRoomInfo} from "@shared/gameData/GameState";
 
 export default class LobbyScene extends BaseScene {
     private socket!: Socket;

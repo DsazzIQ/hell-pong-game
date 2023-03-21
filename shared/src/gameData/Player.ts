@@ -1,6 +1,4 @@
 import {IPaddle, Paddle} from "../entities/Paddle";
-import {Position} from "../entities/component/Position";
-import {Velocity} from "../entities/component/Velocity";
 
 export enum PlayerIndex {
   FIRST = 0,
@@ -17,31 +15,10 @@ export default class Player {
   index: PlayerIndex;
   paddle: Paddle;
 
-  constructor(id: string, index: PlayerIndex, fps: number) {
+  constructor(id: string, index: PlayerIndex) {
     this.id = id;
     this.index = index;
-    this.paddle = new Paddle(index, fps);
-  }
-
-  movePaddle(): this {
-    this.paddle.move();
-    return this;
-  }
-
-  setPaddlePosition(y: number): this {
-    const position = this.paddle.getComponent(Position);
-    if (position) {
-      position.y = y;
-    }
-    return this;
-  }
-
-  setPaddleVelocity(y: number): this {
-    const velocity = this.paddle.getComponent(Velocity);
-    if (velocity) {
-      velocity.y = y;
-    }
-    return this;
+    this.paddle = new Paddle(index);
   }
 
   toJson(): IPlayer {
@@ -52,4 +29,23 @@ export default class Player {
     }
   }
 }
+// const limitMaxSpeed = () => {
+//   let maxSpeed = 1;
+//   if (body.velocity.x > maxSpeed) {
+//     Body.setVelocity(body, { x: maxSpeed, y: body.velocity.y });
+//   }
+//
+//   if (body.velocity.x < -maxSpeed) {
+//     Body.setVelocity(body, { x: -maxSpeed, y: body.velocity.y });
+//   }
+//
+//   if (body.velocity.y > maxSpeed) {
+//     Body.setVelocity(body, { x: body.velocity.x, y: maxSpeed });
+//   }
+//
+//   if (body.velocity.y < -maxSpeed) {
+//     Body.setVelocity(body, { x: -body.velocity.x, y: -maxSpeed });
+//   }
+// }
+// Events.on(engine, 'beforeUpdate', limitMaxSpeed);
 

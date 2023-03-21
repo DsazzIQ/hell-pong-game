@@ -1,94 +1,39 @@
-import {Velocity} from "./Velocity";
 import Component from "./Component";
-import {GAME_HEIGHT, GAME_WIDTH} from "../../constants";
 
 export interface IPosition {
   x: number;
   y: number;
-  fps: number;
 }
 export class Position extends Component implements IPosition {
   x: number;
   y: number;
-  fps: number;
 
-  constructor(x: number, y: number, fps: number) {
+  constructor(x: number, y: number) {
     super();
     this.x = x;
     this.y = y;
-    this.fps = fps;
   }
 
-  setTopY(height: number): this {
-    this.y = height;
-    return this;
-  }
-
-  setBottomY(height: number): this {
-    this.y = GAME_HEIGHT - height;
-    return this;
-  }
-
-  getTopY(height: number): number {
-    return this.y - height*0.5;
-  }
-
-  getBottomY(height: number): number {
-    return this.y + height*0.5;
-  }
-
-  collidingWithVerticalBounds(height: number): boolean {
-    // return this.y <= 0 || this.y + height >= gameHeight;
-    return this.collidingWithBottomVerticalBound(height) || this.collidingWithTopVerticalBound(height);
-  }
-
-  collidingWithTopVerticalBound(height: number): boolean {
-    return this.getTopY(height) <= 0;
-  }
-
-  collidingWithBottomVerticalBound(height: number): boolean {
-    return this.getBottomY(height) >= GAME_HEIGHT;
-  }
-
-  collidingWithHorizontalBounds(width: number): boolean {
-    return this.x - width*0.5 <= 0 || this.x + width*0.5 >= GAME_WIDTH;
-  }
-
-  move(velocity: Velocity): this {
-    this.x += velocity.x / this.fps;
-    this.y += velocity.y / this.fps;
-    return this;
-  }
-
-  /**
-   * The interpolate method calculates a new Position instance
-   * between the current position and the target position, based on the given interpolation factor alpha.
-   * When alpha is 0, the result will be the current position,
-   * and when alpha is 1, the result will be the target position.
-   * For values between 0 and 1, the result will be a position that lies proportionally between the current and target positions.
-   *
-   * @param target
-   * @param alpha
-   */
   interpolate(target: Position, alpha: number): Position {
-    const newX = this.x + alpha * (target.x - this.x);
-    const newY = this.y + alpha * (target.y - this.y);
-    return new Position(newX, newY, this.fps);
+    const deltaX = target.x - this.x;
+    const deltaY = target.y - this.y;
+    const interpolatedX = this.x + deltaX * alpha;
+    const interpolatedY = this.y + deltaY * alpha;
+    return new Position(interpolatedX, interpolatedY);
   }
 
   interpolateXY(targetX: number, targetY: number, alpha: number): Position {
-    return this.interpolate(new Position(targetX, targetY, this.fps), alpha);
+    return this.interpolate(new Position(targetX, targetY), alpha);
   }
 
-  static fromJson(json: IPosition): Position {
-    return new Position(json.x, json.y, json.fps);
+  static fromJson({ x, y }: IPosition): Position {
+    return new Position(x, y);
   }
 
   toJson(): IPosition {
     return {
       x: this.x,
-      y: this.y,
-      fps: this.fps
+      y: this.y
     }
   }
 }
