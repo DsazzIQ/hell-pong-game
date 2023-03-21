@@ -1,6 +1,6 @@
 # Hell Pong Multiplayer Game
 
-Welcome to Hell Pong, a fast-paced multiplayer ping-pong game built with Lerna, TypeScript, Phaser 3, Matter.js, and Socket.io. This project leverages the power of Lerna to manage a monorepo with multiple packages.
+Welcome to Hell Pong, a fast-paced multiplayer ping-pong game built with Lerna, TypeScript, Phaser 3, Matter.js, and Socket.io
 
 
 <div align="center">
