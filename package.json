@@ -1,16 +1,37 @@
 {
   "name": "hell-pong",
+  "version": "1.0.0",
   "private": true,
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "start:client": "concurrently \"yarn workspace shared watch\" \"yarn workspace client start\"",
-    "start:server": "concurrently \"yarn workspace shared watch\" \"yarn workspace server start\"",
-    "start": "concurrently \"yarn start:client\" \"yarn start:server\""
+    "start": "lerna run start --scope=@hell-pong/{shared,server,client} --parallel",
+    "start:client": "lerna run start --scope=@hell-pong/{shared,client} --parallel",
+    "start:server": "lerna run start --scope=@hell-pong/{shared,server} --parallel",
+    "lint": "lerna run lint --parallel",
+    "lint:fix": "lerna run lint:fix --parallel",
+    "clean": "lerna clean",
+    "clean:update": "lerna clean && lerna bootstrap"
   },
   "devDependencies": {
-    "concurrently": "^7.6.0",
-    "lerna": "^6.5.1"
+    "@types/node": "^18.15.5",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
+    "eslint": "^8.36.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "eslint-plugin-standard": "^5.0.0",
+    "lerna": "^6.5.1",
+    "prettier": "^2.8.6",
+    "ts-node": "^10.9.1"
+  },
+  "dependencies": {
+    "typescript": "^5.0.2"
   }
 }

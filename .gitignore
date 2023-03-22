@@ -1,2 +1,5 @@
 node_modules/
-/packages/shared/dist/
+/packages/**/dist/
+/packages/**/node_modules/
+/packages/**/tsconfig.tsbuildinfo
+/yarn-error.log

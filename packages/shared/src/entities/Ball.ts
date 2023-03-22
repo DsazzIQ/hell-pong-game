@@ -1,16 +1,18 @@
-import {Entity} from "./Entity";
-import {IPosition, Position} from "./component/Position";
-import {IVelocity, Velocity} from "./component/Velocity";
+import { Bodies, Body, Pair } from 'matter-js';
+
 import {
-  BALL_LABEL, BALL_MAX_SPEED,
+  BALL_LABEL,
+  BALL_MAX_SPEED,
   BALL_RADIUS,
   BALL_SPEED,
   GAME_HEIGHT,
   GAME_WIDTH,
   PADDLE_LABEL_ONE,
-  PADDLE_LABEL_TWO,
-} from "../constants";
-import {Bodies, Body, Pair, Vector} from "matter-js";
+  PADDLE_LABEL_TWO
+} from '../constants';
+import { IPosition, Position } from './component/Position';
+import { IVelocity, Velocity } from './component/Velocity';
+import { Entity } from './Entity';
 
 export interface IBall {
   position: IPosition;
@@ -28,7 +30,7 @@ export class Ball extends Entity {
       frictionAir: 0,
       friction: 0,
       restitution: 1,
-      label: BALL_LABEL,
+      label: BALL_LABEL
     };
     this.body = Bodies.circle(x, y, BALL_RADIUS, options);
     // Body.setAngularVelocity(this.body, 0);
@@ -48,7 +50,7 @@ export class Ball extends Entity {
       const scaleFactor = BALL_MAX_SPEED / currentSpeed;
 
       // Set the ball's velocity to the scaled velocity
-      this.setVelocity(new Velocity(x * scaleFactor, y * scaleFactor))
+      this.setVelocity(new Velocity(x * scaleFactor, y * scaleFactor));
     }
   }
 
@@ -83,32 +85,29 @@ export class Ball extends Entity {
   }
 
   private get initX(): number {
-    return GAME_WIDTH*0.5 - BALL_RADIUS;
+    return GAME_WIDTH * 0.5 - BALL_RADIUS;
   }
 
   private get initY(): number {
-    return GAME_HEIGHT*0.5 - BALL_RADIUS;
+    return GAME_HEIGHT * 0.5 - BALL_RADIUS;
   }
 
   invertVelocityY(): this {
-    return this.setVelocity(this.velocity.invertY())
+    return this.setVelocity(this.velocity.invertY());
   }
 
   invertVelocityX(): this {
-    return this.setVelocity(this.velocity.invertX())
+    return this.setVelocity(this.velocity.invertX());
   }
 
   interpolatePosition(target: Position, alpha: number) {
     const interpolated = this.position.interpolate(target, alpha);
-    // Body.setPosition(this.body, interpolated.toJson());
-    console.log('[BALL:interpolatePosition]', interpolated.toJson());
-    Body.setPosition(this.body, Vector.create(interpolated.x, interpolated.y));
+    Body.setPosition(this.body, interpolated.toJson());
     return this;
   }
 
   private setVelocity(velocity: Velocity): this {
-    console.log('[BALL:setVelocity]', velocity.toJson());
-    Body.setVelocity(this.body, Vector.create(velocity.x, velocity.y));
+    Body.setVelocity(this.body, velocity.toJson());
     return this;
   }
 

@@ -3,7 +3,7 @@
  * BALL_SPEED: The velocity speed
  */
 export const BALL_SIZE = 28;
-export const BALL_RADIUS = BALL_SIZE*0.5;
+export const BALL_RADIUS = BALL_SIZE * 0.5;
 export const BALL_MAX_SPEED = 7;
 export const BALL_SPEED = 3;
 export const BALL_LABEL = 'ball';
@@ -33,5 +33,3 @@ export const GAME_HEIGHT = 600;
 
 export const GAME_FPS = 50;
 export const GAME_UPDATE_INTERVAL = 1000 / GAME_FPS;
-
-

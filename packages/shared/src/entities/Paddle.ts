@@ -1,32 +1,38 @@
-import {Entity} from "./Entity";
-import {IPosition, Position} from "./component/Position";
-import {Ball} from "./Ball";
-import {ISize, Size} from "./component/Size";
+import { Bodies, Body, Vector } from 'matter-js';
+
 import {
   GAME_HEIGHT,
   GAME_WIDTH,
   PADDLE_HEIGHT,
-  PADDLE_LABEL_ONE, PADDLE_LABEL_TWO,
+  PADDLE_LABEL_ONE,
+  PADDLE_LABEL_TWO,
   PADDLE_OFFSET,
   PADDLE_SPEED,
   PADDLE_WIDTH
-} from "../constants";
-import {PlayerIndex} from "../gameData/Player";
-import {IVelocity, Velocity} from "./component/Velocity";
-import {Bodies, Body, Collision, Vector} from "matter-js";
+} from '../constants';
+import { PlayerIndex, PlayerMove } from '../gameData/Player';
+import { IPosition, Position } from './component/Position';
+import { ISize, Size } from './component/Size';
+import { IVelocity, Velocity } from './component/Velocity';
+import { Entity } from './Entity';
 
 export interface IPaddle {
-  playerIndex: PlayerIndex,
-  position: IPosition,
-  velocity: IVelocity,
-  size: ISize
+  playerIndex: PlayerIndex;
+  position: IPosition;
+  velocity: IVelocity;
+  size: ISize;
 }
 
 export class Paddle extends Entity {
   playerIndex: PlayerIndex;
   private readonly speed: number = PADDLE_SPEED;
 
-  constructor(playerIndex: PlayerIndex, position?: IPosition, velocity?: IVelocity, size?: ISize) {
+  constructor(
+    playerIndex: PlayerIndex,
+    position?: IPosition,
+    velocity?: IVelocity,
+    size?: ISize
+  ) {
     super();
     this.playerIndex = playerIndex;
 
@@ -45,7 +51,8 @@ export class Paddle extends Entity {
       restitution: 0,
       inertia: Number.MAX_SAFE_INTEGER,
       mass: Number.MAX_SAFE_INTEGER,
-      label: playerIndex === PlayerIndex.FIRST ? PADDLE_LABEL_ONE : PADDLE_LABEL_TWO,
+      label:
+        playerIndex === PlayerIndex.FIRST ? PADDLE_LABEL_ONE : PADDLE_LABEL_TWO
     };
     this.body = Bodies.rectangle(x, y, width, height, options);
 
@@ -59,17 +66,15 @@ export class Paddle extends Entity {
     this.body.velocity.y = 0;
   }
 
-  checkCollision(ball: Ball): boolean {
-    return Collision.create(ball.getBody(), this.body).collided;
-  }
+  // checkCollision(ball: Ball): boolean {
+  //   return Collision.create(ball.getBody(), this.body).collided;
+  // }
 
   moveUp(): this {
-    console.log('MOVE UP', -this.speed);
     return this.setVelocity(new Velocity(0, -this.speed));
   }
 
   moveDown(): this {
-    console.log('MOVE DOWN', this.speed);
     return this.setVelocity(new Velocity(0, this.speed));
   }
 
@@ -77,11 +82,14 @@ export class Paddle extends Entity {
     return this.setVelocity(new Velocity(0, 0));
   }
 
-  move(key: 'UP' | 'DOWN' | 'STOP'): this {
+  move(key: PlayerMove): this {
     switch (key) {
-      case "UP": return this.moveUp();
-      case "DOWN": return this.moveDown();
-      case "STOP": return this.stop();
+      case PlayerMove.UP:
+        return this.moveUp();
+      case PlayerMove.DOWN:
+        return this.moveDown();
+      case PlayerMove.STOP:
+        return this.stop();
     }
   }
 
@@ -90,17 +98,20 @@ export class Paddle extends Entity {
     return this;
   }
 
-  // public interpolateVelocity(newY: number): this {
-  //   const interpolated = this.velocity.interpolateY(new Velocity(0, newY), this.speed);
-  //   return this.setVelocity(interpolated);
-  // }
   static getInitialPositionX(playerIndex: PlayerIndex): number {
     let paddleX;
     switch (playerIndex) {
-      case PlayerIndex.FIRST: paddleX = PADDLE_OFFSET + PADDLE_WIDTH; break;
-      case PlayerIndex.SECOND: paddleX = GAME_WIDTH - PADDLE_WIDTH - PADDLE_OFFSET; break;
-      case PlayerIndex.UNKNOWN: paddleX = 0; break;
-      default: paddleX = 0;
+      case PlayerIndex.FIRST:
+        paddleX = PADDLE_OFFSET + PADDLE_WIDTH;
+        break;
+      case PlayerIndex.SECOND:
+        paddleX = GAME_WIDTH - PADDLE_WIDTH - PADDLE_OFFSET;
+        break;
+      case PlayerIndex.UNKNOWN:
+        paddleX = 0;
+        break;
+      default:
+        paddleX = 0;
     }
     return paddleX;
   }
@@ -122,6 +133,6 @@ export class Paddle extends Entity {
       position: this.position.toJson(),
       velocity: this.velocity.toJson(),
       size: this.size.toJson()
-    }
+    };
   }
 }

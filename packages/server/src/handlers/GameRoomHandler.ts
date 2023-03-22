@@ -1,12 +1,15 @@
+import { IRoomInfo } from '@hell-pong/shared/gameData/GameState';
+import { PlayerMove } from '@hell-pong/shared/gameData/Player';
+import { ServerToClientEvents } from '@hell-pong/shared/types/socket.io';
 import { Server, Socket } from 'socket.io';
 import { v4 as uuid } from 'uuid';
-import GameRoom from "../gameLogic/GameRoom";
-import {IRoomInfo} from "shared/gameData/GameState";
+
+import GameRoom from '../gameLogic/GameRoom';
 
 export default class GameRoomHandler {
   private readonly rooms: Map<string, GameRoom>;
 
-  constructor(private io: Server) {
+  constructor(private io: Server<ServerToClientEvents>) {
     this.rooms = new Map<string, GameRoom>();
   }
 
@@ -14,7 +17,7 @@ export default class GameRoomHandler {
     let roomId = '';
 
     do {
-      roomId = uuid(); // Generate a unique ID using uuid
+      roomId = uuid(); // Generate a unique ID
     } while (this.rooms.has(roomId)); // Continue generating new IDs until a unique one is found
 
     return roomId;
@@ -42,14 +45,20 @@ export default class GameRoomHandler {
 
     if (!room) {
       console.log(`    Room ${roomId} not found.`);
-      socket.emit('joinFailed', { roomId, message: `Room ${roomId} not found.` });
+      socket.emit('joinFailed', {
+        roomId,
+        message: `Room ${roomId} not found.`
+      });
 
       return null;
     }
 
     if (!room.tryAddPlayer(socket.id)) {
       console.log(`    You can not join room ${roomId}`);
-      socket.emit('joinFailed', { roomId, message: `You can not join room ${roomId}` });
+      socket.emit('joinFailed', {
+        roomId,
+        message: `You can not join room ${roomId}`
+      });
 
       return null;
     }
@@ -115,22 +124,24 @@ export default class GameRoomHandler {
     return true;
   }
 
-  // onPlayerMoved(socket: Socket, newY: number): boolean {
-  onPlayerMoved(socket: Socket, key: 'UP' | 'DOWN' | 'STOP'): boolean {
+  onPlayerMoved(socket: Socket, key: PlayerMove): boolean {
     const playerId = socket.id;
     const room = this.findRoomByPlayerId(socket.id);
     if (!room) {
-      console.log(`[Server:playerMoved] room for player ${playerId} not found!`);
+      console.log(
+        `[Server:playerMoved] room for player ${playerId} not found!`
+      );
       return false;
     }
 
     const player = room.findPlayer(playerId);
     if (!player) {
-      console.log(`[Server:playerMoved] player ${playerId} in room ${room.id} not found!`);
+      console.log(
+        `[Server:playerMoved] player ${playerId} in room ${room.id} not found!`
+      );
       return false;
     }
 
-    // player.paddle.interpolateVelocity(newVelocityY);
     player.paddle.move(key);
 
     return true;

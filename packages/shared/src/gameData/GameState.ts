@@ -1,5 +1,5 @@
-import {Ball, IBall} from "../entities/Ball";
-import Player, {IPlayer} from "./Player";
+import { Ball, IBall } from '../entities/Ball';
+import Player, { IPlayer } from './Player';
 
 export interface IPlayerInfo {
   id: string;
@@ -23,7 +23,12 @@ export default class GameState implements IGameState {
   players: IPlayer[];
   lastUpdateTime: number;
 
-  constructor(roomId: string, ball: Ball, players: Player[], lastUpdateTime: number) {
+  constructor(
+    roomId: string,
+    ball: Ball,
+    players: Player[],
+    lastUpdateTime: number
+  ) {
     this.roomId = roomId;
     this.ball = ball.toJson();
     this.players = players.map((player) => player.toJson());

@@ -1,13 +1,16 @@
-import http from 'http';
+import { GAME_UPDATE_INTERVAL } from '@hell-pong/shared/constants';
+import { PlayerMove } from '@hell-pong/shared/gameData/Player';
 import express from 'express';
+import http from 'http';
+import path from 'path';
 import { Server as SocketIOServer, Socket } from 'socket.io';
+
+import { ServerToClientEvents } from '../../shared/src/types/socket.io';
 import GameRoomHandler from './handlers/GameRoomHandler';
-import path from "path";
-import {GAME_UPDATE_INTERVAL} from "shared/constants";
 
 const app = express();
 const server = http.createServer(app);
-const io = new SocketIOServer(server, {
+const io = new SocketIOServer<ServerToClientEvents>(server, {
   cors: {
     origin: '*', // or specify the allowed origins 'http://localhost:8080'
     methods: ['GET', 'POST'],
@@ -40,10 +43,7 @@ io.on('connection', (socket: Socket) => {
     roomManager.joinRoom(socket, roomId);
   });
 
-  // socket.on('playerMoved', (data: { y: number }) => {
-  //   roomManager.onPlayerMoved(socket, data.y);
-  // });
-  socket.on('playerMoved', (data: { key: 'UP' | 'DOWN' | 'STOP' }) => {
+  socket.on('playerMoved', (data: { key: PlayerMove }) => {
     roomManager.onPlayerMoved(socket, data.key);
   });
 

@@ -1,21 +1,27 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "dist",
     "rootDir": "src",
     "target": "es2021",
+    "lib": ["es2021", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",
+    "strict": true,
+    "allowJs": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["es2021", "dom"],
-    "strict": true,
-    "allowJs": true,
     "paths": {
-      "shared/*": ["../shared/src/*"]
+      "@hell-pong/shared/*": ["../shared/src/*"]
     }
   },
+  "references": [
+    {
+      "path": "../shared"
+    }
+  ],
   "include": ["src/**/*.ts"],
   "exclude": [
     "dist",
