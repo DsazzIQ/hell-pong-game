@@ -1,17 +1,23 @@
-import Phaser from 'phaser';
-import { BaseScene } from './BaseScene';
-import { Socket } from 'socket.io-client';
 import {
   BALL_RADIUS,
-  GAME_UPDATE_INTERVAL,
   GAME_HEIGHT,
-  GAME_WIDTH, PADDLE_HEIGHT,
+  GAME_UPDATE_INTERVAL,
+  GAME_WIDTH,
+  PADDLE_HEIGHT,
   PADDLE_WIDTH
-} from "shared/constants";
-import GameState, {IGameState} from "shared/gameData/GameState";
-import {IPlayer, PlayerIndex} from "shared/gameData/Player";
-import {Position} from "shared/entities/component/Position";
+} from '@hell-pong/shared/constants';
+import { Position } from '@hell-pong/shared/entities/component/Position';
+import GameState, { IGameState } from '@hell-pong/shared/gameData/GameState';
+import {
+  IPlayer,
+  PlayerIndex,
+  PlayerMove
+} from '@hell-pong/shared/gameData/Player';
+import Phaser from 'phaser';
+import { Socket } from 'socket.io-client';
 import { Pane } from 'tweakpane';
+
+import { BaseScene } from './BaseScene';
 
 const ALPHA_THRESHOLD = 1;
 const MIN_BUFFER_SIZE_INTERPOLATION = 2;
@@ -22,7 +28,7 @@ interface GamePlayer {
   index: PlayerIndex;
   paddle: Phaser.Physics.Matter.Image;
 }
-export default class GameSceneMatter extends BaseScene {
+export default class GameScene extends BaseScene {
   private roomId!: string;
   private initData!: IGameState;
 
@@ -40,64 +46,86 @@ export default class GameSceneMatter extends BaseScene {
 
   private pane!: Pane;
 
-  private isPaused: boolean = false;
+  private isPaused = false;
 
   constructor() {
     super('Game');
   }
 
-  // @ts-ignore
   public init(data: IGameState): void {
     super.init();
     this.roomId = data.roomId;
     this.initData = data;
     this.socket = this.registry.get('socket') as Socket;
     this.pane = new Pane({
-      title: 'GameState',
+      title: 'GameState'
     });
     this.pane.addMonitor(this.game.loop, 'actualFps', { view: 'graph' });
-    this.pane.addFolder({ title: 'Buffer Size'}).addMonitor(this.gameStateBuffer, 'length');
+    this.pane
+      .addFolder({ title: 'Buffer Size' })
+      .addMonitor(this.gameStateBuffer, 'length');
   }
 
   private handleVisibilityChange(): void {
-    console.log('[handleVisibilityChange] set game on pause', document.hidden)
+    console.log('[handleVisibilityChange] set game on pause', document.hidden);
     this.isPaused = document.hidden;
   }
 
   private initBall(): void {
-    this.ball = this.matter.add.sprite(this.initData.ball.position.x, this.initData.ball.position.y, 'textures', 'gameplay/ball')
+    this.ball = this.matter.add.sprite(
+      this.initData.ball.position.x,
+      this.initData.ball.position.y,
+      'textures',
+      'gameplay/ball'
+    );
     this.ball.setCircle(BALL_RADIUS);
 
     this.ball.setFrictionAir(0);
     this.ball.setFriction(0);
 
-    this.ball.setBounce(1)
-    this.ball.setOrigin(0.5)
-    this.ball.setName('ball')
+    this.ball.setBounce(1);
+    this.ball.setOrigin(0.5);
+    this.ball.setName('ball');
   }
 
   private initBackground(): void {
-    this.add.tileSprite(0, 0, this.game.canvas.width, this.game.canvas.height, 'textures', 'background/background-1')
-      .setOrigin(0)
-    ;
+    this.add
+      .tileSprite(
+        0,
+        0,
+        this.game.canvas.width,
+        this.game.canvas.height,
+        'textures',
+        'background/background-1'
+      )
+      .setOrigin(0);
   }
 
   private initGameScore(): void {
-    this.playersScoreText = this.add.text(this.centerX, 20, `0 - 0`,
-      { fontFamily: 'arcade-zig', fontSize: '24px', color: '#ffffff' })
+    this.playersScoreText = this.add
+      .text(this.centerX, 20, `0 - 0`, {
+        fontFamily: 'arcade-zig',
+        fontSize: '24px',
+        color: '#ffffff'
+      })
       .setOrigin(0.5)
       .setName('score');
   }
 
   private initPlayers(): void {
     this.players = this.initData.players.map((player) => {
-      const paddle = this.matter.add.sprite(player.paddle.position.x, player.paddle.position.y, 'textures', 'gameplay/paddle');
+      const paddle = this.matter.add.sprite(
+        player.paddle.position.x,
+        player.paddle.position.y,
+        'textures',
+        'gameplay/paddle'
+      );
       paddle.setRectangle(PADDLE_WIDTH, PADDLE_HEIGHT);
       paddle.setStatic(true);
       // paddle.setFrictionAir(0);
       paddle.setBounce(1);
       paddle.setOrigin(0.5);
-      paddle.setName(`paddle-${player.index+1}`);
+      paddle.setName(`paddle-${player.index + 1}`);
 
       return { id: player.id, index: player.index, paddle };
     });
@@ -105,17 +133,17 @@ export default class GameSceneMatter extends BaseScene {
 
   private initDebugMonitor(): void {
     const ballFolder = this.pane.addFolder({
-      title: 'Ball',
+      title: 'Ball'
     });
     ballFolder.addMonitor(this.ball, 'x', { bufferSize: 100 });
     ballFolder.addMonitor(this.ball, 'y', { bufferSize: 100 });
 
     this.players.map((player) => {
       const playerFolder = this.pane.addFolder({
-        title: `Player ${player.index + 1}`,
+        title: `Player ${player.index + 1}`
       });
-      playerFolder.addMonitor(player.paddle, 'x', {bufferSize: 100});
-      playerFolder.addMonitor(player.paddle, 'y', {bufferSize: 100});
+      playerFolder.addMonitor(player.paddle, 'x', { bufferSize: 100 });
+      playerFolder.addMonitor(player.paddle, 'y', { bufferSize: 100 });
     });
   }
 
@@ -139,7 +167,10 @@ export default class GameSceneMatter extends BaseScene {
     });
 
     // Add visibility change event listeners
-    document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
+    document.addEventListener(
+      'visibilitychange',
+      this.handleVisibilityChange.bind(this)
+    );
   }
 
   private getLocalPlayer(): GamePlayer | undefined {
@@ -147,23 +178,21 @@ export default class GameSceneMatter extends BaseScene {
   }
 
   private findPlayer(id: string): GamePlayer | undefined {
-    return this.players.find(p => p.id === id);
+    return this.players.find((p) => p.id === id);
   }
 
   private handlePlayerMovement() {
     const localPlayer = this.getLocalPlayer();
     if (!localPlayer) {
-      console.log('[handlePlayerMovement] no local player')
+      console.log('[handlePlayerMovement] no local player');
       return;
     }
-    let key: 'UP' | 'DOWN' | 'STOP' = 'STOP';
+    let key: PlayerMove = PlayerMove.STOP;
     if (this.cursors.up.isDown) {
-      key = 'UP';
-      console.log('[handlePlayerMovement] MOVED', key);
+      key = PlayerMove.UP;
     }
     if (this.cursors.down.isDown) {
-      key = 'DOWN';
-      console.log('[handlePlayerMovement] MOVED', key);
+      key = PlayerMove.DOWN;
     }
 
     this.socket.emit('playerMoved', { key });
@@ -185,20 +214,26 @@ export default class GameSceneMatter extends BaseScene {
 
   private calculateInterpolationDelta() {
     if (!this.lastReceivedTime) return 0;
-    return (this.getCurrentTime() - this.lastReceivedTime);
+    return this.getCurrentTime() - this.lastReceivedTime;
   }
 
   private calculateInterpolationAlpha(): number {
     const previousState = this.gameStateBuffer[0];
     const nextState = this.gameStateBuffer[1];
 
-    const timeDifference = nextState.lastUpdateTime - previousState.lastUpdateTime;
-    if (!timeDifference) { return 0; }
+    const timeDifference =
+      nextState.lastUpdateTime - previousState.lastUpdateTime;
+    if (!timeDifference) {
+      return 0;
+    }
     return this.calculateInterpolationDelta() / timeDifference;
   }
 
   handleInterpolationCompletion(alpha: number) {
-    if (alpha >= ALPHA_THRESHOLD && this.calculateInterpolationDelta() > GAME_UPDATE_INTERVAL) {
+    if (
+      alpha >= ALPHA_THRESHOLD &&
+      this.calculateInterpolationDelta() > GAME_UPDATE_INTERVAL
+    ) {
       this.gameStateBuffer.shift();
       this.lastReceivedTime = this.getCurrentTime();
     }
@@ -212,7 +247,10 @@ export default class GameSceneMatter extends BaseScene {
   }
 
   private applyServerReconciliation() {
-    if (!this.lastReceivedTime || this.gameStateBuffer.length < MIN_BUFFER_SIZE_INTERPOLATION) {
+    if (
+      !this.lastReceivedTime ||
+      this.gameStateBuffer.length < MIN_BUFFER_SIZE_INTERPOLATION
+    ) {
       console.log('[applyServerReconciliation]: skip');
       return;
     }
@@ -225,16 +263,29 @@ export default class GameSceneMatter extends BaseScene {
     const interpolationAlpha = this.calculateInterpolationAlpha();
 
     // Update the positions of the players and ball based on the server data
-    const ballPosition = Position.fromJson(previousState.ball.position).interpolateXY(nextState.ball.position.x, nextState.ball.position.y, interpolationAlpha);
+    const ballPosition = Position.fromJson(
+      previousState.ball.position
+    ).interpolateXY(
+      nextState.ball.position.x,
+      nextState.ball.position.y,
+      interpolationAlpha
+    );
     this.ball.setPosition(ballPosition.x, ballPosition.y);
 
     // Update player positions
     previousState.players.forEach((playerData: IPlayer) => {
       const player = this.findPlayer(playerData.id);
       if (player) {
-        const nextPlayerData = nextState.players.find(p => p.id === playerData.id);
+        const nextPlayerData = nextState.players.find(
+          (p) => p.id === playerData.id
+        );
         if (nextPlayerData) {
-          const paddlePosition = Position.fromJson(playerData.paddle.position).interpolateXY(nextPlayerData.paddle.position.x, nextPlayerData.paddle.position.y, interpolationAlpha);
+          const paddlePosition = Position.fromJson(
+            playerData.paddle.position
+          ).interpolate(
+            Position.fromJson(nextPlayerData.paddle.position),
+            interpolationAlpha
+          );
           player.paddle.setPosition(paddlePosition.x, paddlePosition.y);
         }
       }
@@ -255,7 +306,10 @@ export default class GameSceneMatter extends BaseScene {
 
   public destroy(): void {
     // Remove the visibility change event listener
-    document.removeEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
+    document.removeEventListener(
+      'visibilitychange',
+      this.handleVisibilityChange.bind(this)
+    );
     // ...rest of the destroy method
   }
 }

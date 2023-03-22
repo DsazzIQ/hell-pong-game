@@ -1,19 +1,19 @@
-import {Server} from "socket.io";
 import {
   BOTTOM_WALL_LABEL,
   GAME_HEIGHT,
+  GAME_UPDATE_INTERVAL,
   GAME_WIDTH,
   LEFT_WALL_LABEL,
   MAX_ROOM_PLAYERS,
   RIGHT_WALL_LABEL,
-  GAME_UPDATE_INTERVAL,
   TOP_WALL_LABEL
-} from "shared/constants";
-import GameState from "shared/gameData/GameState";
-import {Body, Bodies, Engine, Events, World, Pair} from 'matter-js';
-import Player, {PlayerIndex} from "shared/gameData/Player";
-import {Ball} from "shared/entities/Ball";
-import {IGameState, IRoomInfo} from "shared/gameData/GameState";
+} from '@hell-pong/shared/constants';
+import { Ball } from '@hell-pong/shared/entities/Ball';
+import GameState from '@hell-pong/shared/gameData/GameState';
+import { IGameState, IRoomInfo } from '@hell-pong/shared/gameData/GameState';
+import Player, { PlayerIndex } from '@hell-pong/shared/gameData/Player';
+import { Bodies, Body, Engine, Events, Pair, World } from 'matter-js';
+import { Server } from 'socket.io';
 
 export default class GameRoom {
   readonly id: string;
@@ -27,7 +27,7 @@ export default class GameRoom {
   private leftWall!: Body;
   private rightWall!: Body;
 
-  private lastUpdateTime: number = 0;
+  private lastUpdateTime = 0;
   private gameStarted = false;
 
   constructor(roomId: string) {
@@ -55,27 +55,68 @@ export default class GameRoom {
       thickness: Number.MAX_SAFE_INTEGER,
       options: {
         isStatic: true,
-        restitution: 1.0,
+        restitution: 1.0
       }
     };
 
-    this.bottomWall = Bodies.rectangle(0, 0, bounds.thickness, bounds.thickness, bounds.options)
-    Body.setPosition(this.bottomWall, { x: bounds.width*0.5, y: bounds.height + bounds.thickness*0.5 })
+    this.bottomWall = Bodies.rectangle(
+      0,
+      0,
+      bounds.thickness,
+      bounds.thickness,
+      bounds.options
+    );
+    Body.setPosition(this.bottomWall, {
+      x: bounds.width * 0.5,
+      y: bounds.height + bounds.thickness * 0.5
+    });
     this.bottomWall.label = BOTTOM_WALL_LABEL;
 
-    this.leftWall = Bodies.rectangle(0, 0, bounds.thickness, bounds.thickness, bounds.options)
-    Body.setPosition(this.leftWall, { x: -bounds.thickness*0.5, y: bounds.height*0.5 })
+    this.leftWall = Bodies.rectangle(
+      0,
+      0,
+      bounds.thickness,
+      bounds.thickness,
+      bounds.options
+    );
+    Body.setPosition(this.leftWall, {
+      x: -bounds.thickness * 0.5,
+      y: bounds.height * 0.5
+    });
     this.leftWall.label = LEFT_WALL_LABEL;
 
-    this.rightWall = Bodies.rectangle(0, 0, bounds.thickness, bounds.thickness, bounds.options)
-    Body.setPosition(this.rightWall, { x: bounds.width + bounds.thickness*0.5, y: bounds.height*0.5 })
+    this.rightWall = Bodies.rectangle(
+      0,
+      0,
+      bounds.thickness,
+      bounds.thickness,
+      bounds.options
+    );
+    Body.setPosition(this.rightWall, {
+      x: bounds.width + bounds.thickness * 0.5,
+      y: bounds.height * 0.5
+    });
     this.rightWall.label = RIGHT_WALL_LABEL;
 
-    this.topWall = Bodies.rectangle(0, 0, bounds.thickness, bounds.thickness, bounds.options)
-    Body.setPosition(this.topWall, { x: bounds.width*0.5, y: -bounds.thickness*0.5 })
+    this.topWall = Bodies.rectangle(
+      0,
+      0,
+      bounds.thickness,
+      bounds.thickness,
+      bounds.options
+    );
+    Body.setPosition(this.topWall, {
+      x: bounds.width * 0.5,
+      y: -bounds.thickness * 0.5
+    });
     this.topWall.label = TOP_WALL_LABEL;
 
-    World.add(this.world, [this.topWall, this.bottomWall, this.leftWall, this.rightWall]);
+    World.add(this.world, [
+      this.topWall,
+      this.bottomWall,
+      this.leftWall,
+      this.rightWall
+    ]);
   }
 
   private initWorldCollisions(): void {
@@ -87,8 +128,9 @@ export default class GameRoom {
         this.ball.updateAfterCollisions(pair);
       }
     });
+
     Events.on(this.engine, 'beforeUpdate', (_) => {
-      this.players.map(p => p.paddle.preventMoving());
+      this.players.map((p) => p.paddle.preventMoving());
       this.ball.limitMaxSpeed();
     });
   }
@@ -116,7 +158,9 @@ export default class GameRoom {
   }
 
   private addPlayer(id: string): Player {
-    const playerIndex = this.players.length ? PlayerIndex.FIRST : PlayerIndex.SECOND;
+    const playerIndex = this.players.length
+      ? PlayerIndex.FIRST
+      : PlayerIndex.SECOND;
     const player = new Player(id, playerIndex);
     player.paddle.addToWorld(this.world);
 
@@ -127,7 +171,7 @@ export default class GameRoom {
   }
 
   hasPlayer(playerId: string): boolean {
-    return this.players.some(player => player.id === playerId);
+    return this.players.some((player) => player.id === playerId);
   }
 
   findPlayer(playerId: string): Player | null {
@@ -136,7 +180,9 @@ export default class GameRoom {
 
   tryAddPlayer(playerId: string): boolean {
     if (this.hasPlayer(playerId)) {
-      console.log(`[GameRoom:tryAddPlayer] you (${playerId}) already in this room`);
+      console.log(
+        `[GameRoom:tryAddPlayer] you (${playerId}) already in this room`
+      );
       return false;
     }
 
@@ -150,7 +196,9 @@ export default class GameRoom {
   }
 
   removePlayer(playerId: string): boolean {
-    const playerIndex = this.players.findIndex((player) => player.id === playerId);
+    const playerIndex = this.players.findIndex(
+      (player) => player.id === playerId
+    );
 
     if (playerIndex !== -1) {
       this.players.splice(playerIndex, 1);
@@ -192,7 +240,7 @@ export default class GameRoom {
   toJson(): IRoomInfo {
     return {
       id: this.id,
-      players: Array.from(this.players.values()).map((p) => p.toJson()),
+      players: Array.from(this.players.values()).map((p) => p.toJson())
     };
   }
 }

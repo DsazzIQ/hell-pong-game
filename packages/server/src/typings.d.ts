@@ -1,1 +1,1 @@
-declare var __dirname: string;
+declare let __dirname: string;

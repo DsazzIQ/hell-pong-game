@@ -1,9 +1,10 @@
-import Component from "./Component";
+import Component from './Component';
 
 export interface IPosition {
   x: number;
   y: number;
 }
+
 export class Position extends Component implements IPosition {
   x: number;
   y: number;
@@ -34,7 +35,6 @@ export class Position extends Component implements IPosition {
     return {
       x: this.x,
       y: this.y
-    }
+    };
   }
 }
-

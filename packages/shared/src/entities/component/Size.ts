@@ -1,4 +1,4 @@
-import Component from "./Component";
+import Component from './Component';
 
 export interface ISize {
   width: number;
@@ -23,6 +23,6 @@ export class Size extends Component implements ISize {
     return {
       width: this.width,
       height: this.height
-    }
+    };
   }
 }

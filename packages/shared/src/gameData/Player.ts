@@ -1,9 +1,14 @@
-import {IPaddle, Paddle} from "../entities/Paddle";
+import { IPaddle, Paddle } from '../entities/Paddle';
 
+export enum PlayerMove {
+  UP = 'UP',
+  DOWN = 'DOWN',
+  STOP = 'STOP'
+}
 export enum PlayerIndex {
   FIRST = 0,
   SECOND = 1,
-  UNKNOWN = -1,
+  UNKNOWN = -1
 }
 export interface IPlayer {
   id: string;
@@ -26,7 +31,7 @@ export default class Player {
       id: this.id,
       index: this.index,
       paddle: this.paddle.toJson()
-    }
+    };
   }
 }
 
@@ -49,4 +54,3 @@ export default class Player {
 //   }
 // }
 // Events.on(engine, 'beforeUpdate', limitMaxSpeed);
-

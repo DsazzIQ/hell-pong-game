@@ -1,12 +1,8 @@
 {
   "root": true,
-  "env": {
-    "browser": true
-  },
   "extends": [
     "../../.eslintrc.base.json"
   ],
-  "ignorePatterns": ["webpack.config.js"],
   "parserOptions": {
     "project": "./tsconfig.json"
   },
@@ -15,18 +11,11 @@
       "typescript": {
         "project": "./tsconfig.json",
         "alwaysTryTypes": true
-      },
-      "node": {
-        "extensions": [".js", ".ts"]
       }
     },
     "import/parsers": {
       "@typescript-eslint/parser": [".ts"]
     },
     "import/extensions": [".js", ".ts"]
-  },
-  "rules": {
-    "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/no-empty-interface": "off"
   }
 }

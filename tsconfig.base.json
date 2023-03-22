@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+    "moduleResolution": "Node",
+    "module": "CommonJS",
+    "target": "es2022",
+    "sourceMap": true,
+    "lib": ["es2021", "dom"],
+    "allowJs": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true
+  },
+  "references": [
+    {
+      "path": "packages/shared"
+    },
+    {
+      "path": "packages/server"
+    },
+    {
+      "path": "packages/client"
+    }
+  ],
+  "exclude": ["node_modules", "**/node_modules/**/*.*", "dist", "*.d.ts"]
+}
