@@ -1,15 +1,18 @@
 import { GAME_FPS, GAME_HEIGHT, GAME_WIDTH } from '@hell-pong/shared/constants';
 import Phaser from 'phaser';
 import AwaitLoaderPlugin from 'phaser3-rex-plugins/plugins/awaitloader-plugin.js';
+import GlowFilterPipelinePlugin from 'phaser3-rex-plugins/plugins/glowfilter2pipeline-plugin';
 
 import GameScene from './scenes/GameScene';
 import LobbyScene from './scenes/LobbyScene';
 import MainScene from './scenes/MainScene';
 import PreloaderScene from './scenes/PreloaderScene';
+import { SplashScene } from './scenes/SplashScene';
 
 const config: Phaser.Types.Core.GameConfig = {
   parent: 'game-container',
-  type: Phaser.AUTO,
+  // type: Phaser.AUTO,
+  type: Phaser.WEBGL,
   width: GAME_WIDTH,
   height: GAME_HEIGHT,
   fps: {
@@ -27,7 +30,7 @@ const config: Phaser.Types.Core.GameConfig = {
   pixelArt: true,
   backgroundColor: '#222222',
   disableContextMenu: true,
-  scene: [PreloaderScene, MainScene, LobbyScene, GameScene],
+  scene: [PreloaderScene, SplashScene, MainScene, LobbyScene, GameScene],
   physics: {
     // default: 'arcade',
     // arcade: {
@@ -43,6 +46,11 @@ const config: Phaser.Types.Core.GameConfig = {
       {
         key: 'rexAwaitLoader',
         plugin: AwaitLoaderPlugin,
+        start: true
+      },
+      {
+        key: 'rexGlowFilterPipeline',
+        plugin: GlowFilterPipelinePlugin,
         start: true
       }
     ]

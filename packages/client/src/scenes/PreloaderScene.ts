@@ -1,10 +1,19 @@
 import Phaser from 'phaser';
 import io from 'socket.io-client';
+
+import { BaseScene } from './BaseScene';
 const SOCKET_URL = 'http://localhost:3000';
 
-export default class PreloaderScene extends Phaser.Scene {
+const PROGRESS_BOX_WIDTH = 210;
+const PROGRESS_BOX_HEIGHT = 30;
+const PROGRESS_BOX_PADDING = 10;
+const PROGRESS_BAR_WIDTH = PROGRESS_BOX_WIDTH - PROGRESS_BOX_PADDING;
+const PROGRESS_BAR_HEIGHT = PROGRESS_BOX_HEIGHT - PROGRESS_BOX_PADDING;
+
+export default class PreloaderScene extends BaseScene {
   private progressBar!: Phaser.GameObjects.Graphics;
   private progressBox!: Phaser.GameObjects.Graphics;
+  private percentText!: Phaser.GameObjects.Text;
 
   constructor() {
     super('Preloader');
@@ -25,7 +34,7 @@ export default class PreloaderScene extends Phaser.Scene {
     this.loadFont('arcade-rexlia', 'assets/fonts/rexlia.otf');
     this.loadFont('arcade-chargen', 'assets/fonts/chargen.ttf');
 
-    // // Load the assets
+    // Load the assets
     this.load.atlas(
       'textures',
       'assets/textures/pong_textures.png',
@@ -34,26 +43,38 @@ export default class PreloaderScene extends Phaser.Scene {
     this.load.audio('click', 'assets/sounds/click.ogg');
     this.load.audio('main_theme', 'assets/sounds/main_theme.ogg');
 
-    // // Show progress bar
+    // // Create progress bar
     this.progressBar = this.add.graphics();
     this.progressBox = this.add.graphics();
     this.progressBox.fillStyle(0x000, 0.5);
     this.progressBox.fillRect(
-      canvasWidth / 2 - 210 / 2,
-      canvasHeight / 2 - 5,
-      210,
-      30
+      canvasWidth * 0.5 - PROGRESS_BOX_WIDTH * 0.5,
+      canvasHeight * 0.5 - PROGRESS_BOX_PADDING * 0.5,
+      PROGRESS_BOX_WIDTH,
+      PROGRESS_BOX_HEIGHT
+    );
+
+    this.percentText = this.add.text(
+      canvasWidth * 0.5,
+      canvasHeight * 0.5 + PROGRESS_BOX_PADDING * 0.5,
+      '0%',
+      {
+        fontSize: '15px monospace',
+        color: '#ffffff'
+      }
     );
 
     this.load.on('progress', (value: number) => {
       this.progressBar.clear();
       this.progressBar.fillStyle(0xffbd19, 1);
       this.progressBar.fillRect(
-        canvasWidth / 2 - 200 / 2,
-        canvasHeight / 2,
-        200 * value,
-        20
+        canvasWidth * 0.5 - PROGRESS_BAR_WIDTH * 0.5,
+        canvasHeight * 0.5,
+        PROGRESS_BAR_WIDTH * value,
+        PROGRESS_BAR_HEIGHT
       );
+
+      this.percentText.setText(`${value * 100}%`);
     });
 
     // Remove progress bar and start game
@@ -61,16 +82,18 @@ export default class PreloaderScene extends Phaser.Scene {
       const socket = io(SOCKET_URL);
 
       socket.on('connect', () => {
-        console.log('[PreloaderScene:complete] Connected to socket server');
-
         this.progressBar.destroy();
         this.progressBox.destroy();
-        this.scene.stop('Preloader');
-        this.cameras.main.setBackgroundColor('#020079');
+        this.percentText.destroy();
+
+        // this.scene.stop('Preloader');
+        //
+        // this.cameras.main.setBackgroundColor('#020079');
 
         // Store the geckos connection in the registry
         this.registry.set('socket', socket);
-        this.scene.start('Main');
+        this.startTransition('Splash');
+        // this.scene.start('Splash');
       });
     });
   }
