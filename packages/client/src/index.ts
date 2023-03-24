@@ -28,7 +28,6 @@ const config: Phaser.Types.Core.GameConfig = {
     //     },
   },
   pixelArt: true,
-  backgroundColor: '#222222',
   disableContextMenu: true,
   scene: [PreloaderScene, SplashScene, MainScene, LobbyScene, GameScene],
   physics: {

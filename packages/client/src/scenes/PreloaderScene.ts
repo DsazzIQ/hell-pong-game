@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import LineProgress from 'phaser3-rex-plugins/plugins/lineprogress.js';
 import io from 'socket.io-client';
 
 import { BaseScene } from './BaseScene';
@@ -6,14 +6,13 @@ const SOCKET_URL = 'http://localhost:3000';
 
 const PROGRESS_BOX_WIDTH = 210;
 const PROGRESS_BOX_HEIGHT = 30;
-const PROGRESS_BOX_PADDING = 10;
-const PROGRESS_BAR_WIDTH = PROGRESS_BOX_WIDTH - PROGRESS_BOX_PADDING;
-const PROGRESS_BAR_HEIGHT = PROGRESS_BOX_HEIGHT - PROGRESS_BOX_PADDING;
+
+const COLOR_PRIMARY = 0xa42337;
+const COLOR_LIGHT = 0x7b5e57;
+const COLOR_DARK = 0x260e04;
 
 export default class PreloaderScene extends BaseScene {
-  private progressBar!: Phaser.GameObjects.Graphics;
-  private progressBox!: Phaser.GameObjects.Graphics;
-  private percentText!: Phaser.GameObjects.Text;
+  private lineProgress: LineProgress;
 
   constructor() {
     super('Preloader');
@@ -44,37 +43,31 @@ export default class PreloaderScene extends BaseScene {
     this.load.audio('main_theme', 'assets/sounds/main_theme.ogg');
 
     // // Create progress bar
-    this.progressBar = this.add.graphics();
-    this.progressBox = this.add.graphics();
-    this.progressBox.fillStyle(0x000, 0.5);
-    this.progressBox.fillRect(
-      canvasWidth * 0.5 - PROGRESS_BOX_WIDTH * 0.5,
-      canvasHeight * 0.5 - PROGRESS_BOX_PADDING * 0.5,
-      PROGRESS_BOX_WIDTH,
-      PROGRESS_BOX_HEIGHT
-    );
-
-    this.percentText = this.add.text(
-      canvasWidth * 0.5,
-      canvasHeight * 0.5 + PROGRESS_BOX_PADDING * 0.5,
-      '0%',
-      {
-        fontSize: '15px monospace',
-        color: '#ffffff'
-      }
-    );
+    this.lineProgress = new LineProgress(this, {
+      valuechangeCallback(newValue): void {
+        console.log(`[Progress] ${newValue}%`);
+      },
+      x: canvasWidth * 0.5,
+      y: canvasHeight * 0.5,
+      width: PROGRESS_BOX_WIDTH,
+      height: PROGRESS_BOX_HEIGHT,
+      barColor: COLOR_PRIMARY,
+      trackColor: COLOR_DARK,
+      trackStrokeColor: COLOR_LIGHT
+    });
+    this.add.existing(this.lineProgress);
+    this.add
+      .graphics({
+        lineStyle: {
+          width: 2,
+          color: 0xff0000,
+          alpha: 1
+        }
+      })
+      .strokeRectShape(this.lineProgress.getBounds());
 
     this.load.on('progress', (value: number) => {
-      this.progressBar.clear();
-      this.progressBar.fillStyle(0xffbd19, 1);
-      this.progressBar.fillRect(
-        canvasWidth * 0.5 - PROGRESS_BAR_WIDTH * 0.5,
-        canvasHeight * 0.5,
-        PROGRESS_BAR_WIDTH * value,
-        PROGRESS_BAR_HEIGHT
-      );
-
-      this.percentText.setText(`${value * 100}%`);
+      this.lineProgress.setValue(value);
     });
 
     // Remove progress bar and start game
@@ -82,18 +75,11 @@ export default class PreloaderScene extends BaseScene {
       const socket = io(SOCKET_URL);
 
       socket.on('connect', () => {
-        this.progressBar.destroy();
-        this.progressBox.destroy();
-        this.percentText.destroy();
-
-        // this.scene.stop('Preloader');
-        //
-        // this.cameras.main.setBackgroundColor('#020079');
+        this.lineProgress.destroy();
 
         // Store the geckos connection in the registry
         this.registry.set('socket', socket);
         this.startTransition('Splash');
-        // this.scene.start('Splash');
       });
     });
   }

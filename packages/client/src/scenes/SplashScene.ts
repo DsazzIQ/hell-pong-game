@@ -13,7 +13,6 @@ export class SplashScene extends BaseScene {
 
   create() {
     const { width, height } = this.scale;
-    this.cameras.main.setBackgroundColor('#000');
 
     // Display the logo in the center of the screen
     this.logo = this.add
