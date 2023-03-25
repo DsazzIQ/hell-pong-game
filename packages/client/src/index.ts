@@ -1,4 +1,4 @@
 import GameConfig from './Config';
-import Game from './Game';
+import HellPongGame from './Game';
 
-new Game(GameConfig);
+new HellPongGame(GameConfig);

@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@hell-pong/shared": "^1.0.0",
-    "phaser": "^3.55.2",
+    "phaser": "^3.60.0-beta.21",
     "phaser3-rex-plugins": "^1.1.82",
     "socket.io-client": "^4.3.2",
     "tweakpane": "^3.1.7"

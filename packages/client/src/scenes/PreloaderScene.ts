@@ -1,11 +1,12 @@
 import io from 'socket.io-client';
 
 import RoundedProgressBar from '../components/RoundedProgressBar';
+import AudioKey from '../constants/AudioKey';
 import FontKey from '../constants/FontKey';
-import { BaseScene } from './BaseScene';
+import HellPongGame from '../Game';
 const SOCKET_URL = 'http://localhost:3000';
 
-export default class PreloaderScene extends BaseScene {
+export default class PreloaderScene extends Phaser.Scene {
   private lineProgress: RoundedProgressBar;
 
   constructor() {
@@ -36,7 +37,7 @@ export default class PreloaderScene extends BaseScene {
       socket.on('connect', () => {
         // Store the geckos connection in the registry
         this.registry.set('socket', socket);
-        this.startTransition('Splash');
+        (this.game as HellPongGame).startTransition(this, 'Splash');
       });
     });
   }
@@ -50,8 +51,13 @@ export default class PreloaderScene extends BaseScene {
   }
 
   private loadAudios() {
-    this.load.audio('main_theme', 'assets/sounds/main_theme.ogg');
-    this.load.audio('splash', 'assets/sounds/splash.mp3');
+    this.load.audio(AudioKey.MainTheme, 'assets/sounds/main_theme.ogg');
+    this.load.audio(AudioKey.LobbyTheme, 'assets/sounds/lobby.mp3');
+    this.load.audio(AudioKey.SplashLogo, 'assets/sounds/splash.mp3');
+    this.load.audio(AudioKey.MenuSelect, 'assets/sounds/menu_select.wav');
+    this.load.audio(AudioKey.StartGame, 'assets/sounds/start_game.mp3');
+    this.load.audio(AudioKey.PaddleHit, 'assets/sounds/paddle_hit.wav');
+    this.load.audio(AudioKey.BallHit, 'assets/sounds/ball_hit.wav');
   }
 
   private loadFonts() {

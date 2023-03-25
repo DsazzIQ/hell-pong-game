@@ -2,9 +2,10 @@ import { IGameState, IRoomInfo } from '@hell-pong/shared/gameData/GameState';
 import Phaser from 'phaser';
 import { Socket } from 'socket.io-client';
 
-import { BaseScene } from './BaseScene';
+import AudioKey from '../constants/AudioKey';
+import GameScene from './GameScene';
 
-export default class LobbyScene extends BaseScene {
+export default class LobbyScene extends Phaser.Scene {
   private socket!: Socket;
   private roomsContainer!: Phaser.GameObjects.Container;
 
@@ -13,12 +14,13 @@ export default class LobbyScene extends BaseScene {
   }
 
   public init(): void {
-    super.init();
     this.socket = this.registry.get('socket') as Socket;
   }
 
   create() {
     this.socket = this.registry.get('socket');
+    this.sound.play(AudioKey.LobbyTheme, { loop: true, volume: 0.2 });
+
     this.add.text(80, 50, `YOUR ID: ${this.socket.id}`, {
       fontSize: '25px',
       color: '#FFF'
@@ -40,7 +42,7 @@ export default class LobbyScene extends BaseScene {
     this.socket.emit('getRooms');
     this.socket.on('startGame', (state: IGameState) => {
       // Perform actions after joining the room, such as transitioning to another scene
-      this.scene.start('Game', state);
+      this.scene.start<GameScene>('Game', state);
       // this.startTransition("Game");
     });
   }
