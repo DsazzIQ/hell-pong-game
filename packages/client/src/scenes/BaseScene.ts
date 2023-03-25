@@ -43,17 +43,17 @@ export class BaseScene extends Phaser.Scene {
     });
   }
 
-  startTransition(sceneName: string) {
-    this.cameras.main.fadeOut(500, 0, 0, 0, (_, progress: number) => {
-      if (progress === 1) {
-        this.scene.transition({
-          target: sceneName,
-          duration: 500,
-          moveAbove: true
-        });
-        this.scene.stop();
-        this.scene.remove();
-      }
+  startTransition(sceneName: string, duration = 500) {
+    this.cameras.main.fadeOut(duration, 0, 0, 0, (_, progress: number) => {
+      const animationFinished = progress === 1;
+      if (!animationFinished) return;
+
+      this.scene.transition({
+        target: sceneName,
+        duration: duration,
+        moveAbove: true
+      });
+      this.scene.stop();
     });
   }
 }

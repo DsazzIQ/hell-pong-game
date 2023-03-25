@@ -56,7 +56,7 @@ export default class GameScene extends BaseScene {
     super.init();
     this.roomId = data.roomId;
     this.initData = data;
-    this.socket = this.registry.get('socket') as Socket;
+    this.socket = this.registry.get<Socket>('socket');
     this.pane = new Pane({
       title: 'GameState'
     });

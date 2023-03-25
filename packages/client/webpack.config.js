@@ -21,19 +21,19 @@ module.exports = (env, argv) => {
           test: /\.tsx?$/,
           exclude: /node_modules/,
           use: {
-            loader: "babel-loader",
+            loader: `ts-loader`,
             options: {
-              presets: ["@babel/preset-env", "@babel/preset-typescript"],
+              configFile: path.resolve(__dirname, "tsconfig.json"),
+              transpileOnly: true,
             },
-          },
-        },
-      ],
+          }
+        }
+      ]
     },
     resolve: {
       alias: {
         // Add an alias for 'matter' module
         matter: "matter-js/build/matter.js",
-        // 'shared': path.resolve(__dirname, '../shared/src'),
       },
       plugins: [
         new TsconfigPathsPlugin({
