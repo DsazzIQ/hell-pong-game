@@ -8,11 +8,13 @@
     "lib": ["es2021", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",
-    "strict": true,
     "allowJs": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "jsx": "preserve",
+    "types": ["phaser"],
+    "typeRoots": ["../../node_modules/phaser/types"],
     "paths": {
       "@hell-pong/shared/*": ["../shared/src/*"]
     }
@@ -22,10 +24,7 @@
       "path": "../shared"
     }
   ],
-  "include": [
-    "src/**/*",
-    "node_modules/phaser3-rex-plugins-types"
-  ],
+  "include": ["src/**/*"],
   "exclude": [
     "node_modules",
     "src/index.html",
