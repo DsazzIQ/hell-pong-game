@@ -11,8 +11,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "jsx": "preserve",
-    "lib": ["es2021", "dom", "dom.iterable", "scripthost"],
+    "lib": ["es2021", "dom", "dom.iterable"],
     "paths": {
       "@hell-pong/shared/*": ["../shared/src/*"]
     }
