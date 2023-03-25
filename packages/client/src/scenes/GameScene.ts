@@ -17,8 +17,6 @@ import Phaser from 'phaser';
 import { Socket } from 'socket.io-client';
 import { Pane } from 'tweakpane';
 
-import { BaseScene } from './BaseScene';
-
 const ALPHA_THRESHOLD = 1;
 const MIN_BUFFER_SIZE_INTERPOLATION = 2;
 const MAX_BUFFER_SIZE = 5;
@@ -28,7 +26,7 @@ interface GamePlayer {
   index: PlayerIndex;
   paddle: Phaser.Physics.Matter.Image;
 }
-export default class GameScene extends BaseScene {
+export default class GameScene extends Phaser.Scene {
   private roomId!: string;
   private initData!: IGameState;
 
@@ -53,7 +51,6 @@ export default class GameScene extends BaseScene {
   }
 
   public init(data: IGameState): void {
-    super.init();
     this.roomId = data.roomId;
     this.initData = data;
     this.socket = this.registry.get<Socket>('socket');
@@ -103,7 +100,7 @@ export default class GameScene extends BaseScene {
 
   private initGameScore(): void {
     this.playersScoreText = this.add
-      .text(this.centerX, 20, `0 - 0`, {
+      .text(this.game.canvas.width * 0.5, 20, `0 - 0`, {
         fontFamily: 'arcade-zig',
         fontSize: '24px',
         color: '#ffffff'

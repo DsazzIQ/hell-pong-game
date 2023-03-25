@@ -1,36 +1,28 @@
 import Phaser from 'phaser';
 
-import { BaseScene } from './BaseScene';
+import AudioKey from '../constants/AudioKey';
+import HellPongGame from '../Game';
 
-class MainScene extends BaseScene {
+class MainScene extends Phaser.Scene {
   private startButton!: Phaser.GameObjects.Sprite;
-  private volumeButton!: Phaser.GameObjects.Sprite;
-  private mainThemeSound!: Phaser.Sound.BaseSound;
 
   constructor() {
     super('Main');
   }
 
   create() {
-    this.initSound();
     this.initBackground();
     this.initTitle();
     this.initStartButton();
-    this.initVolumeButton();
-  }
-
-  initSound() {
-    this.mainThemeSound = this.sound.add('main_theme');
+    this.playMainTheme();
   }
 
   playMainTheme() {
-    this.mainThemeSound.play({ loop: true, volume: 0.05 });
-    this.volumeButton.setFrame('button/volume-on');
+    this.sound.play(AudioKey.MainTheme, { loop: true, volume: 0.1 });
   }
 
   stopMainTheme() {
-    this.mainThemeSound.stop();
-    this.volumeButton.setFrame('button/volume-off');
+    this.sound.get(AudioKey.MainTheme).stop();
   }
 
   // Play the animation on the sprite
@@ -42,8 +34,8 @@ class MainScene extends BaseScene {
     // Get a reference to the scene's animation manager
     const anims = this.anims;
     const background = this.add.sprite(
-      this.centerX,
-      this.centerY,
+      (this.game as HellPongGame).centerX,
+      (this.game as HellPongGame).centerY,
       'textures',
       'background/main/0000'
     );
@@ -68,16 +60,20 @@ class MainScene extends BaseScene {
   }
 
   initTitle() {
-    console.log('Scale', this.scale);
     const title = this.add
-      .image(this.centerX, 0, 'textures', 'text/main-title')
+      .image(
+        (this.game as HellPongGame).centerX,
+        0,
+        'textures',
+        'text/main-title'
+      )
       .setOrigin(0.5);
-    title.setScale(this.scaleFactor * 2);
+    title.setScale(1.5);
 
     // Set the final position of the title
     this.tweens.add({
       targets: title,
-      y: this.centerY * 0.35 * this.scaleFactor,
+      y: (this.game as HellPongGame).centerY * 0.35,
       duration: 1000,
       ease: Phaser.Math.Easing.Bounce.Out,
       delay: 200
@@ -86,54 +82,25 @@ class MainScene extends BaseScene {
 
   initStartButton() {
     this.startButton = this.add.sprite(0, 0, 'textures', 'button/main-start');
-    this.startButton
-      .setY(this.centerY * this.scaleFactor)
-      .setScale(this.scaleFactor);
+    this.startButton.setY((this.game as HellPongGame).centerY);
 
-    this.addClickAnimation(
+    (this.game as HellPongGame).addClickAnimation(
       this.startButton,
       () => {
         this.stopMainTheme();
-        this.startTransition('Lobby');
+        (this.game as HellPongGame).startTransition(this, 'Lobby');
       },
-      this.scaleFactor - 0.1
+      0.9
     );
 
     // Move the button to the center
     this.tweens.add({
       targets: this.startButton,
-      x: this.centerX,
+      x: (this.game as HellPongGame).centerX,
       duration: 500,
       ease: Phaser.Math.Easing.Linear,
       delay: 200
     });
-  }
-
-  initVolumeButton() {
-    this.volumeButton = this.add.sprite(
-      0,
-      0,
-      'textures',
-      'button/volume-off'
-      // "button/volume-on"
-    );
-    this.volumeButton.setScale(this.scaleFactor);
-    this.volumeButton.setX(
-      this.game.canvas.width - this.volumeButton.width * this.scaleFactor
-    );
-    this.volumeButton.setY(this.volumeButton.height * this.scaleFactor);
-
-    this.addClickAnimation(
-      this.volumeButton,
-      () => {
-        if (this.mainThemeSound.isPlaying) {
-          this.stopMainTheme();
-        } else {
-          this.playMainTheme();
-        }
-      },
-      this.scaleFactor - 0.1
-    );
   }
 }
 
