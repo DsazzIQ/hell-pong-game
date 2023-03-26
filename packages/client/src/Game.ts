@@ -9,25 +9,6 @@ export default class HellPongGame extends Phaser.Game {
     this.centerY = config.height * 0.5;
   }
 
-  addClickAnimation(
-    element: Phaser.GameObjects.GameObject,
-    onClick: () => void,
-    scaleFactor = 0.9
-  ) {
-    element.setInteractive({ useHandCursor: true });
-    element.on('pointerdown', () => {
-      element.scene.tweens.add({
-        targets: element,
-        scaleX: scaleFactor,
-        scaleY: scaleFactor,
-        duration: 100,
-        ease: 'Power1',
-        yoyo: true,
-        onComplete: onClick
-      });
-    });
-  }
-
   startTransition(fromScene: Phaser.Scene, sceneName: string, duration = 500) {
     fromScene.cameras.main.fadeOut(duration, 0, 0, 0, (_, progress: number) => {
       const animationFinished = progress === 1;

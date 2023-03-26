@@ -1,5 +1,7 @@
 import LineProgress from 'phaser3-rex-plugins/plugins/gameobjects/canvas/lineprogress/LineProgress';
 
+import HellPongGame from '../../../Game';
+
 const PROGRESS_BOX_WIDTH = 250;
 const PROGRESS_BOX_HEIGHT = 25;
 
@@ -11,13 +13,14 @@ const BORDER_COLOR = 0xff0000;
 const BORDER_WIDTH = 3;
 
 export default class RoundedProgressBar extends LineProgress {
-  constructor(scene, x, y) {
+  constructor(scene) {
+    const game = scene.game as HellPongGame;
     super(scene, {
       valuechangeCallback(newValue) {
         console.log(`[Progress] ${newValue}%`);
       },
-      x,
-      y,
+      x: game.centerX,
+      y: game.centerY,
       width: PROGRESS_BOX_WIDTH,
       height: PROGRESS_BOX_HEIGHT,
       barColor: COLOR_PRIMARY,
@@ -29,8 +32,8 @@ export default class RoundedProgressBar extends LineProgress {
 
     const halfWidth = PROGRESS_BOX_WIDTH * 0.5;
     const halfHeight = PROGRESS_BOX_HEIGHT * 0.5;
-    const maskX = x - halfWidth;
-    const maskY = y - halfHeight;
+    const maskX = game.centerX - halfWidth;
+    const maskY = game.centerY - halfHeight;
 
     // Create rounded mask
     const mask = scene.add

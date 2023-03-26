@@ -5,8 +5,8 @@ import GlowFilterPipelinePlugin from 'phaser3-rex-plugins/plugins/glowfilter2pip
 
 import GameScene from './scenes/GameScene';
 import LobbyScene from './scenes/LobbyScene';
-import MainScene from './scenes/MainScene';
-import PreloaderScene from './scenes/PreloaderScene';
+import MainScene from './scenes/main/MainScene';
+import PreloaderScene from './scenes/preloader/PreloaderScene';
 import SplashScene from './scenes/SplashScene';
 
 const GameConfig: Types.Core.GameConfig = {

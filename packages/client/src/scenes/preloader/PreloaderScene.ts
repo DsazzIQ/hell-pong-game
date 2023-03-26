@@ -1,9 +1,9 @@
 import io from 'socket.io-client';
 
-import RoundedProgressBar from '../components/RoundedProgressBar';
-import AudioKey from '../constants/AudioKey';
-import FontKey from '../constants/FontKey';
-import HellPongGame from '../Game';
+import AudioKey from '../../constants/AudioKey';
+import FontKey from '../../constants/FontKey';
+import HellPongGame from '../../Game';
+import RoundedProgressBar from './components/RoundedProgressBar';
 const SOCKET_URL = 'http://localhost:3000';
 
 export default class PreloaderScene extends Phaser.Scene {
@@ -17,15 +17,12 @@ export default class PreloaderScene extends Phaser.Scene {
     this.loadFonts();
     this.loadTextures();
     this.loadAudios();
+    this.initProgressBar();
+  }
 
-    // Create progress bar
-    const canvasWidth = this.sys.game.canvas.width;
-    const canvasHeight = this.sys.game.canvas.height;
-    this.lineProgress = new RoundedProgressBar(
-      this,
-      canvasWidth * 0.5,
-      canvasHeight * 0.5
-    );
+  private initProgressBar() {
+    const game = this.game as HellPongGame;
+    this.lineProgress = new RoundedProgressBar(this);
 
     this.load.on('progress', (value: number) => {
       this.lineProgress.setValue(value);
@@ -35,9 +32,10 @@ export default class PreloaderScene extends Phaser.Scene {
       const socket = io(SOCKET_URL);
 
       socket.on('connect', () => {
+        // TODO: move it to socket manager
         // Store the geckos connection in the registry
         this.registry.set('socket', socket);
-        (this.game as HellPongGame).startTransition(this, 'Splash');
+        game.startTransition(this, 'Splash');
       });
     });
   }
@@ -62,6 +60,11 @@ export default class PreloaderScene extends Phaser.Scene {
 
   private loadFonts() {
     this.loadFont(FontKey.Text, 'assets/fonts/rexlia.otf');
+    this.load.bitmapFont(
+      FontKey.Retro,
+      'assets/fonts/retro.png',
+      'assets/fonts/retro.xml'
+    );
   }
 
   private loadFont(name: string, url: string) {

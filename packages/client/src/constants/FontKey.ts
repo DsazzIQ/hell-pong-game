@@ -1,4 +1,5 @@
 const FontKey = Object.freeze({
-  Text: 'rexlia'
+  Text: 'rexlia',
+  Retro: 'Retro'
 });
 export default FontKey;
