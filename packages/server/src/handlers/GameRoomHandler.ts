@@ -128,17 +128,13 @@ export default class GameRoomHandler {
     const playerId = socket.id;
     const room = this.findRoomByPlayerId(socket.id);
     if (!room) {
-      console.log(
-        `[Server:playerMoved] room for player ${playerId} not found!`
-      );
+      console.log(`[Server:playerMoved] room for player ${playerId} not found!`);
       return false;
     }
 
     const player = room.findPlayer(playerId);
     if (!player) {
-      console.log(
-        `[Server:playerMoved] player ${playerId} in room ${room.id} not found!`
-      );
+      console.log(`[Server:playerMoved] player ${playerId} in room ${room.id} not found!`);
       return false;
     }
 

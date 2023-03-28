@@ -27,12 +27,7 @@ export class Paddle extends Entity {
   playerIndex: PlayerIndex;
   private readonly speed: number = PADDLE_SPEED;
 
-  constructor(
-    playerIndex: PlayerIndex,
-    position?: IPosition,
-    velocity?: IVelocity,
-    size?: ISize
-  ) {
+  constructor(playerIndex: PlayerIndex, position?: IPosition, velocity?: IVelocity, size?: ISize) {
     super();
     this.playerIndex = playerIndex;
 
@@ -51,8 +46,7 @@ export class Paddle extends Entity {
       restitution: 0,
       inertia: Number.MAX_SAFE_INTEGER,
       mass: Number.MAX_SAFE_INTEGER,
-      label:
-        playerIndex === PlayerIndex.FIRST ? PADDLE_LABEL_ONE : PADDLE_LABEL_TWO
+      label: playerIndex === PlayerIndex.FIRST ? PADDLE_LABEL_ONE : PADDLE_LABEL_TWO
     };
     this.body = Bodies.rectangle(x, y, width, height, options);
 

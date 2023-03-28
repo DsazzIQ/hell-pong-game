@@ -1,11 +1,9 @@
-import HellPongGame from '../../../Game';
+import Game from '../../../Game';
 
 export default class Title {
   constructor(scene: Phaser.Scene) {
-    const game = scene.game as HellPongGame;
-    const title = scene.add
-      .image(game.centerX, 0, 'textures', 'text/main-title')
-      .setOrigin(0.5);
+    const game = scene.game as Game;
+    const title = scene.add.image(game.centerX, 0, 'textures', 'text/main-title').setOrigin(0.5);
 
     title.setScale(1.5); // TODO need to scale title sprite a bit
 

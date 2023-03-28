@@ -2,7 +2,8 @@ import io from 'socket.io-client';
 
 import AudioKey from '../../constants/AudioKey';
 import FontKey from '../../constants/FontKey';
-import HellPongGame from '../../Game';
+import SceneKey from '../../constants/SceneKey';
+import Game from '../../Game';
 import RoundedProgressBar from './components/RoundedProgressBar';
 const SOCKET_URL = 'http://localhost:3000';
 
@@ -10,7 +11,7 @@ export default class PreloaderScene extends Phaser.Scene {
   private lineProgress: RoundedProgressBar;
 
   constructor() {
-    super('Preloader');
+    super(SceneKey.Preloader);
   }
 
   public preload() {
@@ -21,38 +22,35 @@ export default class PreloaderScene extends Phaser.Scene {
   }
 
   private initProgressBar() {
-    const game = this.game as HellPongGame;
+    const game = this.game as Game;
     this.lineProgress = new RoundedProgressBar(this);
 
-    this.load.on('progress', (value: number) => {
-      this.lineProgress.setValue(value);
-    });
+    this.load.on('progress', (value: number) => this.lineProgress.setValue(value));
 
     this.load.on('complete', () => {
       const socket = io(SOCKET_URL);
 
       socket.on('connect', () => {
-        // TODO: move it to socket manager
         // Store the geckos connection in the registry
         this.registry.set('socket', socket);
-        game.startTransition(this, 'Splash');
+
+        //TODO commented for development
+        // game.startTransition(this, SceneKey.Splash);
+        game.startTransition(this, SceneKey.Main);
       });
     });
   }
 
   private loadTextures() {
-    this.load.atlas(
-      'textures',
-      'assets/textures/pong_textures.png',
-      'assets/textures/pong_textures.json'
-    );
+    this.load.atlas('textures', 'assets/textures/pong_textures.png', 'assets/textures/pong_textures.json');
+    this.load.atlas('gui', 'assets/textures/gui.png', 'assets/textures/gui.json');
   }
 
   private loadAudios() {
     this.load.audio(AudioKey.MainTheme, 'assets/sounds/main_theme.ogg');
-    this.load.audio(AudioKey.LobbyTheme, 'assets/sounds/lobby.mp3');
+    this.load.audio(AudioKey.SecondaryTheme, 'assets/sounds/secondary_theme.mp3');
     this.load.audio(AudioKey.SplashLogo, 'assets/sounds/splash.mp3');
-    this.load.audio(AudioKey.MenuSelect, 'assets/sounds/menu_select.wav');
+    this.load.audio(AudioKey.ButtonClick, 'assets/sounds/button_click.wav');
     this.load.audio(AudioKey.StartGame, 'assets/sounds/start_game.mp3');
     this.load.audio(AudioKey.PaddleHit, 'assets/sounds/paddle_hit.wav');
     this.load.audio(AudioKey.BallHit, 'assets/sounds/ball_hit.wav');
@@ -60,11 +58,7 @@ export default class PreloaderScene extends Phaser.Scene {
 
   private loadFonts() {
     this.loadFont(FontKey.Text, 'assets/fonts/rexlia.otf');
-    this.load.bitmapFont(
-      FontKey.Retro,
-      'assets/fonts/retro.png',
-      'assets/fonts/retro.xml'
-    );
+    this.load.bitmapFont(FontKey.Retro, 'assets/fonts/retro.png', 'assets/fonts/retro.xml');
   }
 
   private loadFont(name: string, url: string) {

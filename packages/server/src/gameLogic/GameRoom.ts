@@ -59,64 +59,35 @@ export default class GameRoom {
       }
     };
 
-    this.bottomWall = Bodies.rectangle(
-      0,
-      0,
-      bounds.thickness,
-      bounds.thickness,
-      bounds.options
-    );
+    this.bottomWall = Bodies.rectangle(0, 0, bounds.thickness, bounds.thickness, bounds.options);
     Body.setPosition(this.bottomWall, {
       x: bounds.width * 0.5,
       y: bounds.height + bounds.thickness * 0.5
     });
     this.bottomWall.label = BOTTOM_WALL_LABEL;
 
-    this.leftWall = Bodies.rectangle(
-      0,
-      0,
-      bounds.thickness,
-      bounds.thickness,
-      bounds.options
-    );
+    this.leftWall = Bodies.rectangle(0, 0, bounds.thickness, bounds.thickness, bounds.options);
     Body.setPosition(this.leftWall, {
       x: -bounds.thickness * 0.5,
       y: bounds.height * 0.5
     });
     this.leftWall.label = LEFT_WALL_LABEL;
 
-    this.rightWall = Bodies.rectangle(
-      0,
-      0,
-      bounds.thickness,
-      bounds.thickness,
-      bounds.options
-    );
+    this.rightWall = Bodies.rectangle(0, 0, bounds.thickness, bounds.thickness, bounds.options);
     Body.setPosition(this.rightWall, {
       x: bounds.width + bounds.thickness * 0.5,
       y: bounds.height * 0.5
     });
     this.rightWall.label = RIGHT_WALL_LABEL;
 
-    this.topWall = Bodies.rectangle(
-      0,
-      0,
-      bounds.thickness,
-      bounds.thickness,
-      bounds.options
-    );
+    this.topWall = Bodies.rectangle(0, 0, bounds.thickness, bounds.thickness, bounds.options);
     Body.setPosition(this.topWall, {
       x: bounds.width * 0.5,
       y: -bounds.thickness * 0.5
     });
     this.topWall.label = TOP_WALL_LABEL;
 
-    World.add(this.world, [
-      this.topWall,
-      this.bottomWall,
-      this.leftWall,
-      this.rightWall
-    ]);
+    World.add(this.world, [this.topWall, this.bottomWall, this.leftWall, this.rightWall]);
   }
 
   private initWorldCollisions(): void {
@@ -158,9 +129,7 @@ export default class GameRoom {
   }
 
   private addPlayer(id: string): Player {
-    const playerIndex = this.players.length
-      ? PlayerIndex.FIRST
-      : PlayerIndex.SECOND;
+    const playerIndex = this.players.length ? PlayerIndex.FIRST : PlayerIndex.SECOND;
     const player = new Player(id, playerIndex);
     player.paddle.addToWorld(this.world);
 
@@ -180,9 +149,7 @@ export default class GameRoom {
 
   tryAddPlayer(playerId: string): boolean {
     if (this.hasPlayer(playerId)) {
-      console.log(
-        `[GameRoom:tryAddPlayer] you (${playerId}) already in this room`
-      );
+      console.log(`[GameRoom:tryAddPlayer] you (${playerId}) already in this room`);
       return false;
     }
 
@@ -196,9 +163,7 @@ export default class GameRoom {
   }
 
   removePlayer(playerId: string): boolean {
-    const playerIndex = this.players.findIndex(
-      (player) => player.id === playerId
-    );
+    const playerIndex = this.players.findIndex((player) => player.id === playerId);
 
     if (playerIndex !== -1) {
       this.players.splice(playerIndex, 1);

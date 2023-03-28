@@ -1,8 +1,8 @@
 const AudioKey = Object.freeze({
   MainTheme: 'MainTheme',
-  LobbyTheme: 'LobbyTheme',
+  SecondaryTheme: 'SecondaryTheme',
   SplashLogo: 'SplashLogo',
-  MenuSelect: 'MenuSelect',
+  ButtonClick: 'ButtonClick',
   StartGame: 'StartGame',
   PaddleHit: 'PaddleHit',
   BallHit: 'BallHit'

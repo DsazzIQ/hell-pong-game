@@ -1,4 +1,4 @@
-export default class HellPongGame extends Phaser.Game {
+export default class Game extends Phaser.Game {
   public readonly centerX;
   public readonly centerY;
 

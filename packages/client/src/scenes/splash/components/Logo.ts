@@ -1,21 +1,25 @@
 import Phaser from 'phaser';
 
+import Game from '../../../Game';
+
 const GLOW_DISTANCE = 4;
 const GLOW_COLOR = 0xff0000;
 
-export default class SplashLogo {
+export default class Logo {
   private readonly sprite: Phaser.GameObjects.Sprite;
 
-  constructor(scene: Phaser.Scene, x, y, onFinish: () => void) {
-    this.sprite = scene.add.sprite(x, y, 'textures', 'background/logo');
-
+  constructor(scene: Phaser.Scene, onFinish: () => void) {
+    const game = scene.game as Game;
+    this.sprite = scene.add.sprite(game.centerX, game.centerY, 'textures', 'background/logo');
     this.sprite.setOrigin(0.5).setAlpha(0);
-    this.sprite.preFX.addGlow(GLOW_COLOR, GLOW_DISTANCE);
 
-    this.addAnimation(scene, onFinish);
+    this.addAnimation(onFinish);
   }
 
-  private addAnimation(scene, onFinish) {
+  private addAnimation(onFinish) {
+    this.sprite.preFX.addGlow(GLOW_COLOR, GLOW_DISTANCE);
+
+    const scene = this.sprite.scene;
     const fadeOut = () => {
       scene.time.delayedCall(1500, () => {
         scene.tweens.add({
@@ -28,7 +32,6 @@ export default class SplashLogo {
       });
     };
 
-    // fade in
     scene.tweens.add({
       targets: this.sprite,
       alpha: 1,

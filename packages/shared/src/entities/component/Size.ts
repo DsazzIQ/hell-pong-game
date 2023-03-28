@@ -15,6 +15,14 @@ export class Size extends Component implements ISize {
     this.height = height;
   }
 
+  get widthCenter(): number {
+    return this.width * 0.5;
+  }
+
+  get heightCenter(): number {
+    return this.height * 0.5;
+  }
+
   static fromJson(json: ISize): Size {
     return new Size(json.width, json.height);
   }

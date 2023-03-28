@@ -8,11 +8,7 @@ import {
 } from '@hell-pong/shared/constants';
 import { Position } from '@hell-pong/shared/entities/component/Position';
 import GameState, { IGameState } from '@hell-pong/shared/gameData/GameState';
-import {
-  IPlayer,
-  PlayerIndex,
-  PlayerMove
-} from '@hell-pong/shared/gameData/Player';
+import { IPlayer, PlayerIndex, PlayerMove } from '@hell-pong/shared/gameData/Player';
 import Phaser from 'phaser';
 import { Socket } from 'socket.io-client';
 import { Pane } from 'tweakpane';
@@ -58,9 +54,7 @@ export default class GameScene extends Phaser.Scene {
       title: 'GameState'
     });
     this.pane.addMonitor(this.game.loop, 'actualFps', { view: 'graph' });
-    this.pane
-      .addFolder({ title: 'Buffer Size' })
-      .addMonitor(this.gameStateBuffer, 'length');
+    this.pane.addFolder({ title: 'Buffer Size' }).addMonitor(this.gameStateBuffer, 'length');
   }
 
   private handleVisibilityChange(): void {
@@ -87,14 +81,7 @@ export default class GameScene extends Phaser.Scene {
 
   private initBackground(): void {
     this.add
-      .tileSprite(
-        0,
-        0,
-        this.game.canvas.width,
-        this.game.canvas.height,
-        'textures',
-        'background/background-1'
-      )
+      .tileSprite(0, 0, this.game.canvas.width, this.game.canvas.height, 'textures', 'background/background-1')
       .setOrigin(0);
   }
 
@@ -164,10 +151,7 @@ export default class GameScene extends Phaser.Scene {
     });
 
     // Add visibility change event listeners
-    document.addEventListener(
-      'visibilitychange',
-      this.handleVisibilityChange.bind(this)
-    );
+    document.addEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
   }
 
   private getLocalPlayer(): GamePlayer | undefined {
@@ -218,8 +202,7 @@ export default class GameScene extends Phaser.Scene {
     const previousState = this.gameStateBuffer[0];
     const nextState = this.gameStateBuffer[1];
 
-    const timeDifference =
-      nextState.lastUpdateTime - previousState.lastUpdateTime;
+    const timeDifference = nextState.lastUpdateTime - previousState.lastUpdateTime;
     if (!timeDifference) {
       return 0;
     }
@@ -227,10 +210,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   handleInterpolationCompletion(alpha: number) {
-    if (
-      alpha >= ALPHA_THRESHOLD &&
-      this.calculateInterpolationDelta() > GAME_UPDATE_INTERVAL
-    ) {
+    if (alpha >= ALPHA_THRESHOLD && this.calculateInterpolationDelta() > GAME_UPDATE_INTERVAL) {
       this.gameStateBuffer.shift();
       this.lastReceivedTime = this.getCurrentTime();
     }
@@ -244,10 +224,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   private applyServerReconciliation() {
-    if (
-      !this.lastReceivedTime ||
-      this.gameStateBuffer.length < MIN_BUFFER_SIZE_INTERPOLATION
-    ) {
+    if (!this.lastReceivedTime || this.gameStateBuffer.length < MIN_BUFFER_SIZE_INTERPOLATION) {
       console.log('[applyServerReconciliation]: skip');
       return;
     }
@@ -260,9 +237,7 @@ export default class GameScene extends Phaser.Scene {
     const interpolationAlpha = this.calculateInterpolationAlpha();
 
     // Update the positions of the players and ball based on the server data
-    const ballPosition = Position.fromJson(
-      previousState.ball.position
-    ).interpolateXY(
+    const ballPosition = Position.fromJson(previousState.ball.position).interpolateXY(
       nextState.ball.position.x,
       nextState.ball.position.y,
       interpolationAlpha
@@ -273,13 +248,9 @@ export default class GameScene extends Phaser.Scene {
     previousState.players.forEach((playerData: IPlayer) => {
       const player = this.findPlayer(playerData.id);
       if (player) {
-        const nextPlayerData = nextState.players.find(
-          (p) => p.id === playerData.id
-        );
+        const nextPlayerData = nextState.players.find((p) => p.id === playerData.id);
         if (nextPlayerData) {
-          const paddlePosition = Position.fromJson(
-            playerData.paddle.position
-          ).interpolate(
+          const paddlePosition = Position.fromJson(playerData.paddle.position).interpolate(
             Position.fromJson(nextPlayerData.paddle.position),
             interpolationAlpha
           );
@@ -303,10 +274,7 @@ export default class GameScene extends Phaser.Scene {
 
   public destroy(): void {
     // Remove the visibility change event listener
-    document.removeEventListener(
-      'visibilitychange',
-      this.handleVisibilityChange.bind(this)
-    );
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
     // ...rest of the destroy method
   }
 }

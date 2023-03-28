@@ -23,12 +23,7 @@ export default class GameState implements IGameState {
   players: IPlayer[];
   lastUpdateTime: number;
 
-  constructor(
-    roomId: string,
-    ball: Ball,
-    players: Player[],
-    lastUpdateTime: number
-  ) {
+  constructor(roomId: string, ball: Ball, players: Player[], lastUpdateTime: number) {
     this.roomId = roomId;
     this.ball = ball.toJson();
     this.players = players.map((player) => player.toJson());
