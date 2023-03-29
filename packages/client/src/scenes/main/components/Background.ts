@@ -1,3 +1,4 @@
+import TextureKey from '../../../constants/TextureKey';
 import Game from '../../../Game';
 
 const BACKGROUND_LABEL = 'menu_bg_animation';
@@ -5,17 +6,16 @@ export default class Background {
   constructor(scene: Phaser.Scene) {
     const game = scene.game as Game;
 
-    const background = scene.add.sprite(game.centerX, game.centerY, 'textures', 'background/main/0000');
+    const background = scene.add.sprite(
+      game.centerX,
+      game.centerY,
+      TextureKey.Background.Key,
+      TextureKey.Background.Frames.Menu.First
+    );
 
-    // Create the animation and add it to the animation manager
     scene.anims.create({
       key: BACKGROUND_LABEL,
-      frames: scene.anims.generateFrameNames('textures', {
-        prefix: 'background/main/',
-        zeroPad: 4,
-        start: 0,
-        end: 7
-      }),
+      frames: scene.anims.generateFrameNames(TextureKey.Background.Key, TextureKey.Background.Frames.Menu.Config),
       repeat: -1,
       frameRate: 6
     });

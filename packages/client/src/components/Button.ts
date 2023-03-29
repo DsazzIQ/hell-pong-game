@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import TweenBuilderConfig = Phaser.Types.Tweens.TweenBuilderConfig;
 import AudioKey from '../constants/AudioKey';
+import TextureKey from '../constants/TextureKey';
 
 export default class Button {
   protected readonly sprite: Phaser.GameObjects.Sprite;
@@ -12,7 +13,7 @@ export default class Button {
   constructor(scene: Phaser.Scene, x: number, y: number, frame: string, onClick: () => void, onHoverColor = 0xff0000) {
     this.onHoverColor = onHoverColor;
 
-    this.sprite = scene.add.sprite(x, y, 'textures', frame);
+    this.sprite = scene.add.sprite(x, y, TextureKey.Gui.Key, frame);
     this.sprite.setOrigin(0.5);
 
     this.shine = this.sprite.preFX.addShine(1, 1);
