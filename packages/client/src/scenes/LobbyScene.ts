@@ -13,7 +13,7 @@ export default class LobbyScene extends Phaser.Scene {
   private roomsContainer!: Phaser.GameObjects.Container;
 
   constructor() {
-    super('Lobby');
+    super(SceneKey.Lobby);
   }
 
   public init(): void {
@@ -57,7 +57,7 @@ export default class LobbyScene extends Phaser.Scene {
     this.socket.emit('getRooms');
     this.socket.on('startGame', (state: IGameState) => {
       // Perform actions after joining the room, such as transitioning to another scene
-      this.scene.start<GameScene>('Game', state);
+      this.scene.start<GameScene>(SceneKey.Game, state);
       // this.startTransition("Game");
     });
   }

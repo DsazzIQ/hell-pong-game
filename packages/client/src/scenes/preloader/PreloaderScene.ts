@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 import AudioKey from '../../constants/AudioKey';
 import FontKey from '../../constants/FontKey';
 import SceneKey from '../../constants/SceneKey';
+import TextureKey from '../../constants/TextureKey';
 import Game from '../../Game';
 import RoundedProgressBar from './components/RoundedProgressBar';
 const SOCKET_URL = 'http://localhost:3000';
@@ -42,8 +43,8 @@ export default class PreloaderScene extends Phaser.Scene {
   }
 
   private loadTextures() {
-    this.load.atlas('textures', 'assets/textures/pong_textures.png', 'assets/textures/pong_textures.json');
-    this.load.atlas('gui', 'assets/textures/gui.png', 'assets/textures/gui.json');
+    this.load.atlas(TextureKey.Background.Key, TextureKey.Background.TextureUrl, TextureKey.Background.AtlasUrl);
+    this.load.atlas(TextureKey.Gui.Key, TextureKey.Gui.TextureUrl, TextureKey.Gui.AtlasUrl);
   }
 
   private loadAudios() {

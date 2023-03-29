@@ -13,6 +13,11 @@ import Phaser from 'phaser';
 import { Socket } from 'socket.io-client';
 import { Pane } from 'tweakpane';
 
+import FontKey from '../constants/FontKey';
+import FontSize from '../constants/FontSize';
+import SceneKey from '../constants/SceneKey';
+import TextureKey from '../constants/TextureKey';
+
 const ALPHA_THRESHOLD = 1;
 const MIN_BUFFER_SIZE_INTERPOLATION = 2;
 const MAX_BUFFER_SIZE = 5;
@@ -43,7 +48,7 @@ export default class GameScene extends Phaser.Scene {
   private isPaused = false;
 
   constructor() {
-    super('Game');
+    super(SceneKey.Game);
   }
 
   public init(data: IGameState): void {
@@ -66,8 +71,8 @@ export default class GameScene extends Phaser.Scene {
     this.ball = this.matter.add.sprite(
       this.initData.ball.position.x,
       this.initData.ball.position.y,
-      'textures',
-      'gameplay/ball'
+      TextureKey.Gui.Key,
+      TextureKey.Gui.Frames.Gameplay.Ball
     );
     this.ball.setCircle(BALL_RADIUS);
 
@@ -76,20 +81,27 @@ export default class GameScene extends Phaser.Scene {
 
     this.ball.setBounce(1);
     this.ball.setOrigin(0.5);
-    this.ball.setName('ball');
+    this.ball.setName(TextureKey.Gui.Frames.Gameplay.Ball);
   }
 
   private initBackground(): void {
     this.add
-      .tileSprite(0, 0, this.game.canvas.width, this.game.canvas.height, 'textures', 'background/background-1')
+      .tileSprite(
+        0,
+        0,
+        this.game.canvas.width,
+        this.game.canvas.height,
+        TextureKey.Background.Key,
+        TextureKey.Background.Frames.Main
+      )
       .setOrigin(0);
   }
 
   private initGameScore(): void {
     this.playersScoreText = this.add
       .text(this.game.canvas.width * 0.5, 20, `0 - 0`, {
-        fontFamily: 'arcade-zig',
-        fontSize: '24px',
+        fontFamily: FontKey.Text,
+        fontSize: FontSize.Title,
         color: '#ffffff'
       })
       .setOrigin(0.5)
@@ -101,8 +113,8 @@ export default class GameScene extends Phaser.Scene {
       const paddle = this.matter.add.sprite(
         player.paddle.position.x,
         player.paddle.position.y,
-        'textures',
-        'gameplay/paddle'
+        TextureKey.Gui.Key,
+        TextureKey.Gui.Frames.Gameplay.Paddle
       );
       paddle.setRectangle(PADDLE_WIDTH, PADDLE_HEIGHT);
       paddle.setStatic(true);
