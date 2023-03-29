@@ -95,9 +95,9 @@ export default class Slider {
     this.container.setInteractive({
       draggable: true,
       hitArea: new Phaser.Geom.Rectangle(
-        -this.trackSize.widthCenter + this.thumb.width * 0.5,
+        -this.trackSize.widthCenter,
         -this.trackSize.heightCenter,
-        this.trackSize.width - this.thumb.width,
+        this.trackSize.width,
         this.trackSize.height
       ),
       hitAreaCallback: Phaser.Geom.Rectangle.Contains,
@@ -107,11 +107,11 @@ export default class Slider {
 
   // private drawDebugBorder(scene: Phaser.Scene) {
   //   const debugGraphics = scene.add.graphics();
-  //   debugGraphics.lineStyle(1, 0xff0000, 1); // Set line style: width, color, alpha
+  //   debugGraphics.lineStyle(1, 0xff0000, 1);
   //   debugGraphics.strokeRect(
-  //     -this.trackSize.widthCenter + this.thumb.width * 0.5,
+  //     -this.trackSize.widthCenter,
   //     -this.trackSize.heightCenter,
-  //     this.trackSize.width - this.thumb.width,
+  //     this.trackSize.width,
   //     this.trackSize.height
   //   );
   //   this.container.add(debugGraphics);
