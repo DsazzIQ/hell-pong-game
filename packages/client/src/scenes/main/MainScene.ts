@@ -22,7 +22,7 @@ class MainScene extends Phaser.Scene {
     new Title(this);
 
     this.initButtons();
-    this.playTheme();
+    // this.playTheme();
   }
 
   playTheme() {
@@ -36,12 +36,12 @@ class MainScene extends Phaser.Scene {
   initButtons() {
     const game = this.game as Game;
     new MenuButton(this, game.centerY, TextureKey.Gui.Frames.Button.MenuStart, () => {
-      this.stopTheme();
+      // this.stopTheme();
       game.startTransition(this, SceneKey.Lobby);
     });
 
     new MenuButton(this, game.centerY * 1.25, TextureKey.Gui.Frames.Button.MenuOptions, () => {
-      this.stopTheme();
+      // this.stopTheme();
       game.startTransition(this, SceneKey.Options);
     });
   }

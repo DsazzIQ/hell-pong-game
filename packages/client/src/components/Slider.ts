@@ -26,10 +26,11 @@ export default class Slider {
     this.initializeTrack(scene);
     this.initializeThumb(scene);
 
-    this.setInteractiveArea();
-    this.registerDragHandlers(scene);
+    this.initArrows(scene);
+    this.registerArrowsEventHandlers();
 
-    this.registerArrowsHandlers();
+    this.setInteractiveArea();
+    this.registerThumbEventHandlers(scene);
 
     this.setValue(startValue);
   }
@@ -49,7 +50,9 @@ export default class Slider {
 
     this.initTrackSize();
     this.initTrackPosition();
+  }
 
+  private initArrows(scene: Phaser.Scene) {
     this.arrowLeft = scene.add.image(
       this.container.x - this.trackSize.width,
       this.container.y,
@@ -92,15 +95,27 @@ export default class Slider {
     this.container.setInteractive({
       draggable: true,
       hitArea: new Phaser.Geom.Rectangle(
-        -this.trackSize.widthCenter,
+        -this.trackSize.widthCenter + this.thumb.width * 0.5,
         -this.trackSize.heightCenter,
-        this.trackSize.width,
+        this.trackSize.width - this.thumb.width,
         this.trackSize.height
       ),
       hitAreaCallback: Phaser.Geom.Rectangle.Contains,
       useHandCursor: true
     });
   }
+
+  // private drawDebugBorder(scene: Phaser.Scene) {
+  //   const debugGraphics = scene.add.graphics();
+  //   debugGraphics.lineStyle(1, 0xff0000, 1); // Set line style: width, color, alpha
+  //   debugGraphics.strokeRect(
+  //     -this.trackSize.widthCenter + this.thumb.width * 0.5,
+  //     -this.trackSize.heightCenter,
+  //     this.trackSize.width - this.thumb.width,
+  //     this.trackSize.height
+  //   );
+  //   this.container.add(debugGraphics);
+  // }
 
   private setThumbOutFrame() {
     this.thumb.setTexture(TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.ThumbOut);
@@ -110,43 +125,47 @@ export default class Slider {
     this.thumb.setTexture(TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.ThumbIn);
   }
 
-  private registerArrowsHandlers() {
-    this.arrowLeft.on(Phaser.Input.Events.POINTER_DOWN, () => {
-      this.arrowLeft.setTexture(TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.ArrowLeftIn);
-      this.updateThumbPosition(this.thumb.x - 1);
+  private registerArrowEventHandlers(
+    arrow: Phaser.GameObjects.Image,
+    frameIn: string,
+    frameOut: string,
+    onClick: () => void
+  ) {
+    arrow.on(Phaser.Input.Events.POINTER_DOWN, () => {
+      arrow.setTexture(TextureKey.Gui.Key, frameIn);
+      onClick();
     });
 
-    this.arrowLeft.on(Phaser.Input.Events.POINTER_UP, () => {
-      this.arrowLeft.setTexture(TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.ArrowLeftOut);
+    arrow.on(Phaser.Input.Events.POINTER_UP, () => {
+      arrow.setTexture(TextureKey.Gui.Key, frameOut);
     });
 
-    this.arrowLeft.on(Phaser.Input.Events.POINTER_OVER, () => {
-      this.arrowLeft.setTexture(TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.ArrowLeftIn);
+    arrow.on(Phaser.Input.Events.POINTER_OVER, () => {
+      arrow.setTexture(TextureKey.Gui.Key, frameIn);
     });
 
-    this.arrowLeft.on(Phaser.Input.Events.POINTER_OUT, () => {
-      this.arrowLeft.setTexture(TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.ArrowLeftOut);
-    });
-
-    this.arrowRight.on(Phaser.Input.Events.POINTER_DOWN, () => {
-      this.arrowRight.setTexture(TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.ArrowRightIn);
-      this.updateThumbPosition(this.thumb.x + 1);
-    });
-
-    this.arrowRight.on(Phaser.Input.Events.POINTER_UP, () => {
-      this.arrowRight.setTexture(TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.ArrowRightOut);
-    });
-
-    this.arrowRight.on(Phaser.Input.Events.POINTER_OVER, () => {
-      this.arrowRight.setTexture(TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.ArrowRightIn);
-    });
-
-    this.arrowRight.on(Phaser.Input.Events.POINTER_OUT, () => {
-      this.arrowRight.setTexture(TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.ArrowRightOut);
+    arrow.on(Phaser.Input.Events.POINTER_OUT, () => {
+      arrow.setTexture(TextureKey.Gui.Key, frameOut);
     });
   }
 
-  private registerDragHandlers(scene: Phaser.Scene) {
+  private registerArrowsEventHandlers() {
+    this.registerArrowEventHandlers(
+      this.arrowLeft,
+      TextureKey.Gui.Frames.Slider.ArrowLeftIn,
+      TextureKey.Gui.Frames.Slider.ArrowLeftOut,
+      () => this.updateThumbPosition(this.thumb.x - 1)
+    );
+
+    this.registerArrowEventHandlers(
+      this.arrowRight,
+      TextureKey.Gui.Frames.Slider.ArrowRightIn,
+      TextureKey.Gui.Frames.Slider.ArrowRightOut,
+      () => this.updateThumbPosition(this.thumb.x + 1)
+    );
+  }
+
+  private registerThumbEventHandlers(scene: Phaser.Scene) {
     scene.input.on(Phaser.Input.Events.POINTER_UP, () => {
       this.setThumbOutFrame();
     });
@@ -162,17 +181,25 @@ export default class Slider {
     });
   }
 
+  private get leftDraggableBorder(): number {
+    return this.trackLeft.getLeftCenter().x + this.thumb.width * 0.5;
+  }
+
+  private get rightDraggableBorder(): number {
+    return this.trackRight.getRightCenter().x - this.thumb.width * 0.5;
+  }
+
   private updateThumbPosition(x: number) {
-    const clampedX = Phaser.Math.Clamp(x, this.trackLeft.getLeftCenter().x, this.trackRight.getRightCenter().x);
+    const clampedX = Phaser.Math.Clamp(x, this.leftDraggableBorder, this.rightDraggableBorder);
     this.thumb.x = clampedX;
 
-    this.value = Phaser.Math.Percent(clampedX - this.trackLeft.getLeftCenter().x, 0, this.trackSize.width);
+    this.value = Phaser.Math.Percent(clampedX - this.leftDraggableBorder, 0, this.trackSize.width - this.thumb.width);
     this.onValueChanged(this.value);
   }
 
   private setValue(value) {
     this.value = Phaser.Math.Clamp(value, 0, 1);
-    this.thumb.x = Phaser.Math.Linear(this.trackLeft.getLeftCenter().x, this.trackRight.getRightCenter().x, this.value);
+    this.thumb.x = Phaser.Math.Linear(this.leftDraggableBorder, this.rightDraggableBorder, this.value);
     this.onValueChanged(this.value);
   }
 
