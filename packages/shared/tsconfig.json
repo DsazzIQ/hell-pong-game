@@ -6,10 +6,13 @@
     "rootDir": "src",
     "declaration": true,
     "strict": true,
+    "noEmit": false,
+    "removeComments": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "composite": true
+    "composite": true,
+    "target": "es2021"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["**/node_modules/**", "node_modules", "dist"]

@@ -8,9 +8,8 @@
   "license": "MIT",
   "scripts": {
     "start": "tsc -w",
-    "build": "tsc --build",
+    "build": "tsc -b",
     "lint": "eslint . --ext .ts --ext js",
     "lint:fix": "eslint --fix . --ext ts --ext js"
-
   }
 }
