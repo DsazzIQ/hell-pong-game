@@ -23,11 +23,11 @@ export default class PreloaderScene extends Phaser.Scene {
   }
 
   private initProgressBar() {
-    const game = this.game as Game;
     this.lineProgress = new RoundedProgressBar(this);
 
     this.load.on('progress', (value: number) => this.lineProgress.setValue(value));
 
+    const { startTransition } = this.game as Game;
     this.load.on('complete', () => {
       const socket = io(SOCKET_URL);
 
@@ -36,8 +36,8 @@ export default class PreloaderScene extends Phaser.Scene {
         this.registry.set('socket', socket);
 
         //TODO commented for development
-        // game.startTransition(this, SceneKey.Splash);
-        game.startTransition(this, SceneKey.Main);
+        startTransition(this, SceneKey.Splash);
+        // startTransition(this, SceneKey.Main);
       });
     });
   }
@@ -52,6 +52,9 @@ export default class PreloaderScene extends Phaser.Scene {
     this.load.audio(AudioKey.SecondaryTheme, 'assets/sounds/secondary_theme.mp3');
     this.load.audio(AudioKey.SplashLogo, 'assets/sounds/splash.mp3');
     this.load.audio(AudioKey.ButtonClick, 'assets/sounds/button_click.wav');
+    this.load.audio(AudioKey.ButtonHover, 'assets/sounds/button_hover.wav');
+    this.load.audio(AudioKey.ChangeSelection, 'assets/sounds/change_selection.wav');
+    this.load.audio(AudioKey.Touch, 'assets/sounds/touch.wav');
     this.load.audio(AudioKey.StartGame, 'assets/sounds/start_game.mp3');
     this.load.audio(AudioKey.PaddleHit, 'assets/sounds/paddle_hit.wav');
     this.load.audio(AudioKey.BallHit, 'assets/sounds/ball_hit.wav');

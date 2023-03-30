@@ -7,8 +7,9 @@ export default class Button {
   protected readonly sprite: Phaser.GameObjects.Sprite;
   protected onHoverColor: number;
   private shadow: Phaser.FX.Shadow;
-  private shine: Phaser.FX.Shine;
-  private activeSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
+
+  private clickSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
+  private hoverSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
 
   constructor(scene: Phaser.Scene, x: number, y: number, frame: string, onClick: () => void, onHoverColor = 0xff0000) {
     this.onHoverColor = onHoverColor;
@@ -16,27 +17,17 @@ export default class Button {
     this.sprite = scene.add.sprite(x, y, TextureKey.Gui.Key, frame);
     this.sprite.setOrigin(0.5);
 
-    this.shine = this.sprite.preFX.addShine(1, 1);
-    this.stopShine();
-
-    this.shadow = this.sprite.preFX.addShadow(1, 0, 0.1, 1, this.onHoverColor);
+    this.shadow = this.sprite.preFX.addShadow(0.5, 0, 0.15, 1, this.onHoverColor);
     this.stopShadow();
 
-    this.activeSound = scene.sound.add(AudioKey.ButtonClick);
+    this.clickSound = scene.sound.add(AudioKey.ButtonClick);
+    this.hoverSound = scene.sound.add(AudioKey.ButtonHover);
 
     this.sprite
       .setInteractive({ useHandCursor: true })
       .on(Phaser.Input.Events.POINTER_OVER, () => this.onHoverState())
       .on(Phaser.Input.Events.POINTER_OUT, () => this.onOutState())
-      .on(Phaser.Input.Events.POINTER_DOWN, () => this.onActive(onClick));
-  }
-
-  protected startShine() {
-    this.shine.active = true;
-  }
-
-  protected stopShine() {
-    this.shine.active = false;
+      .on(Phaser.Input.Events.POINTER_DOWN, () => this.onClick(onClick));
   }
 
   protected startShadow() {
@@ -70,17 +61,16 @@ export default class Button {
   }
 
   protected onHoverState() {
+    this.hoverSound.play({ volume: 0.2 });
     this.startShadow();
-    this.startShine();
   }
 
   protected onOutState() {
     this.stopShadow();
-    this.stopShine();
   }
 
-  protected onActive(onClick: () => void) {
-    this.activeSound.play({ volume: 0.2 });
+  protected onClick(onClick: () => void) {
+    this.clickSound.play({ volume: 0.1 });
 
     const scaleFactor = this.sprite.scale - 0.1;
     this.sprite.scene.tweens.add({

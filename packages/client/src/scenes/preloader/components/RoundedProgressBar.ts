@@ -14,13 +14,13 @@ const BORDER_WIDTH = 3;
 
 export default class RoundedProgressBar extends LineProgress {
   constructor(scene) {
-    const game = scene.game as Game;
+    const { centerX, centerY } = scene.game as Game;
     super(scene, {
       valuechangeCallback(newValue) {
         console.log(`[Progress] ${newValue}%`);
       },
-      x: game.centerX,
-      y: game.centerY,
+      x: centerX,
+      y: centerY,
       width: PROGRESS_BOX_WIDTH,
       height: PROGRESS_BOX_HEIGHT,
       barColor: COLOR_PRIMARY,
@@ -32,8 +32,8 @@ export default class RoundedProgressBar extends LineProgress {
 
     const halfWidth = PROGRESS_BOX_WIDTH * 0.5;
     const halfHeight = PROGRESS_BOX_HEIGHT * 0.5;
-    const maskX = game.centerX - halfWidth;
-    const maskY = game.centerY - halfHeight;
+    const maskX = centerX - halfWidth;
+    const maskY = centerY - halfHeight;
 
     // Create rounded mask
     const mask = scene.add

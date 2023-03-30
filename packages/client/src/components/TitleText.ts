@@ -11,6 +11,7 @@ export default class TitleText {
     const title = scene.add.bitmapText(0, 0, FontKey.Retro, text, FontSize.Title).setOrigin(0.5);
     container.add(title);
 
-    container.setXY((scene.game as Game).centerX, (scene.game as Game).centerY * TOP_OFFSET);
+    const { centerX, centerY } = scene.game as Game;
+    container.setXY(centerX, centerY * TOP_OFFSET);
   }
 }
