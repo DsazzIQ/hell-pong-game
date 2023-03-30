@@ -4,11 +4,11 @@ import Game from '../../../Game';
 const BACKGROUND_LABEL = 'menu_bg_animation';
 export default class Background {
   constructor(scene: Phaser.Scene) {
-    const game = scene.game as Game;
+    const { centerX, centerY, canvas } = scene.game as Game;
 
     const background = scene.add.sprite(
-      game.centerX,
-      game.centerY,
+      centerX,
+      centerY,
       TextureKey.Background.Key,
       TextureKey.Background.Frames.Menu.First
     );
@@ -20,7 +20,7 @@ export default class Background {
       frameRate: 6
     });
 
-    background.displayHeight = game.canvas.height as number;
+    background.displayHeight = canvas.height as number;
     const scale = background.displayHeight / background.height;
     background.displayWidth = background.width * scale;
 

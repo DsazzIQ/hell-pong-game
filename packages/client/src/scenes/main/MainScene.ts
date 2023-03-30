@@ -2,7 +2,6 @@ import Phaser from 'phaser';
 
 import AudioKey from '../../constants/AudioKey';
 import SceneKey from '../../constants/SceneKey';
-import TextureKey from '../../constants/TextureKey';
 import Game from '../../Game';
 import Background from './components/Background';
 import MenuButton from './components/MenuButton';
@@ -34,15 +33,15 @@ class MainScene extends Phaser.Scene {
   }
 
   initButtons() {
-    const game = this.game as Game;
-    new MenuButton(this, game.centerY, TextureKey.Gui.Frames.Button.MenuStart, () => {
+    const { centerY, config, startTransition } = this.game as Game;
+    new MenuButton(this, 0, centerY, 'start', () => {
       // this.stopTheme();
-      game.startTransition(this, SceneKey.Lobby);
+      startTransition(this, SceneKey.Lobby);
     });
 
-    new MenuButton(this, game.centerY * 1.25, TextureKey.Gui.Frames.Button.MenuOptions, () => {
+    new MenuButton(this, config.width as number, centerY * 1.2, 'settings', () => {
       // this.stopTheme();
-      game.startTransition(this, SceneKey.Options);
+      startTransition(this, SceneKey.Settings);
     });
   }
 }

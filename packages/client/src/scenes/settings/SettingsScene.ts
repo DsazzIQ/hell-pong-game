@@ -1,17 +1,17 @@
 import BackButton from '../../components/BackButton';
 import GUIContainer from '../../components/GUIContainer';
 import LavaBackground from '../../components/LavaBackground';
-import Slider from '../../components/Slider';
+// import Slider from '../../components/Slider';
 import TitleText from '../../components/TitleText';
 import AudioKey from '../../constants/AudioKey';
 import SceneKey from '../../constants/SceneKey';
 import Game from '../../Game';
 
-export default class OptionsScene extends Phaser.Scene {
+export default class SettingsScene extends Phaser.Scene {
   private background: LavaBackground;
 
   constructor() {
-    super(SceneKey.Options);
+    super(SceneKey.Settings);
   }
 
   public init(): void {
@@ -34,14 +34,14 @@ export default class OptionsScene extends Phaser.Scene {
       // this.stopTheme();
       (this.game as Game).startTransition(this, SceneKey.Main);
     });
-    new TitleText(this, 'Options');
+    new TitleText(this, 'Settings');
     this.initGUI();
   }
 
   private initGUI() {
-    const { centerX, centerY } = this.game as Game;
+    // const { centerX, centerY } = this.game as Game;
     new GUIContainer(this);
-    new Slider(this, centerX, centerY, (value) => console.log(value), 0.5);
+    // new Slider(this, centerX, centerY, (value) => console.log(value), 0.5);
   }
 
   update() {

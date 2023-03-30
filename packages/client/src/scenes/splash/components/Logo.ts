@@ -9,8 +9,8 @@ export default class Logo {
   private readonly sprite: Phaser.GameObjects.Sprite;
 
   constructor(scene: Phaser.Scene, onFinish: () => void) {
-    const game = scene.game as Game;
-    this.sprite = scene.add.sprite(game.centerX, game.centerY, 'textures', 'background/logo');
+    const { centerX, centerY } = scene.game as Game;
+    this.sprite = scene.add.sprite(centerX, centerY, 'textures', 'background/logo');
     this.sprite.setOrigin(0.5).setAlpha(0);
 
     this.addAnimation(onFinish);

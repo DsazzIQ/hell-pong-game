@@ -38,10 +38,18 @@ const TextureKey = Object.freeze({
       },
       Button: {
         Back: 'button/back',
-        MenuEmpty: 'button/menu-empty', //must be removed later
-        MenuOptions: 'button/menu-options', //should be replaced with menu-settings
-        MenuStart: 'button/menu-start',
-        Square: 'button/square'
+        Square: 'button/square',
+        Main: 'button/main',
+        Checked: 'button/checked',
+        UnChecked: 'button/unchecked'
+      },
+      Icon: {
+        Accept: 'icon/accept',
+        Decline: 'icon/decline',
+        Empty: 'icon/empty',
+        Music: 'icon/music',
+        Return: 'icon/return',
+        Setting: 'icon/setting'
       },
       Gameplay: {
         Ball: 'gameplay/ball',

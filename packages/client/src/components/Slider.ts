@@ -1,10 +1,14 @@
-import { Size } from '@hell-pong/shared/entities/component/Size';
+import { ISize, Size } from '@hell-pong/shared/entities/component/Size';
 
+import AudioKey from '../constants/AudioKey';
 import Depth from '../constants/Depth';
 import TextureKey from '../constants/TextureKey';
 
+const SLIDER_SCALE = 2;
 export default class Slider {
-  private container: Phaser.GameObjects.Container;
+  private readonly trackContainer: Phaser.GameObjects.Container;
+  private readonly _container: Phaser.GameObjects.Container;
+
   private value: number;
 
   private trackLeft: Phaser.GameObjects.Image;
@@ -18,10 +22,16 @@ export default class Slider {
   private arrowLeft: Phaser.GameObjects.Image;
   private arrowRight: Phaser.GameObjects.Image;
 
+  private touchSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
+
   constructor(scene: Phaser.Scene, x, y, onValueChanged: (value: number) => void, startValue = 0) {
     this.onValueChanged = onValueChanged;
 
-    this.container = scene.add.container(x, y).setDepth(Depth.Base).setScale(2);
+    this.touchSound = scene.sound.add(AudioKey.Touch);
+
+    this.trackContainer = scene.add.container(0, 0);
+    this._container = scene.add.container(x, y).setDepth(Depth.Base).setScale(SLIDER_SCALE);
+    this._container.add(this.trackContainer);
 
     this.initializeTrack(scene);
     this.initializeThumb(scene);
@@ -33,20 +43,30 @@ export default class Slider {
     this.registerThumbEventHandlers(scene);
 
     this.setValue(startValue);
+
+    scene.input.enableDebug(this._container, 0xff00ff);
+  }
+
+  public get size(): ISize {
+    return { width: this.trackSize.width + this.arrowLeft.width * 2, height: this.arrowLeft.height };
+  }
+
+  public get container() {
+    return this._container;
   }
 
   private initializeTrack(scene: Phaser.Scene) {
     this.trackLeft = scene.add.image(0, 0, TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.TrackLeft);
     this.trackLeft.setOrigin(0, 0.5);
-    this.container.add(this.trackLeft);
+    this.trackContainer.add(this.trackLeft);
 
     this.trackCenter = scene.add.image(0, 0, TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.TrackCenter);
     this.trackCenter.setOrigin(0, 0.5);
-    this.container.add(this.trackCenter);
+    this.trackContainer.add(this.trackCenter);
 
     this.trackRight = scene.add.image(0, 0, TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.TrackRight);
     this.trackRight.setOrigin(0, 0.5);
-    this.container.add(this.trackRight);
+    this.trackContainer.add(this.trackRight);
 
     this.initTrackSize();
     this.initTrackPosition();
@@ -54,20 +74,22 @@ export default class Slider {
 
   private initArrows(scene: Phaser.Scene) {
     this.arrowLeft = scene.add.image(
-      this.container.x - this.trackSize.width,
-      this.container.y,
+      this.trackContainer.x - this.trackSize.widthCenter,
+      this.trackContainer.y,
       TextureKey.Gui.Key,
       TextureKey.Gui.Frames.Slider.ArrowLeftOut
     );
-    this.arrowLeft.setInteractive({ useHandCursor: true }).setOrigin(1, 0.5).setScale(2);
+    this.arrowLeft.setInteractive({ useHandCursor: true }).setOrigin(1, 0.5);
+    this._container.add(this.arrowLeft);
 
     this.arrowRight = scene.add.image(
-      this.container.x + this.trackSize.width,
-      this.container.y,
+      this.trackContainer.x + this.trackSize.widthCenter,
+      this.trackContainer.y,
       TextureKey.Gui.Key,
       TextureKey.Gui.Frames.Slider.ArrowRightOut
     );
-    this.arrowRight.setInteractive({ useHandCursor: true }).setOrigin(0, 0.5).setScale(2);
+    this.arrowRight.setInteractive({ useHandCursor: true }).setOrigin(0, 0.5);
+    this._container.add(this.arrowRight);
   }
 
   private initTrackSize() {
@@ -84,7 +106,7 @@ export default class Slider {
     this.thumb = scene.add.image(0, 0, TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.ThumbOut);
     this.thumb.setOrigin(0.5, 0.5);
 
-    this.container.add(this.thumb);
+    this.trackContainer.add(this.thumb);
   }
 
   private calculateTrackWidth(): number {
@@ -92,7 +114,7 @@ export default class Slider {
   }
 
   private setInteractiveArea() {
-    this.container.setInteractive({
+    this.trackContainer.setInteractive({
       draggable: true,
       hitArea: new Phaser.Geom.Rectangle(
         -this.trackSize.widthCenter,
@@ -120,6 +142,7 @@ export default class Slider {
     onClick: () => void
   ) {
     arrow.on(Phaser.Input.Events.POINTER_DOWN, () => {
+      this.playTouch();
       arrow.setTexture(TextureKey.Gui.Key, frameIn);
       onClick();
     });
@@ -155,15 +178,17 @@ export default class Slider {
 
   private registerThumbEventHandlers(scene: Phaser.Scene) {
     scene.input.on(Phaser.Input.Events.POINTER_UP, () => {
+      this.playTouch();
       this.setThumbOutFrame();
     });
 
-    this.container.on(Phaser.Input.Events.DRAG, ({ worldX }) => {
+    this.trackContainer.on(Phaser.Input.Events.DRAG, ({ worldX }) => {
       this.setThumbInFrame();
       this.updateThumbPosition(this.worldToLocalX(worldX));
     });
 
-    this.container.on(Phaser.Input.Events.POINTER_DOWN, ({ worldX }) => {
+    this.trackContainer.on(Phaser.Input.Events.POINTER_DOWN, ({ worldX }) => {
+      this.playTouch();
       this.setThumbInFrame();
       this.updateThumbPosition(this.worldToLocalX(worldX));
     });
@@ -192,7 +217,11 @@ export default class Slider {
   }
 
   private worldToLocalX(worldX: number): number {
-    const { x } = this.container.getWorldTransformMatrix().applyInverse(worldX, 0);
+    const { x } = this.trackContainer.getWorldTransformMatrix().applyInverse(worldX, 0);
     return x;
+  }
+
+  private playTouch() {
+    this.touchSound.play({ volume: 0.2 });
   }
 }

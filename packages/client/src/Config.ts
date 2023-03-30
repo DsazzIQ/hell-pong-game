@@ -7,7 +7,7 @@ import GameScene from './scenes/GameScene';
 import LobbyScene from './scenes/LobbyScene';
 import MainScene from './scenes/main/MainScene';
 import PreloaderScene from './scenes/preloader/PreloaderScene';
-import OptionsScene from './scenes/settings/OptionsScene';
+import SettingsScene from './scenes/settings/SettingsScene';
 import SplashScene from './scenes/splash/SplashScene';
 
 const GameConfig: Types.Core.GameConfig = {
@@ -25,7 +25,7 @@ const GameConfig: Types.Core.GameConfig = {
   },
   pixelArt: true,
   disableContextMenu: true,
-  scene: [PreloaderScene, SplashScene, MainScene, OptionsScene, LobbyScene, GameScene],
+  scene: [PreloaderScene, SplashScene, MainScene, SettingsScene, LobbyScene, GameScene],
   physics: {
     default: 'matter',
     matter: {
