@@ -36,8 +36,8 @@ export default class PreloaderScene extends Phaser.Scene {
         this.registry.set('socket', socket);
 
         //TODO commented for development
-        // game.startTransition(this, SceneKey.Splash);
-        startTransition(this, SceneKey.Main);
+        startTransition(this, SceneKey.Splash);
+        // startTransition(this, SceneKey.Main);
       });
     });
   }

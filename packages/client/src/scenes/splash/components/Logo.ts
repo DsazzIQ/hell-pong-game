@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 
+import TextureKey from '../../../constants/TextureKey';
 import Game from '../../../Game';
 
 const GLOW_DISTANCE = 4;
@@ -10,7 +11,7 @@ export default class Logo {
 
   constructor(scene: Phaser.Scene, onFinish: () => void) {
     const { centerX, centerY } = scene.game as Game;
-    this.sprite = scene.add.sprite(centerX, centerY, 'textures', 'background/logo');
+    this.sprite = scene.add.sprite(centerX, centerY, TextureKey.Background.Key, TextureKey.Background.Frames.Logo);
     this.sprite.setOrigin(0.5).setAlpha(0);
 
     this.addAnimation(onFinish);
