@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "Server for Ping Pong game",
   "main": "dist/index.js",
+  "license": "MIT",
   "scripts": {
     "start:prod": "pm2 start --name hell-pong --watch dist/index.js --node-args=\"-r dotenv/config\"",
     "start": "nodemon",
-    "build": "tsc",
+    "build": "yarn workspace @hell-pong/shared build && tsc --project tsconfig.json",
     "watch": "tsc -w",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix"
