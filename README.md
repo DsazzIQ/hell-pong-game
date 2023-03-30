@@ -1,4 +1,6 @@
 # Hell Pong Multiplayer Game
+![Phaser3 Version](https://img.shields.io/badge/Phaser3-v3.60.0-green)
+![GitHub issues](https://img.shields.io/github/issues/Dsazz/hell-pong-game)
 
 Welcome to Hell Pong, a fast-paced multiplayer ping-pong game built with Lerna, TypeScript, Phaser 3, Matter.js, and Socket.io
 
