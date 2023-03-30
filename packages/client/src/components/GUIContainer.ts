@@ -1,3 +1,6 @@
+import { IPosition } from '@hell-pong/shared/entities/component/Position';
+import { ISize } from '@hell-pong/shared/entities/component/Size';
+
 import Depth from '../constants/Depth';
 import TextureKey from '../constants/TextureKey';
 import Game from '../Game';
@@ -8,9 +11,9 @@ const GUI_SCALE = 2.5;
 
 type GUIFragment = {
   frame: string;
-  position: { x: number; y: number };
-  origin: { x: number; y: number };
-  display?: { width: number; height: number };
+  position: IPosition;
+  origin: IPosition;
+  display?: ISize;
   scale?: number;
 };
 

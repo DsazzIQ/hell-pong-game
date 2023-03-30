@@ -82,7 +82,7 @@ export default class Button {
   protected onActive(onClick: () => void) {
     this.activeSound.play({ volume: 0.2 });
 
-    const scaleFactor = 0.9;
+    const scaleFactor = this.sprite.scale - 0.1;
     this.sprite.scene.tweens.add({
       targets: this.sprite,
       scaleX: scaleFactor,

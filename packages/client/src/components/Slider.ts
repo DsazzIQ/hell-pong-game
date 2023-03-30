@@ -105,18 +105,6 @@ export default class Slider {
     });
   }
 
-  // private drawDebugBorder(scene: Phaser.Scene) {
-  //   const debugGraphics = scene.add.graphics();
-  //   debugGraphics.lineStyle(1, 0xff0000, 1);
-  //   debugGraphics.strokeRect(
-  //     -this.trackSize.widthCenter,
-  //     -this.trackSize.heightCenter,
-  //     this.trackSize.width,
-  //     this.trackSize.height
-  //   );
-  //   this.container.add(debugGraphics);
-  // }
-
   private setThumbOutFrame() {
     this.thumb.setTexture(TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.ThumbOut);
   }
