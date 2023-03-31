@@ -3,8 +3,10 @@ import FontSize from '../constants/FontSize';
 import Game from '../Game';
 
 const TOP_OFFSET = 0.17;
-export default class TitleText {
+export default class TitleText extends Phaser.GameObjects.GameObject {
   constructor(scene: Phaser.Scene, text: string) {
+    super(scene, 'TitleText');
+
     const container = scene.add.group();
     container.setOrigin(0.5);
 

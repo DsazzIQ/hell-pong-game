@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@hell-pong/shared": "^1.0.0",
-    "phaser": "^3.60.0-beta.21",
+    "phaser": "^3.60.0-beta.22",
     "phaser3-rex-plugins": "^1.1.82",
     "socket.io-client": "^4.3.2",
     "tweakpane": "^3.1.7"
@@ -20,6 +20,7 @@
   "devDependencies": {
     "@tweakpane/core": "^1.1.6",
     "clean-webpack-plugin": "^4.0.0",
+    "compression-webpack-plugin": "^10.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "html-webpack-plugin": "^5.5.0",
     "ts-loader": "^9.2.6",

@@ -4,7 +4,6 @@ import { ISize } from '@hell-pong/shared/entities/component/Size';
 import Depth from '../constants/Depth';
 import TextureKey from '../constants/TextureKey';
 import Game from '../Game';
-import Slider from './Slider';
 
 type GUIFragment = {
   frame: string;
@@ -17,14 +16,16 @@ type GUIFragment = {
 const GUI_MARGIN: IPosition = { x: 50, y: 20 };
 const GUI_SCALE = 2.5;
 
-const ROW_OFFSET = { x: 160, y: 25 };
+export const ROW_OFFSET = { x: 160, y: 25 };
 const INNER_BOX_TOP_LEFT: IPosition = { x: 60, y: 140 };
 
-export default class GUIContainer {
+export default class GUIContainer extends Phaser.GameObjects.GameObject {
   private guiContainer: Phaser.GameObjects.Container;
   private container: Phaser.GameObjects.Container;
 
   constructor(scene: Phaser.Scene) {
+    super(scene, 'GUIContainer');
+
     const { config } = scene.game as Game;
     const width = config.width as number;
     const height = config.height as number;
@@ -37,24 +38,10 @@ export default class GUIContainer {
     this.guiContainer.setPosition(0, 0).setDepth(Depth.Gui);
 
     this.container = scene.add.container(INNER_BOX_TOP_LEFT.x, INNER_BOX_TOP_LEFT.y);
+  }
 
-    const musicIcon = scene.add
-      .image(ROW_OFFSET.x, ROW_OFFSET.y, TextureKey.Gui.Key, TextureKey.Gui.Frames.Icon.Music)
-      .setOrigin(0.5);
-    const iconMatrix = musicIcon.preFX.addColorMatrix();
-    this.container.add(musicIcon);
-
-    const slider = new Slider(
-      scene,
-      0,
-      0,
-      (value) => {
-        iconMatrix.grayscale(1 - value);
-      },
-      0.5
-    );
-    slider.container.setPosition(musicIcon.x + musicIcon.width + slider.size.width, musicIcon.y);
-    this.container.add(slider.container);
+  public addToContainer(objects: Phaser.GameObjects.GameObject[]) {
+    this.container.add(objects);
   }
 
   private createCornerFragments(scene: Phaser.Scene, width: number, height: number): Phaser.GameObjects.Image[] {

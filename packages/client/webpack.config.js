@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
+const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === "production";
@@ -49,6 +50,9 @@ module.exports = (env, argv) => {
       }),
       new HtmlWebpackPlugin({
         template: "src/index.html",
+      }),
+      new CompressionPlugin({
+        algorithm: "gzip",
       }),
     ],
     devtool: isProduction ? "source-map" : "inline-source-map",

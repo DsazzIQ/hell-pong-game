@@ -5,7 +5,7 @@ import Depth from '../constants/Depth';
 import TextureKey from '../constants/TextureKey';
 
 const SLIDER_SCALE = 2;
-export default class Slider {
+export default class Slider extends Phaser.GameObjects.GameObject {
   private readonly trackContainer: Phaser.GameObjects.Container;
   private readonly _container: Phaser.GameObjects.Container;
 
@@ -25,6 +25,8 @@ export default class Slider {
   private touchSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
 
   constructor(scene: Phaser.Scene, x, y, onValueChanged: (value: number) => void, startValue = 0) {
+    super(scene, 'Slider');
+
     this.onValueChanged = onValueChanged;
 
     this.touchSound = scene.sound.add(AudioKey.Touch);
