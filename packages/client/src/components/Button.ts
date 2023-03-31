@@ -3,7 +3,7 @@ import TweenBuilderConfig = Phaser.Types.Tweens.TweenBuilderConfig;
 import AudioKey from '../constants/AudioKey';
 import TextureKey from '../constants/TextureKey';
 
-export default class Button {
+export default class Button extends Phaser.GameObjects.GameObject {
   protected readonly sprite: Phaser.GameObjects.Sprite;
   protected onHoverColor: number;
   private shadow: Phaser.FX.Shadow;
@@ -12,6 +12,8 @@ export default class Button {
   private hoverSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
 
   constructor(scene: Phaser.Scene, x: number, y: number, frame: string, onClick: () => void, onHoverColor = 0xff0000) {
+    super(scene, 'Button');
+
     this.onHoverColor = onHoverColor;
 
     this.sprite = scene.add.sprite(x, y, TextureKey.Gui.Key, frame);
@@ -75,13 +77,12 @@ export default class Button {
     const scaleFactor = this.sprite.scale - 0.1;
     this.sprite.scene.tweens.add({
       targets: this.sprite,
-      scaleX: scaleFactor,
-      scaleY: scaleFactor,
+      scale: scaleFactor,
       duration: 100,
       ease: 'Power1',
       yoyo: true,
       onComplete: onClick
-    });
+    } as TweenBuilderConfig);
   }
 
   protected addAnimation(scene: Phaser.Scene, config: TweenBuilderConfig) {

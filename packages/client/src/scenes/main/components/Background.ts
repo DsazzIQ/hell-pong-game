@@ -2,8 +2,10 @@ import TextureKey from '../../../constants/TextureKey';
 import Game from '../../../Game';
 
 const BACKGROUND_LABEL = 'menu_bg_animation';
-export default class Background {
+export default class Background extends Phaser.GameObjects.GameObject {
   constructor(scene: Phaser.Scene) {
+    super(scene, 'MainBackground');
+
     const { centerX, centerY, canvas } = scene.game as Game;
 
     const background = scene.add.sprite(

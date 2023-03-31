@@ -2,14 +2,17 @@ import Phaser from 'phaser';
 
 import TextureKey from '../../../constants/TextureKey';
 import Game from '../../../Game';
+import TweenBuilderConfig = Phaser.Types.Tweens.TweenBuilderConfig;
 
 const GLOW_DISTANCE = 4;
 const GLOW_COLOR = 0xff0000;
 
-export default class Logo {
+export default class Logo extends Phaser.GameObjects.GameObject {
   private readonly sprite: Phaser.GameObjects.Sprite;
 
   constructor(scene: Phaser.Scene, onFinish: () => void) {
+    super(scene, 'Logo');
+
     const { centerX, centerY } = scene.game as Game;
     this.sprite = scene.add.sprite(centerX, centerY, TextureKey.Background.Key, TextureKey.Background.Frames.Logo);
     this.sprite.setOrigin(0.5).setAlpha(0);
@@ -29,7 +32,7 @@ export default class Logo {
           duration: 1000,
           ease: 'Linear',
           onComplete: onFinish
-        });
+        } as TweenBuilderConfig);
       });
     };
 
@@ -39,6 +42,6 @@ export default class Logo {
       duration: 1000,
       ease: 'Linear',
       onComplete: fadeOut
-    });
+    } as TweenBuilderConfig);
   }
 }
