@@ -1,21 +1,21 @@
-import Phaser from 'phaser';
-import TweenBuilderConfig = Phaser.Types.Tweens.TweenBuilderConfig;
+import { FX, GameObjects, Input, Scene, Sound, Types } from 'phaser';
+import TweenBuilderConfig = Types.Tweens.TweenBuilderConfig;
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
 
-import AudioKey from '../constants/AudioKey';
+import SoundKey from '../constants/SoundKey';
 import TextureKey from '../constants/TextureKey';
 
-export default class Button extends Phaser.GameObjects.GameObject {
-  public readonly container: Phaser.GameObjects.Container;
+export default class Button extends GameObjects.GameObject {
+  public readonly container: GameObjects.Container;
 
-  protected readonly sprite: Phaser.GameObjects.Sprite;
+  protected readonly sprite: GameObjects.Sprite;
   protected onHoverColor: number;
-  private shadow: Phaser.FX.Shadow;
+  private shadow: FX.Shadow;
 
-  private clickSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
-  private hoverSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
+  private clickSound: Sound.NoAudioSound | Sound.HTML5AudioSound | Sound.WebAudioSound;
+  private hoverSound: Sound.NoAudioSound | Sound.HTML5AudioSound | Sound.WebAudioSound;
 
-  constructor(scene: Phaser.Scene, position: IPosition, frame: string, onClick: () => void, onHoverColor = 0xff0000) {
+  constructor(scene: Scene, position: IPosition, frame: string, onClick: () => void, onHoverColor = 0xff0000) {
     super(scene, 'Button');
 
     this.container = scene.add.container(position.x, position.y);
@@ -29,14 +29,14 @@ export default class Button extends Phaser.GameObjects.GameObject {
     this.shadow = this.sprite.preFX.addShadow(0.5, 0, 0.15, 1, this.onHoverColor);
     this.stopShadow();
 
-    this.clickSound = scene.sound.add(AudioKey.ButtonClick);
-    this.hoverSound = scene.sound.add(AudioKey.ButtonHover);
+    this.clickSound = scene.sound.add(SoundKey.ButtonClick);
+    this.hoverSound = scene.sound.add(SoundKey.ButtonHover);
 
     this.sprite
       .setInteractive({ useHandCursor: true })
-      .on(Phaser.Input.Events.POINTER_OVER, () => this.onHoverState())
-      .on(Phaser.Input.Events.POINTER_OUT, () => this.onOutState())
-      .on(Phaser.Input.Events.POINTER_DOWN, () => this.onClick(onClick));
+      .on(Input.Events.POINTER_OVER, () => this.onHoverState())
+      .on(Input.Events.POINTER_OUT, () => this.onOutState())
+      .on(Input.Events.POINTER_DOWN, () => this.onClick(onClick));
   }
 
   public setOrigin(x?, y?) {
@@ -97,7 +97,7 @@ export default class Button extends Phaser.GameObjects.GameObject {
     } as TweenBuilderConfig);
   }
 
-  protected addAnimation(scene: Phaser.Scene, config: TweenBuilderConfig) {
+  protected addAnimation(scene: Scene, config: TweenBuilderConfig) {
     scene.tweens.add(config);
   }
 }

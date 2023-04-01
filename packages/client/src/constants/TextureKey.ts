@@ -48,6 +48,7 @@ const TextureKey = Object.freeze({
         Decline: 'icon/decline',
         Empty: 'icon/empty',
         Music: 'icon/music',
+        Sound: 'icon/sound',
         Return: 'icon/return',
         Setting: 'icon/setting'
       },

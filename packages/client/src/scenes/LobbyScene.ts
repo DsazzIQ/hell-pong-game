@@ -1,5 +1,5 @@
 import { IGameState, IRoomInfo } from '@hell-pong/shared/gameData/GameState';
-import Phaser from 'phaser';
+import { GameObjects, Scene } from 'phaser';
 import { Socket } from 'socket.io-client';
 
 import BackButton from '../components/BackButton';
@@ -7,18 +7,18 @@ import BitmapTextButton from '../components/BitmapTextButton';
 import GUIContainer, { ROW_OFFSET } from '../components/GUIContainer';
 import LavaBackground from '../components/LavaBackground';
 import TitleText from '../components/TitleText';
-import AudioKey from '../constants/AudioKey';
 import FontFamily from '../constants/FontFamily';
 import FontSize from '../constants/FontSize';
+import MusicKey from '../constants/MusicKey';
 import RegistryKey from '../constants/RegistryKey';
 import SceneKey from '../constants/SceneKey';
 import TextureKey from '../constants/TextureKey';
 import Game from '../Game';
 
-export default class LobbyScene extends Phaser.Scene {
+export default class LobbyScene extends Scene {
   private socket!: Socket;
   private background: LavaBackground;
-  private roomsContainer!: Phaser.GameObjects.Container;
+  private roomsContainer!: GameObjects.Container;
 
   constructor() {
     super(SceneKey.Lobby);
@@ -26,16 +26,14 @@ export default class LobbyScene extends Phaser.Scene {
 
   public init(): void {
     this.socket = this.registry.get<Socket>(RegistryKey.Socket);
-
-    this.sound.add(AudioKey.SecondaryTheme);
   }
 
   playTheme() {
-    this.sound.get(AudioKey.SecondaryTheme).play({ loop: true });
+    this.sound.get(MusicKey.SecondaryTheme).play({ loop: true });
   }
 
   stopTheme() {
-    this.sound.get(AudioKey.SecondaryTheme).stop();
+    this.sound.get(MusicKey.SecondaryTheme).stop();
   }
 
   create() {

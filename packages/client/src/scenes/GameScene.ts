@@ -9,7 +9,7 @@ import {
 import { Position } from '@hell-pong/shared/entities/component/Position';
 import GameState, { IGameState } from '@hell-pong/shared/gameData/GameState';
 import { IPlayer, PlayerIndex, PlayerMove } from '@hell-pong/shared/gameData/Player';
-import Phaser from 'phaser';
+import { GameObjects, Physics, Scene, Types } from 'phaser';
 import { Socket } from 'socket.io-client';
 import { Pane } from 'tweakpane';
 
@@ -26,17 +26,17 @@ const MAX_BUFFER_SIZE = 5;
 interface GamePlayer {
   id: string;
   index: PlayerIndex;
-  paddle: Phaser.Physics.Matter.Image;
+  paddle: Physics.Matter.Image;
 }
-export default class GameScene extends Phaser.Scene {
+export default class GameScene extends Scene {
   private roomId!: string;
   private initData!: IGameState;
 
-  private ball!: Phaser.Physics.Matter.Image;
+  private ball!: Physics.Matter.Image;
   private players: GamePlayer[] = [];
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+  private cursors!: Types.Input.Keyboard.CursorKeys;
 
-  private playersScoreText!: Phaser.GameObjects.Text;
+  private playersScoreText!: GameObjects.Text;
 
   private socket!: Socket;
 

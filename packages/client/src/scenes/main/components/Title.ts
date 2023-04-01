@@ -1,11 +1,13 @@
+import { GameObjects, Math, Scene, Types } from 'phaser';
+
 import TextureKey from '../../../constants/TextureKey';
 import Game from '../../../Game';
-import TweenBuilderConfig = Phaser.Types.Tweens.TweenBuilderConfig;
+import TweenBuilderConfig = Types.Tweens.TweenBuilderConfig;
 
 const TITLE_TOP_SHIFT = 0.35;
 const TITLE_SCALE = 1.5;
-export default class Title extends Phaser.GameObjects.GameObject {
-  constructor(scene: Phaser.Scene) {
+export default class Title extends GameObjects.GameObject {
+  constructor(scene: Scene) {
     super(scene, 'MainTitle');
 
     const { centerX, centerY } = scene.game as Game;
@@ -19,7 +21,7 @@ export default class Title extends Phaser.GameObjects.GameObject {
       targets: title,
       y: centerY * TITLE_TOP_SHIFT,
       duration: 1000,
-      ease: Phaser.Math.Easing.Bounce.Out,
+      ease: Math.Easing.Bounce.Out,
       delay: 200
     } as TweenBuilderConfig);
   }

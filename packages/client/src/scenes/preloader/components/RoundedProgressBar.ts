@@ -16,9 +16,8 @@ export default class RoundedProgressBar extends LineProgress {
   constructor(scene) {
     const { centerX, centerY } = scene.game as Game;
     super(scene, {
-      valuechangeCallback(newValue) {
-        console.log(`[Progress] ${newValue}%`);
-      },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars,@typescript-eslint/no-empty-function
+      valuechangeCallback(newValue) {},
       x: centerX,
       y: centerY,
       width: PROGRESS_BOX_WIDTH,

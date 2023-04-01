@@ -1,5 +1,6 @@
 export enum SettingType {
-  Volume = 'volume'
+  SoundVolume = 'SoundVolume',
+  MusicVolume = 'MusicVolume'
 }
 
 export abstract class Setting<T> {

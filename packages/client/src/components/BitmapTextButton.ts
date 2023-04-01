@@ -1,14 +1,15 @@
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
+import { GameObjects, Scene } from 'phaser';
 
 import FontFamily from '../constants/FontFamily';
 import FontSize from '../constants/FontSize';
 import Button from './Button';
 
 export default class BitmapTextButton extends Button {
-  protected text: Phaser.GameObjects.BitmapText;
+  protected text: GameObjects.BitmapText;
 
   constructor(
-    scene: Phaser.Scene,
+    scene: Scene,
     position: IPosition,
     frame: string,
     textConfig: { text: string; fontSize: FontSize },

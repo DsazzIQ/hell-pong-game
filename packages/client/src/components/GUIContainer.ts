@@ -1,5 +1,6 @@
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
 import { ISize } from '@hell-pong/shared/entities/component/Size';
+import { GameObjects, Scene } from 'phaser';
 
 import Depth from '../constants/Depth';
 import TextureKey from '../constants/TextureKey';
@@ -19,11 +20,11 @@ const GUI_SCALE = 2.5;
 export const ROW_OFFSET = { x: 20, y: 20 };
 const INNER_BOX_TOP_LEFT: IPosition = { x: 60, y: 140 };
 
-export default class GUIContainer extends Phaser.GameObjects.GameObject {
-  private guiContainer: Phaser.GameObjects.Container;
-  private container: Phaser.GameObjects.Container;
+export default class GUIContainer extends GameObjects.GameObject {
+  private guiContainer: GameObjects.Container;
+  private container: GameObjects.Container;
 
-  constructor(scene: Phaser.Scene) {
+  constructor(scene: Scene) {
     super(scene, 'GUIContainer');
 
     const { config } = scene.game as Game;
@@ -40,11 +41,11 @@ export default class GUIContainer extends Phaser.GameObjects.GameObject {
     this.container = scene.add.container(INNER_BOX_TOP_LEFT.x, INNER_BOX_TOP_LEFT.y);
   }
 
-  public addToContainer(objects: Phaser.GameObjects.GameObject[]) {
+  public addToContainer(objects: GameObjects.GameObject[]) {
     this.container.add(objects);
   }
 
-  private createCornerFragments(scene: Phaser.Scene, width: number, height: number): Phaser.GameObjects.Image[] {
+  private createCornerFragments(scene: Scene, width: number, height: number): GameObjects.Image[] {
     const topLeft = this.createFragment(scene, {
       frame: TextureKey.Gui.Frames.Backstage.TopLeft,
       position: { x: GUI_MARGIN.x, y: GUI_MARGIN.y },
@@ -77,11 +78,11 @@ export default class GUIContainer extends Phaser.GameObjects.GameObject {
   }
 
   private createCrossFragments(
-    scene: Phaser.Scene,
+    scene: Scene,
     width: number,
     height: number,
-    [topLeft, topRight, bottomLeft, bottomRight]: Phaser.GameObjects.Image[]
-  ): Phaser.GameObjects.Image[] {
+    [topLeft, topRight, bottomLeft, bottomRight]: GameObjects.Image[]
+  ): GameObjects.Image[] {
     const top = this.createFragment(scene, {
       frame: TextureKey.Gui.Frames.Backstage.Top,
       position: { x: topLeft.getTopRight().x, y: GUI_MARGIN.y },
@@ -128,10 +129,7 @@ export default class GUIContainer extends Phaser.GameObjects.GameObject {
     return [top, bottom, left, right];
   }
 
-  private createCenterFragment(
-    scene: Phaser.Scene,
-    [top, , left]: Phaser.GameObjects.Image[]
-  ): Phaser.GameObjects.Image {
+  private createCenterFragment(scene: Scene, [top, , left]: GameObjects.Image[]): GameObjects.Image {
     return this.createFragment(scene, {
       frame: TextureKey.Gui.Frames.Backstage.Center,
       position: { x: left.getTopRight().x, y: top.getBottomLeft().y },
@@ -140,10 +138,7 @@ export default class GUIContainer extends Phaser.GameObjects.GameObject {
     });
   }
 
-  private createFragment(
-    scene: Phaser.Scene,
-    { position, frame, origin, display, scale }: GUIFragment
-  ): Phaser.GameObjects.Image {
+  private createFragment(scene: Scene, { position, frame, origin, display, scale }: GUIFragment): GameObjects.Image {
     const fragment = scene.add.image(position.x, position.y, TextureKey.Gui.Key, frame).setOrigin(origin.x, origin.y);
     if (display) {
       fragment.setDisplaySize(display.width, display.height);
