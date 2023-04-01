@@ -1,19 +1,15 @@
-import Phaser from 'phaser';
+import { Scene } from 'phaser';
 
-import AudioKey from '../../constants/AudioKey';
+import MusicKey from '../../constants/MusicKey';
 import SceneKey from '../../constants/SceneKey';
 import Game from '../../Game';
 import Background from './components/Background';
 import MenuButton from './components/MenuButton';
 import Title from './components/Title';
 
-class MainScene extends Phaser.Scene {
+class MainScene extends Scene {
   constructor() {
     super(SceneKey.Main);
-  }
-
-  init() {
-    this.sound.add(AudioKey.MainTheme);
   }
 
   create() {
@@ -25,11 +21,11 @@ class MainScene extends Phaser.Scene {
   }
 
   playTheme() {
-    this.sound.get(AudioKey.MainTheme).play({ loop: true });
+    this.sound.get(MusicKey.MainTheme).play({ loop: true });
   }
 
   stopTheme() {
-    this.sound.get(AudioKey.MainTheme).stop();
+    this.sound.get(MusicKey.MainTheme).stop();
   }
 
   initButtons() {

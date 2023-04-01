@@ -1,13 +1,9 @@
-enum SoundKey {
+enum MusicKey {
   MainTheme = 'MainTheme',
   SecondaryTheme = 'SecondaryTheme',
-  SplashLogo = 'SplashLogo',
-  ButtonClick = 'ButtonClick',
-  ButtonHover = 'ButtonHover',
-  ChangeSelection = 'ChangeSelection',
-  Touch = 'Touch',
-  StartGame = 'StartGame',
-  PaddleHit = 'PaddleHit',
-  BallHit = 'BallHit'
+  SplashLogo = 'SplashLogo'
 }
-export default SoundKey;
+export function isMusicKey(key: string): boolean {
+  return Object.values(MusicKey).includes(key);
+}
+export default MusicKey;

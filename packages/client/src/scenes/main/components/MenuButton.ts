@@ -1,4 +1,5 @@
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
+import { Math, Scene } from 'phaser';
 
 import BitmapTextButton from '../../../components/BitmapTextButton';
 import FontSize from '../../../constants/FontSize';
@@ -7,7 +8,7 @@ import Game from '../../../Game';
 
 const BUTTON_SCALE = 2;
 export default class MenuButton extends BitmapTextButton {
-  constructor(scene: Phaser.Scene, position: IPosition, text: string, onClick: () => void) {
+  constructor(scene: Scene, position: IPosition, text: string, onClick: () => void) {
     super(
       scene,
       position,
@@ -21,7 +22,7 @@ export default class MenuButton extends BitmapTextButton {
       targets: this.container,
       x: (scene.game as Game).centerX,
       duration: 500,
-      ease: Phaser.Math.Easing.Linear
+      ease: Math.Easing.Linear
     });
   }
 }

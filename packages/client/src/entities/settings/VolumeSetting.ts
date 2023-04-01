@@ -8,8 +8,8 @@ enum Value {
 export class VolumeSetting extends Setting<number> {
   private readonly onUpdateVolume: (volume: number) => void;
 
-  constructor(onUpdateVolume: (volume: number) => void) {
-    super(SettingType.Volume, Value.Default);
+  constructor(type: SettingType, onUpdateVolume: (volume: number) => void) {
+    super(type, Value.Default);
     this.onUpdateVolume = onUpdateVolume;
     this.apply();
   }

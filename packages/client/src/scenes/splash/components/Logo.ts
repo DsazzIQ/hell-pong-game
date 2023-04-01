@@ -1,16 +1,16 @@
-import Phaser from 'phaser';
+import { GameObjects, Scene, Types } from 'phaser';
 
 import TextureKey from '../../../constants/TextureKey';
 import Game from '../../../Game';
-import TweenBuilderConfig = Phaser.Types.Tweens.TweenBuilderConfig;
+import TweenBuilderConfig = Types.Tweens.TweenBuilderConfig;
 
 const GLOW_DISTANCE = 4;
 const GLOW_COLOR = 0xff0000;
 
-export default class Logo extends Phaser.GameObjects.GameObject {
-  private readonly sprite: Phaser.GameObjects.Sprite;
+export default class Logo extends GameObjects.GameObject {
+  private readonly sprite: GameObjects.Sprite;
 
-  constructor(scene: Phaser.Scene, onFinish: () => void) {
+  constructor(scene: Scene, onFinish: () => void) {
     super(scene, 'Logo');
 
     const { centerX, centerY } = scene.game as Game;

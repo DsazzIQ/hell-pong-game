@@ -1,16 +1,18 @@
+import { Scene } from 'phaser';
 import io, { Socket } from 'socket.io-client';
 
-import AudioKey from '../../constants/AudioKey';
 import FontFamily from '../../constants/FontFamily';
+import MusicKey from '../../constants/MusicKey';
 import RegistryKey from '../../constants/RegistryKey';
 import SceneKey from '../../constants/SceneKey';
+import SoundKey from '../../constants/SoundKey';
 import TextureKey from '../../constants/TextureKey';
 import { SettingsController } from '../../entities/settings/SettingsController';
 import Game from '../../Game';
 import RoundedProgressBar from './components/RoundedProgressBar';
 const SOCKET_URL = 'http://localhost:3000';
 
-export default class PreloaderScene extends Phaser.Scene {
+export default class PreloaderScene extends Scene {
   private lineProgress: RoundedProgressBar;
 
   constructor() {
@@ -44,8 +46,12 @@ export default class PreloaderScene extends Phaser.Scene {
   }
 
   private initRegistry(socket: Socket) {
+    this.registerAudios();
+
     this.registry.set(RegistryKey.Socket, socket);
-    this.registry.set(RegistryKey.SettingsController, new SettingsController(this.game as Game));
+
+    const settings = new SettingsController(this.game as Game);
+    this.registry.set(RegistryKey.SettingsController, settings);
   }
 
   private loadTextures() {
@@ -54,16 +60,30 @@ export default class PreloaderScene extends Phaser.Scene {
   }
 
   private loadAudios() {
-    this.load.audio(AudioKey.MainTheme, 'assets/sounds/main_theme.ogg');
-    this.load.audio(AudioKey.SecondaryTheme, 'assets/sounds/secondary_theme.mp3');
-    this.load.audio(AudioKey.SplashLogo, 'assets/sounds/splash.mp3');
-    this.load.audio(AudioKey.ButtonClick, 'assets/sounds/button_click.wav');
-    this.load.audio(AudioKey.ButtonHover, 'assets/sounds/button_hover.wav');
-    this.load.audio(AudioKey.ChangeSelection, 'assets/sounds/change_selection.wav');
-    this.load.audio(AudioKey.Touch, 'assets/sounds/touch.wav');
-    this.load.audio(AudioKey.StartGame, 'assets/sounds/start_game.mp3');
-    this.load.audio(AudioKey.PaddleHit, 'assets/sounds/paddle_hit.wav');
-    this.load.audio(AudioKey.BallHit, 'assets/sounds/ball_hit.wav');
+    this.load.audio(MusicKey.MainTheme, 'assets/sounds/main_theme.mp3');
+    this.load.audio(MusicKey.SecondaryTheme, 'assets/sounds/secondary_theme.mp3');
+    this.load.audio(MusicKey.SplashLogo, 'assets/sounds/splash.mp3');
+
+    this.load.audio(SoundKey.ButtonClick, 'assets/sounds/button_click.mp3');
+    this.load.audio(SoundKey.ButtonHover, 'assets/sounds/button_hover.mp3');
+    this.load.audio(SoundKey.ChangeSelection, 'assets/sounds/change_selection.mp3');
+    this.load.audio(SoundKey.Touch, 'assets/sounds/touch.mp3');
+    this.load.audio(SoundKey.StartGame, 'assets/sounds/start_game.mp3');
+    this.load.audio(SoundKey.PaddleHit, 'assets/sounds/paddle_hit.mp3');
+    this.load.audio(SoundKey.BallHit, 'assets/sounds/ball_hit.mp3');
+  }
+
+  private registerAudios() {
+    this.sound.add(MusicKey.MainTheme);
+    this.sound.add(MusicKey.SecondaryTheme);
+    this.sound.add(MusicKey.SplashLogo);
+    this.sound.add(SoundKey.ButtonClick);
+    this.sound.add(SoundKey.ButtonHover);
+    this.sound.add(SoundKey.ChangeSelection);
+    this.sound.add(SoundKey.Touch);
+    this.sound.add(SoundKey.StartGame);
+    this.sound.add(SoundKey.PaddleHit);
+    this.sound.add(SoundKey.BallHit);
   }
 
   private loadFonts() {

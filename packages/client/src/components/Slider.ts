@@ -1,36 +1,37 @@
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
 import { ISize, Size } from '@hell-pong/shared/entities/component/Size';
+import { GameObjects, Geom, Input, Math, Scene, Sound } from 'phaser';
 
-import AudioKey from '../constants/AudioKey';
 import Depth from '../constants/Depth';
+import SoundKey from '../constants/SoundKey';
 import TextureKey from '../constants/TextureKey';
 
 const SLIDER_SCALE = 2;
-export default class Slider extends Phaser.GameObjects.GameObject {
-  private readonly trackContainer: Phaser.GameObjects.Container;
-  private readonly _container: Phaser.GameObjects.Container;
+export default class Slider extends GameObjects.GameObject {
+  private readonly trackContainer: GameObjects.Container;
+  private readonly _container: GameObjects.Container;
 
   private value: number;
 
-  private trackLeft: Phaser.GameObjects.Image;
-  private trackCenter: Phaser.GameObjects.Image;
-  private trackRight: Phaser.GameObjects.Image;
+  private trackLeft: GameObjects.Image;
+  private trackCenter: GameObjects.Image;
+  private trackRight: GameObjects.Image;
   private trackSize: Size;
 
-  private thumb: Phaser.GameObjects.Image;
+  private thumb: GameObjects.Image;
 
   private readonly onValueChanged: (value: number) => void;
-  private arrowLeft: Phaser.GameObjects.Image;
-  private arrowRight: Phaser.GameObjects.Image;
+  private arrowLeft: GameObjects.Image;
+  private arrowRight: GameObjects.Image;
 
-  private touchSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
+  private touchSound: Sound.NoAudioSound | Sound.HTML5AudioSound | Sound.WebAudioSound;
 
-  constructor(scene: Phaser.Scene, position: IPosition, onValueChanged: (value: number) => void, startValue = 0) {
+  constructor(scene: Scene, position: IPosition, onValueChanged: (value: number) => void, startValue = 0) {
     super(scene, 'Slider');
 
     this.onValueChanged = onValueChanged;
 
-    this.touchSound = scene.sound.add(AudioKey.Touch);
+    this.touchSound = scene.sound.add(SoundKey.Touch);
 
     this.trackContainer = scene.add.container(0, 0);
     this._container = scene.add.container(position.x, position.y).setDepth(Depth.Base).setScale(SLIDER_SCALE);
@@ -59,7 +60,7 @@ export default class Slider extends Phaser.GameObjects.GameObject {
     return this._container;
   }
 
-  private initializeTrack(scene: Phaser.Scene) {
+  private initializeTrack(scene: Scene) {
     this.trackLeft = scene.add.image(0, 0, TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.TrackLeft);
     this.trackLeft.setOrigin(0, 0.5);
     this.trackContainer.add(this.trackLeft);
@@ -76,7 +77,7 @@ export default class Slider extends Phaser.GameObjects.GameObject {
     this.initTrackPosition();
   }
 
-  private initLeftArrow(scene: Phaser.Scene) {
+  private initLeftArrow(scene: Scene) {
     this.arrowLeft = scene.add.image(
       this.trackContainer.x - this.trackSize.widthCenter,
       this.trackContainer.y,
@@ -87,7 +88,7 @@ export default class Slider extends Phaser.GameObjects.GameObject {
     this._container.add(this.arrowLeft);
   }
 
-  private initRightArrow(scene: Phaser.Scene) {
+  private initRightArrow(scene: Scene) {
     this.arrowRight = scene.add.image(
       this.trackContainer.x + this.trackSize.widthCenter,
       this.trackContainer.y,
@@ -108,7 +109,7 @@ export default class Slider extends Phaser.GameObjects.GameObject {
     this.trackRight.x = this.trackCenter.x + this.trackCenter.width;
   }
 
-  private initializeThumb(scene: Phaser.Scene) {
+  private initializeThumb(scene: Scene) {
     this.thumb = scene.add.image(0, 0, TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.ThumbOut);
     this.thumb.setOrigin(0.5, 0.5);
 
@@ -122,13 +123,13 @@ export default class Slider extends Phaser.GameObjects.GameObject {
   private setInteractiveArea() {
     this.trackContainer.setInteractive({
       draggable: true,
-      hitArea: new Phaser.Geom.Rectangle(
+      hitArea: new Geom.Rectangle(
         -this.trackSize.widthCenter,
         -this.trackSize.heightCenter,
         this.trackSize.width,
         this.trackSize.height
       ),
-      hitAreaCallback: Phaser.Geom.Rectangle.Contains,
+      hitAreaCallback: Geom.Rectangle.Contains,
       useHandCursor: true
     });
   }
@@ -141,27 +142,22 @@ export default class Slider extends Phaser.GameObjects.GameObject {
     this.thumb.setTexture(TextureKey.Gui.Key, TextureKey.Gui.Frames.Slider.ThumbIn);
   }
 
-  private registerArrowEventHandlers(
-    arrow: Phaser.GameObjects.Image,
-    frameIn: string,
-    frameOut: string,
-    onClick: () => void
-  ) {
-    arrow.on(Phaser.Input.Events.POINTER_DOWN, () => {
+  private registerArrowEventHandlers(arrow: GameObjects.Image, frameIn: string, frameOut: string, onClick: () => void) {
+    arrow.on(Input.Events.POINTER_DOWN, () => {
       this.playTouch();
       arrow.setTexture(TextureKey.Gui.Key, frameIn);
       onClick();
     });
 
-    arrow.on(Phaser.Input.Events.POINTER_UP, () => {
+    arrow.on(Input.Events.POINTER_UP, () => {
       arrow.setTexture(TextureKey.Gui.Key, frameOut);
     });
 
-    arrow.on(Phaser.Input.Events.POINTER_OVER, () => {
+    arrow.on(Input.Events.POINTER_OVER, () => {
       arrow.setTexture(TextureKey.Gui.Key, frameIn);
     });
 
-    arrow.on(Phaser.Input.Events.POINTER_OUT, () => {
+    arrow.on(Input.Events.POINTER_OUT, () => {
       arrow.setTexture(TextureKey.Gui.Key, frameOut);
     });
   }
@@ -182,18 +178,18 @@ export default class Slider extends Phaser.GameObjects.GameObject {
     );
   }
 
-  private registerThumbEventHandlers(scene: Phaser.Scene) {
-    scene.input.on(Phaser.Input.Events.POINTER_UP, () => {
+  private registerThumbEventHandlers(scene: Scene) {
+    scene.input.on(Input.Events.POINTER_UP, () => {
       this.playTouch();
       this.setThumbOutFrame();
     });
 
-    this.trackContainer.on(Phaser.Input.Events.DRAG, ({ worldX }) => {
+    this.trackContainer.on(Input.Events.DRAG, ({ worldX }) => {
       this.setThumbInFrame();
       this.updateThumbPosition(this.worldToLocalX(worldX));
     });
 
-    this.trackContainer.on(Phaser.Input.Events.POINTER_DOWN, ({ worldX }) => {
+    this.trackContainer.on(Input.Events.POINTER_DOWN, ({ worldX }) => {
       this.playTouch();
       this.setThumbInFrame();
       this.updateThumbPosition(this.worldToLocalX(worldX));
@@ -209,16 +205,16 @@ export default class Slider extends Phaser.GameObjects.GameObject {
   }
 
   private updateThumbPosition(x: number) {
-    const clampedX = Phaser.Math.Clamp(x, this.leftDraggableBorder, this.rightDraggableBorder);
+    const clampedX = Math.Clamp(x, this.leftDraggableBorder, this.rightDraggableBorder);
     this.thumb.x = clampedX;
 
-    this.value = Phaser.Math.Percent(clampedX - this.leftDraggableBorder, 0, this.trackSize.width - this.thumb.width);
+    this.value = Math.Percent(clampedX - this.leftDraggableBorder, 0, this.trackSize.width - this.thumb.width);
     this.onValueChanged(this.value);
   }
 
   private setValue(value) {
-    this.value = Phaser.Math.Clamp(value, 0, 1);
-    this.thumb.x = Phaser.Math.Linear(this.leftDraggableBorder, this.rightDraggableBorder, this.value);
+    this.value = Math.Clamp(value, 0, 1);
+    this.thumb.x = Math.Linear(this.leftDraggableBorder, this.rightDraggableBorder, this.value);
     this.onValueChanged(this.value);
   }
 

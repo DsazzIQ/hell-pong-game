@@ -1,14 +1,32 @@
+import { Sound } from 'phaser';
+
+import { isMusicKey } from '../../constants/MusicKey';
+import { isSoundKey } from '../../constants/SoundKey';
 import Game from '../../Game';
+import { SettingType } from './Setting';
 import { VolumeSetting } from './VolumeSetting';
 
 export class SettingsController {
-  private readonly volumeSetting: VolumeSetting;
+  public readonly soundVolume: VolumeSetting;
+  public readonly musicVolume: VolumeSetting;
 
   constructor(game: Game) {
-    this.volumeSetting = new VolumeSetting((volume: number) => (game.sound.volume = volume));
-  }
+    this.soundVolume = new VolumeSetting(SettingType.SoundVolume, (volume: number) =>
+      game.sound.getAll('').map((sound: Sound.BaseSound) => {
+        const current = sound as Sound.WebAudioSound;
+        if (current && isSoundKey(sound.key)) {
+          current.setVolume(volume);
+        }
+      })
+    );
 
-  getVolumeSetting(): VolumeSetting {
-    return this.volumeSetting;
+    this.musicVolume = new VolumeSetting(SettingType.MusicVolume, (volume: number) =>
+      game.sound.getAll('').map((sound: Sound.BaseSound) => {
+        const current = sound as Sound.WebAudioSound;
+        if (isMusicKey(sound.key)) {
+          current.setVolume(volume);
+        }
+      })
+    );
   }
 }
