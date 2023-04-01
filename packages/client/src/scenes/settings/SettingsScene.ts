@@ -64,7 +64,7 @@ export default class SettingsScene extends Phaser.Scene {
     );
     slider.container.setPosition(musicIcon.x + musicIcon.width + slider.size.width, musicIcon.y);
 
-    return slider;
+    return slider.container;
   }
 
   private createVolumeRow(): Phaser.GameObjects.GameObject[] {
