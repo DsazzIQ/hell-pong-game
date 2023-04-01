@@ -1,4 +1,4 @@
-enum AudioKey {
+enum SoundKey {
   MainTheme = 'MainTheme',
   SecondaryTheme = 'SecondaryTheme',
   SplashLogo = 'SplashLogo',
@@ -10,4 +10,4 @@ enum AudioKey {
   PaddleHit = 'PaddleHit',
   BallHit = 'BallHit'
 }
-export default AudioKey;
+export default SoundKey;
