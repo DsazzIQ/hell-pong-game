@@ -10,6 +10,7 @@ import TextureKey from '../../constants/TextureKey';
 import { SettingsController } from '../../entities/settings/SettingsController';
 import Game from '../../Game';
 
+const OFFSET_SETTING_ROW = { x: 140 };
 export default class SettingsScene extends Phaser.Scene {
   private settingsController: SettingsController;
 
@@ -52,7 +53,7 @@ export default class SettingsScene extends Phaser.Scene {
 
   private createVolumeRow(): Phaser.GameObjects.GameObject[] {
     const musicIcon = this.add
-      .image(ROW_OFFSET.x, ROW_OFFSET.y, TextureKey.Gui.Key, TextureKey.Gui.Frames.Icon.Music)
+      .image(ROW_OFFSET.x + OFFSET_SETTING_ROW.x, ROW_OFFSET.y, TextureKey.Gui.Key, TextureKey.Gui.Frames.Icon.Music)
       .setOrigin(0.5);
     const iconMatrix = musicIcon.preFX.addColorMatrix();
 

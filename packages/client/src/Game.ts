@@ -9,7 +9,7 @@ export default class Game extends Phaser.Game {
     this.centerY = config.height * 0.5;
   }
 
-  startTransition(fromScene: Phaser.Scene, sceneName: string, duration = 500) {
+  startTransition(fromScene: Phaser.Scene, sceneName: string, data?: unknown, duration = 500) {
     fromScene.cameras.main.fadeOut(duration, 0, 0, 0, (_, progress: number) => {
       const animationFinished = progress === 1;
       if (!animationFinished) return;
@@ -17,7 +17,8 @@ export default class Game extends Phaser.Game {
       fromScene.scene.transition({
         target: sceneName,
         duration: duration,
-        moveAbove: true
+        moveAbove: true,
+        data
       });
       fromScene.scene.stop();
     });

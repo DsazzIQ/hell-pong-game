@@ -1,7 +1,7 @@
 import io, { Socket } from 'socket.io-client';
 
 import AudioKey from '../../constants/AudioKey';
-import FontKey from '../../constants/FontKey';
+import FontFamily from '../../constants/FontFamily';
 import RegistryKey from '../../constants/RegistryKey';
 import SceneKey from '../../constants/SceneKey';
 import TextureKey from '../../constants/TextureKey';
@@ -67,8 +67,8 @@ export default class PreloaderScene extends Phaser.Scene {
   }
 
   private loadFonts() {
-    this.loadFont(FontKey.Text, 'assets/fonts/rexlia.otf');
-    this.load.bitmapFont(FontKey.Retro, 'assets/fonts/retro.png', 'assets/fonts/retro.xml');
+    this.loadFont(FontFamily.Text, 'assets/fonts/rexlia.otf');
+    this.load.bitmapFont(FontFamily.Retro, 'assets/fonts/retro.png', 'assets/fonts/retro.xml');
   }
 
   private loadFont(name: string, url: string) {

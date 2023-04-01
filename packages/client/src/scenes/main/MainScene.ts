@@ -34,12 +34,12 @@ class MainScene extends Phaser.Scene {
 
   initButtons() {
     const { centerY, config, startTransition } = this.game as Game;
-    new MenuButton(this, 0, centerY, 'start', () => {
+    new MenuButton(this, { x: 0, y: centerY }, 'start', () => {
       this.stopTheme();
       startTransition(this, SceneKey.Lobby);
     });
 
-    new MenuButton(this, config.width as number, centerY * 1.2, 'settings', () => {
+    new MenuButton(this, { x: config.width as number, y: centerY * 1.2 }, 'settings', () => {
       this.stopTheme();
       startTransition(this, SceneKey.Settings);
     });

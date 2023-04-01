@@ -3,14 +3,21 @@ import Phaser from 'phaser';
 import { Socket } from 'socket.io-client';
 
 import BackButton from '../components/BackButton';
+import BitmapTextButton from '../components/BitmapTextButton';
+import GUIContainer, { ROW_OFFSET } from '../components/GUIContainer';
+import LavaBackground from '../components/LavaBackground';
+import TitleText from '../components/TitleText';
 import AudioKey from '../constants/AudioKey';
+import FontFamily from '../constants/FontFamily';
+import FontSize from '../constants/FontSize';
 import RegistryKey from '../constants/RegistryKey';
 import SceneKey from '../constants/SceneKey';
+import TextureKey from '../constants/TextureKey';
 import Game from '../Game';
-import GameScene from './GameScene';
 
 export default class LobbyScene extends Phaser.Scene {
   private socket!: Socket;
+  private background: LavaBackground;
   private roomsContainer!: Phaser.GameObjects.Container;
 
   constructor() {
@@ -32,39 +39,70 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   create() {
+    const { startTransition } = this.game as Game;
     this.playTheme();
 
     new BackButton(this, () => {
       this.stopTheme();
-      (this.game as Game).startTransition(this, SceneKey.Main);
+      startTransition(this, SceneKey.Main);
     });
+    new TitleText(this, 'lobby');
 
-    this.add.text(80, 50, `YOUR ID: ${this.socket.id}`, {
-      fontSize: '25px',
-      color: '#FFF'
-    });
-
-    const createRoomBtn = this.add.text(100, 100, 'Create Room', {
-      fontSize: '32px',
-      color: '#FFF'
-    });
-    createRoomBtn.setInteractive();
-    createRoomBtn.on('pointerdown', () => {
-      this.socket.emit('createRoom');
-    });
+    this.background = new LavaBackground(this);
+    this.initGUI();
 
     this.roomsContainer = this.add.container(100, 200);
     this.socket.on('roomListUpdate', (rooms: IRoomInfo[]) => this.updateRoomList(rooms));
     this.socket.emit('getRooms');
     this.socket.on('startGame', (state: IGameState) => {
-      // Perform actions after joining the room, such as transitioning to another scene
-      this.scene.start<GameScene>(SceneKey.Game, state);
-      // this.startTransition("Game");
+      startTransition(this, SceneKey.Game, state);
     });
   }
 
+  private initGUI() {
+    const gui = new GUIContainer(this);
+    gui.addToContainer(this.initIdNameTitle());
+    gui.addToContainer([this.initCreateRoomButton()]);
+  }
+
+  private initIdNameTitle() {
+    const title = this.add
+      .bitmapText(ROW_OFFSET.x, ROW_OFFSET.y, FontFamily.Retro, `YOUR ID`, FontSize.Text)
+      .setOrigin(0, 1);
+
+    const ID_OFFSET = { x: 10, y: -5 };
+    const id = this.add
+      .text(title.x + title.width + ID_OFFSET.x, title.y + ID_OFFSET.y, this.socket.id, {
+        fontFamily: FontFamily.Text,
+        fontSize: FontSize.SmallText
+      })
+      .setOrigin(0, 1);
+
+    return [title, id];
+  }
+
+  private initCreateRoomButton() {
+    const BUTTON_OFFSET = { y: 30 };
+    const createRoomButton = new BitmapTextButton(
+      this,
+      { x: ROW_OFFSET.x, y: ROW_OFFSET.y + BUTTON_OFFSET.y },
+      TextureKey.Gui.Frames.Button.Main,
+      {
+        text: 'Create Room',
+        fontSize: FontSize.ExtraSmallText
+      },
+      1.2,
+      () => {
+        this.socket.emit('createRoom');
+      }
+    );
+    createRoomButton.setOrigin(0, 1).setTextOrigin(-0.2, 1.75);
+
+    return createRoomButton.container;
+  }
+
   updateRoomList(rooms: IRoomInfo[]) {
-    this.roomsContainer.removeAll();
+    this.roomsContainer.removeAll(true);
 
     rooms.forEach((room: IRoomInfo, index: number) => {
       const roomInfo = this.add.text(
@@ -120,5 +158,9 @@ export default class LobbyScene extends Phaser.Scene {
     setTimeout(() => {
       errorMessage.destroy();
     }, 3000);
+  }
+
+  update() {
+    this.background.move();
   }
 }
