@@ -51,12 +51,7 @@ export default class SettingsScene extends Phaser.Scene {
     gui.addToContainer(this.createVolumeRow());
   }
 
-  private createVolumeRow(): Phaser.GameObjects.GameObject[] {
-    const musicIcon = this.add
-      .image(ROW_OFFSET.x + OFFSET_SETTING_ROW.x, ROW_OFFSET.y, TextureKey.Gui.Key, TextureKey.Gui.Frames.Icon.Music)
-      .setOrigin(0.5);
-    const iconMatrix = musicIcon.preFX.addColorMatrix();
-
+  private createVolumeSlider(musicIcon: Phaser.GameObjects.Image, iconMatrix: Phaser.FX.ColorMatrix) {
     const slider = new Slider(
       this,
       0,
@@ -70,7 +65,16 @@ export default class SettingsScene extends Phaser.Scene {
     );
     slider.container.setPosition(musicIcon.x + musicIcon.width + slider.size.width, musicIcon.y);
 
-    return [musicIcon, slider.container];
+    return slider;
+  }
+
+  private createVolumeRow(): Phaser.GameObjects.GameObject[] {
+    const musicIcon = this.add
+      .image(ROW_OFFSET.x + OFFSET_SETTING_ROW.x, ROW_OFFSET.y, TextureKey.Gui.Key, TextureKey.Gui.Frames.Icon.Music)
+      .setOrigin(0.5);
+    const iconMatrix = musicIcon.preFX.addColorMatrix();
+
+    return [musicIcon, this.createVolumeSlider(musicIcon, iconMatrix)];
   }
 
   update() {
