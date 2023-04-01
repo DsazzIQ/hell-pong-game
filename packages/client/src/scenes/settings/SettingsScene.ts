@@ -54,8 +54,7 @@ export default class SettingsScene extends Phaser.Scene {
   private createVolumeSlider(musicIcon: Phaser.GameObjects.Image, iconMatrix: Phaser.FX.ColorMatrix) {
     const slider = new Slider(
       this,
-      0,
-      0,
+      { x: 0, y: 0 },
       (value) => {
         //change music icon color
         iconMatrix.grayscale(1 - value);

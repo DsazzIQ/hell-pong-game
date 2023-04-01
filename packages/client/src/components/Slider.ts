@@ -1,3 +1,4 @@
+import { IPosition } from '@hell-pong/shared/entities/component/Position';
 import { ISize, Size } from '@hell-pong/shared/entities/component/Size';
 
 import AudioKey from '../constants/AudioKey';
@@ -24,7 +25,7 @@ export default class Slider extends Phaser.GameObjects.GameObject {
 
   private touchSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
 
-  constructor(scene: Phaser.Scene, x, y, onValueChanged: (value: number) => void, startValue = 0) {
+  constructor(scene: Phaser.Scene, position: IPosition, onValueChanged: (value: number) => void, startValue = 0) {
     super(scene, 'Slider');
 
     this.onValueChanged = onValueChanged;
@@ -32,7 +33,7 @@ export default class Slider extends Phaser.GameObjects.GameObject {
     this.touchSound = scene.sound.add(AudioKey.Touch);
 
     this.trackContainer = scene.add.container(0, 0);
-    this._container = scene.add.container(x, y).setDepth(Depth.Base).setScale(SLIDER_SCALE);
+    this._container = scene.add.container(position.x, position.y).setDepth(Depth.Base).setScale(SLIDER_SCALE);
     this._container.add(this.trackContainer);
 
     this.initializeTrack(scene);
