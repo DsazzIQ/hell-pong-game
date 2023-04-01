@@ -1,9 +1,11 @@
-import io from 'socket.io-client';
+import io, { Socket } from 'socket.io-client';
 
 import AudioKey from '../../constants/AudioKey';
 import FontKey from '../../constants/FontKey';
+import RegistryKey from '../../constants/RegistryKey';
 import SceneKey from '../../constants/SceneKey';
 import TextureKey from '../../constants/TextureKey';
+import { SettingsController } from '../../entities/settings/SettingsController';
 import Game from '../../Game';
 import RoundedProgressBar from './components/RoundedProgressBar';
 const SOCKET_URL = 'http://localhost:3000';
@@ -32,14 +34,18 @@ export default class PreloaderScene extends Phaser.Scene {
       const socket = io(SOCKET_URL);
 
       socket.on('connect', () => {
-        // Store the geckos connection in the registry
-        this.registry.set('socket', socket);
+        this.initRegistry(socket);
 
         //TODO commented for development
         startTransition(this, SceneKey.Splash);
         // startTransition(this, SceneKey.Main);
       });
     });
+  }
+
+  private initRegistry(socket: Socket) {
+    this.registry.set(RegistryKey.Socket, socket);
+    this.registry.set(RegistryKey.SettingsController, new SettingsController(this.game as Game));
   }
 
   private loadTextures() {

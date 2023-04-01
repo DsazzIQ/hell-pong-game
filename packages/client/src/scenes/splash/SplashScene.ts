@@ -9,7 +9,7 @@ export default class SplashScene extends Phaser.Scene {
   }
 
   create() {
-    this.sound.play(AudioKey.SplashLogo, { volume: 0.5 });
+    this.sound.play(AudioKey.SplashLogo);
     new Logo(this, () => {
       (this.game as Game).startTransition(this, SceneKey.Main);
       this.sound.get(AudioKey.SplashLogo).stop();

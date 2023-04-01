@@ -2,14 +2,17 @@ import BackButton from '../../components/BackButton';
 import GUIContainer, { ROW_OFFSET } from '../../components/GUIContainer';
 import LavaBackground from '../../components/LavaBackground';
 import Slider from '../../components/Slider';
-// import Slider from '../../components/Slider';
 import TitleText from '../../components/TitleText';
 import AudioKey from '../../constants/AudioKey';
+import RegistryKey from '../../constants/RegistryKey';
 import SceneKey from '../../constants/SceneKey';
 import TextureKey from '../../constants/TextureKey';
+import { SettingsController } from '../../entities/settings/SettingsController';
 import Game from '../../Game';
 
 export default class SettingsScene extends Phaser.Scene {
+  private settingsController: SettingsController;
+
   private background: LavaBackground;
 
   constructor() {
@@ -17,11 +20,13 @@ export default class SettingsScene extends Phaser.Scene {
   }
 
   public init(): void {
+    this.settingsController = this.registry.get(RegistryKey.SettingsController);
+
     this.sound.add(AudioKey.SecondaryTheme);
   }
 
   playTheme() {
-    this.sound.get(AudioKey.SecondaryTheme).play({ loop: true, volume: 0.1 });
+    this.sound.get(AudioKey.SecondaryTheme).play({ loop: true });
   }
 
   stopTheme() {
@@ -29,14 +34,14 @@ export default class SettingsScene extends Phaser.Scene {
   }
 
   public create(): void {
-    // this.playTheme();
+    this.playTheme();
     this.background = new LavaBackground(this);
 
     new BackButton(this, () => {
-      // this.stopTheme();
+      this.stopTheme();
       (this.game as Game).startTransition(this, SceneKey.Main);
     });
-    new TitleText(this, 'Settings');
+    new TitleText(this, 'settings');
     this.initGUI();
   }
 
@@ -51,10 +56,17 @@ export default class SettingsScene extends Phaser.Scene {
       .setOrigin(0.5);
     const iconMatrix = musicIcon.preFX.addColorMatrix();
 
-    const changeMusicColor = (value) => {
-      iconMatrix.grayscale(1 - value);
-    };
-    const slider = new Slider(this, 0, 0, changeMusicColor, 0.5);
+    const slider = new Slider(
+      this,
+      0,
+      0,
+      (value) => {
+        //change music icon color
+        iconMatrix.grayscale(1 - value);
+        this.settingsController.getVolumeSetting().set(value);
+      },
+      this.settingsController.getVolumeSetting().get()
+    );
     slider.container.setPosition(musicIcon.x + musicIcon.width + slider.size.width, musicIcon.y);
 
     return [musicIcon, slider.container];

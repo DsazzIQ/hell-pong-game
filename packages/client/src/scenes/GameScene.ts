@@ -15,6 +15,7 @@ import { Pane } from 'tweakpane';
 
 import FontKey from '../constants/FontKey';
 import FontSize from '../constants/FontSize';
+import RegistryKey from '../constants/RegistryKey';
 import SceneKey from '../constants/SceneKey';
 import TextureKey from '../constants/TextureKey';
 
@@ -54,7 +55,7 @@ export default class GameScene extends Phaser.Scene {
   public init(data: IGameState): void {
     this.roomId = data.roomId;
     this.initData = data;
-    this.socket = this.registry.get<Socket>('socket');
+    this.socket = this.registry.get<Socket>(RegistryKey.Socket);
     this.pane = new Pane({
       title: 'GameState'
     });
