@@ -1,9 +1,13 @@
 import Phaser from 'phaser';
 import TweenBuilderConfig = Phaser.Types.Tweens.TweenBuilderConfig;
+import { IPosition } from '@hell-pong/shared/entities/component/Position';
+
 import AudioKey from '../constants/AudioKey';
 import TextureKey from '../constants/TextureKey';
 
 export default class Button extends Phaser.GameObjects.GameObject {
+  public readonly container: Phaser.GameObjects.Container;
+
   protected readonly sprite: Phaser.GameObjects.Sprite;
   protected onHoverColor: number;
   private shadow: Phaser.FX.Shadow;
@@ -11,13 +15,16 @@ export default class Button extends Phaser.GameObjects.GameObject {
   private clickSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
   private hoverSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, frame: string, onClick: () => void, onHoverColor = 0xff0000) {
+  constructor(scene: Phaser.Scene, position: IPosition, frame: string, onClick: () => void, onHoverColor = 0xff0000) {
     super(scene, 'Button');
 
+    this.container = scene.add.container(position.x, position.y);
     this.onHoverColor = onHoverColor;
 
-    this.sprite = scene.add.sprite(x, y, TextureKey.Gui.Key, frame);
+    this.sprite = scene.add.sprite(0, 0, TextureKey.Gui.Key, frame);
     this.sprite.setOrigin(0.5);
+
+    this.container.add(this.sprite);
 
     this.shadow = this.sprite.preFX.addShadow(0.5, 0, 0.15, 1, this.onHoverColor);
     this.stopShadow();
@@ -30,6 +37,11 @@ export default class Button extends Phaser.GameObjects.GameObject {
       .on(Phaser.Input.Events.POINTER_OVER, () => this.onHoverState())
       .on(Phaser.Input.Events.POINTER_OUT, () => this.onOutState())
       .on(Phaser.Input.Events.POINTER_DOWN, () => this.onClick(onClick));
+  }
+
+  public setOrigin(x?, y?) {
+    this.sprite.setOrigin(x, y);
+    return this;
   }
 
   protected startShadow() {
@@ -74,9 +86,9 @@ export default class Button extends Phaser.GameObjects.GameObject {
   protected onClick(onClick: () => void) {
     this.clickSound.play();
 
-    const scaleFactor = this.sprite.scale - 0.1;
+    const scaleFactor = this.container.scale - 0.1;
     this.sprite.scene.tweens.add({
-      targets: this.sprite,
+      targets: this.container,
       scale: scaleFactor,
       duration: 100,
       ease: 'Power1',

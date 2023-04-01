@@ -13,7 +13,7 @@ import Phaser from 'phaser';
 import { Socket } from 'socket.io-client';
 import { Pane } from 'tweakpane';
 
-import FontKey from '../constants/FontKey';
+import FontFamily from '../constants/FontFamily';
 import FontSize from '../constants/FontSize';
 import RegistryKey from '../constants/RegistryKey';
 import SceneKey from '../constants/SceneKey';
@@ -101,7 +101,7 @@ export default class GameScene extends Phaser.Scene {
   private initGameScore(): void {
     this.playersScoreText = this.add
       .text(this.game.canvas.width * 0.5, 20, `0 - 0`, {
-        fontFamily: FontKey.Text,
+        fontFamily: FontFamily.Text,
         fontSize: FontSize.Title,
         color: '#ffffff'
       })

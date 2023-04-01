@@ -1,4 +1,4 @@
-import FontKey from '../constants/FontKey';
+import FontFamily from '../constants/FontFamily';
 import FontSize from '../constants/FontSize';
 import Game from '../Game';
 
@@ -10,7 +10,7 @@ export default class TitleText extends Phaser.GameObjects.GameObject {
     const container = scene.add.group();
     container.setOrigin(0.5);
 
-    const title = scene.add.bitmapText(0, 0, FontKey.Retro, text, FontSize.Title).setOrigin(0.5);
+    const title = scene.add.bitmapText(0, 0, FontFamily.Retro, text, FontSize.Title).setOrigin(0.5);
     container.add(title);
 
     const { centerX, centerY } = scene.game as Game;

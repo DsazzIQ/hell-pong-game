@@ -1,19 +1,21 @@
-import Button from '../../../components/Button';
-import FontKey from '../../../constants/FontKey';
+import { IPosition } from '@hell-pong/shared/entities/component/Position';
+
+import BitmapTextButton from '../../../components/BitmapTextButton';
+import FontSize from '../../../constants/FontSize';
 import TextureKey from '../../../constants/TextureKey';
 import Game from '../../../Game';
 
 const BUTTON_SCALE = 2;
-const FONT_SIZE = 15;
-export default class MenuButton extends Button {
-  private readonly container: Phaser.GameObjects.Container;
-  constructor(scene: Phaser.Scene, x: number, y: number, text: string, onClick: () => void) {
-    super(scene, 0, 0, TextureKey.Gui.Frames.Button.Main, onClick);
-
-    this.container = scene.add.container(x, y);
-    this.container.add(this.sprite.setScale(BUTTON_SCALE));
-
-    this.container.add(scene.add.bitmapText(0, 0, FontKey.Retro, text, FONT_SIZE).setOrigin(0.5));
+export default class MenuButton extends BitmapTextButton {
+  constructor(scene: Phaser.Scene, position: IPosition, text: string, onClick: () => void) {
+    super(
+      scene,
+      position,
+      TextureKey.Gui.Frames.Button.Main,
+      { text, fontSize: FontSize.ExtraSmallText },
+      BUTTON_SCALE,
+      onClick
+    );
 
     this.addAnimation(scene, {
       targets: this.container,

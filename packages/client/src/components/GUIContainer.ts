@@ -16,7 +16,7 @@ type GUIFragment = {
 const GUI_MARGIN: IPosition = { x: 50, y: 20 };
 const GUI_SCALE = 2.5;
 
-export const ROW_OFFSET = { x: 160, y: 25 };
+export const ROW_OFFSET = { x: 20, y: 20 };
 const INNER_BOX_TOP_LEFT: IPosition = { x: 60, y: 140 };
 
 export default class GUIContainer extends Phaser.GameObjects.GameObject {
