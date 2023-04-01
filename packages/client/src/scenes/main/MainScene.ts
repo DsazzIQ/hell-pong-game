@@ -21,11 +21,11 @@ class MainScene extends Phaser.Scene {
     new Title(this);
 
     this.initButtons();
-    // this.playTheme();
+    this.playTheme();
   }
 
   playTheme() {
-    this.sound.get(AudioKey.MainTheme).play({ loop: true, volume: 0.1 });
+    this.sound.get(AudioKey.MainTheme).play({ loop: true });
   }
 
   stopTheme() {
@@ -35,12 +35,12 @@ class MainScene extends Phaser.Scene {
   initButtons() {
     const { centerY, config, startTransition } = this.game as Game;
     new MenuButton(this, 0, centerY, 'start', () => {
-      // this.stopTheme();
+      this.stopTheme();
       startTransition(this, SceneKey.Lobby);
     });
 
     new MenuButton(this, config.width as number, centerY * 1.2, 'settings', () => {
-      // this.stopTheme();
+      this.stopTheme();
       startTransition(this, SceneKey.Settings);
     });
   }

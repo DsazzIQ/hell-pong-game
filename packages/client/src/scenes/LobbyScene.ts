@@ -4,6 +4,7 @@ import { Socket } from 'socket.io-client';
 
 import BackButton from '../components/BackButton';
 import AudioKey from '../constants/AudioKey';
+import RegistryKey from '../constants/RegistryKey';
 import SceneKey from '../constants/SceneKey';
 import Game from '../Game';
 import GameScene from './GameScene';
@@ -17,13 +18,13 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   public init(): void {
-    this.socket = this.registry.get('socket') as Socket;
+    this.socket = this.registry.get<Socket>(RegistryKey.Socket);
 
     this.sound.add(AudioKey.SecondaryTheme);
   }
 
   playTheme() {
-    this.sound.get(AudioKey.SecondaryTheme).play({ loop: true, volume: 0.1 });
+    this.sound.get(AudioKey.SecondaryTheme).play({ loop: true });
   }
 
   stopTheme() {

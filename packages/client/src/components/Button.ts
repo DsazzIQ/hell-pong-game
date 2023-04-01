@@ -63,7 +63,7 @@ export default class Button extends Phaser.GameObjects.GameObject {
   }
 
   protected onHoverState() {
-    this.hoverSound.play({ volume: 0.2 });
+    this.hoverSound.play();
     this.startShadow();
   }
 
@@ -72,7 +72,7 @@ export default class Button extends Phaser.GameObjects.GameObject {
   }
 
   protected onClick(onClick: () => void) {
-    this.clickSound.play({ volume: 0.1 });
+    this.clickSound.play();
 
     const scaleFactor = this.sprite.scale - 0.1;
     this.sprite.scene.tweens.add({

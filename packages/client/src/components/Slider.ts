@@ -38,7 +38,8 @@ export default class Slider extends Phaser.GameObjects.GameObject {
     this.initializeTrack(scene);
     this.initializeThumb(scene);
 
-    this.initArrows(scene);
+    this.initLeftArrow(scene);
+    this.initRightArrow(scene);
     this.registerArrowsEventHandlers();
 
     this.setInteractiveArea();
@@ -74,7 +75,7 @@ export default class Slider extends Phaser.GameObjects.GameObject {
     this.initTrackPosition();
   }
 
-  private initArrows(scene: Phaser.Scene) {
+  private initLeftArrow(scene: Phaser.Scene) {
     this.arrowLeft = scene.add.image(
       this.trackContainer.x - this.trackSize.widthCenter,
       this.trackContainer.y,
@@ -83,7 +84,9 @@ export default class Slider extends Phaser.GameObjects.GameObject {
     );
     this.arrowLeft.setInteractive({ useHandCursor: true }).setOrigin(1, 0.5);
     this._container.add(this.arrowLeft);
+  }
 
+  private initRightArrow(scene: Phaser.Scene) {
     this.arrowRight = scene.add.image(
       this.trackContainer.x + this.trackSize.widthCenter,
       this.trackContainer.y,
@@ -224,6 +227,6 @@ export default class Slider extends Phaser.GameObjects.GameObject {
   }
 
   private playTouch() {
-    this.touchSound.play({ volume: 0.2 });
+    this.touchSound.play();
   }
 }

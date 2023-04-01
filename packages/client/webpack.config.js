@@ -2,14 +2,18 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
+const { TsconfigPathsPlugin } = require("tsconfig-paths-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 
+const Env = Object.freeze({
+  Production: "production",
+  Development: "development",
+});
 module.exports = (env, argv) => {
-  const isProduction = argv.mode === "production";
+  const isProduction = argv.mode === Env.Production;
 
   return {
-    mode: isProduction ? "production" : "development",
+    mode: isProduction ? Env.Production : Env.Development,
     entry: "./src/index.ts",
     output: {
       path: path.resolve(__dirname, "dist"),
