@@ -7,6 +7,7 @@ export default {
     base: './',
     build: {
         outDir: 'dist',
+        clean: true
     },
     clearScreen: false,
     plugins: [
@@ -31,9 +32,8 @@ export default {
         },
     },
     optimizeDeps: {
-        include: ['phaser', '@hell-pong/shared'],
+        include: ['phaser'],
     },
-    tsconfig: "tsconfig.json",
     typeCheck: {
         eslint: {
             files: ['./src/**/*.{ts,js}'],

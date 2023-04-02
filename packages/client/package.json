@@ -5,7 +5,7 @@
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
-    "start": "tsc && vite --open",
+    "start": "vite --open",
     "build": "tsc && vite build",
     "lint": "eslint . --ext .ts --ext .js",
     "lint:fix": "eslint . --ext .ts --ext .js --fix"

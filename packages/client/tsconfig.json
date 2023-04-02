@@ -23,12 +23,14 @@
     "strict": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "incremental": true,
     "paths": {
       "@hell-pong/shared/*": ["../shared/src/*"]
     },
     "typeRoots": [
       "../../node_modules/@types",
-      "../../node_modules/phaser/types"
+      "../../node_modules/phaser/types",
+      "../../node_modules/vite/client",
     ]
   },
   "references": [
