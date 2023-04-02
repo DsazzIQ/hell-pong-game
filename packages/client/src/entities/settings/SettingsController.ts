@@ -1,5 +1,6 @@
 import { Sound } from 'phaser';
 
+import EventKey from '../../constants/EventKey';
 import { isMusicKey } from '../../constants/MusicKey';
 import { isSoundKey } from '../../constants/SoundKey';
 import Game from '../../Game';
@@ -11,22 +12,26 @@ export class SettingsController {
   public readonly musicVolume: VolumeSetting;
 
   constructor(game: Game) {
-    this.soundVolume = new VolumeSetting(SettingType.SoundVolume, (volume: number) =>
+    this.soundVolume = new VolumeSetting(SettingType.SoundVolume, (volume: number) => {
       game.sound.getAll('').map((sound: Sound.BaseSound) => {
         const current = sound as Sound.WebAudioSound;
         if (current && isSoundKey(sound.key)) {
           current.setVolume(volume);
         }
-      })
-    );
+      });
 
-    this.musicVolume = new VolumeSetting(SettingType.MusicVolume, (volume: number) =>
+      game.events.emit(EventKey.SoundVolumeChanged, volume);
+    });
+
+    this.musicVolume = new VolumeSetting(SettingType.MusicVolume, (volume: number) => {
       game.sound.getAll('').map((sound: Sound.BaseSound) => {
         const current = sound as Sound.WebAudioSound;
         if (isMusicKey(sound.key)) {
           current.setVolume(volume);
         }
-      })
-    );
+      });
+
+      game.events.emit(EventKey.MusicVolumeChanged, volume);
+    });
   }
 }

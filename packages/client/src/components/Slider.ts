@@ -180,7 +180,6 @@ export default class Slider extends GameObjects.GameObject {
 
   private registerThumbEventHandlers(scene: Scene) {
     scene.input.on(Input.Events.POINTER_UP, () => {
-      this.playTouch();
       this.setThumbOutFrame();
     });
 
@@ -214,8 +213,11 @@ export default class Slider extends GameObjects.GameObject {
 
   private setValue(value) {
     this.value = Math.Clamp(value, 0, 1);
-    this.thumb.x = Math.Linear(this.leftDraggableBorder, this.rightDraggableBorder, this.value);
-    this.onValueChanged(this.value);
+    this.changeThumbPosByValue(this.value);
+  }
+
+  public changeThumbPosByValue(value: number) {
+    this.thumb.x = Math.Linear(this.leftDraggableBorder, this.rightDraggableBorder, value);
   }
 
   private worldToLocalX(worldX: number): number {

@@ -1,22 +1,26 @@
-import { FX, GameObjects, Scene } from 'phaser';
+import { IPosition } from '@hell-pong/shared/entities/component/Position';
+import { Scene } from 'phaser';
 
 import BackButton from '../../components/BackButton';
-import GUIContainer, { ROW_OFFSET } from '../../components/GUIContainer';
+import GUIContainer from '../../components/GUIContainer';
 import LavaBackground from '../../components/LavaBackground';
-import Slider from '../../components/Slider';
 import TitleText from '../../components/TitleText';
+import EventKey from '../../constants/EventKey';
 import MusicKey from '../../constants/MusicKey';
 import RegistryKey from '../../constants/RegistryKey';
 import SceneKey from '../../constants/SceneKey';
 import TextureKey from '../../constants/TextureKey';
 import { SettingsController } from '../../entities/settings/SettingsController';
 import Game from '../../Game';
+import VolumeSliderRow from './components/VolumeSliderRow';
 
-const OFFSET_SETTING_ROW = { x: 140 };
+const OFFSET_ROW: IPosition = { x: 140, y: 60 };
 export default class SettingsScene extends Scene {
   private settingsController: SettingsController;
 
   private background: LavaBackground;
+  private soundRow: VolumeSliderRow;
+  private musicRow: VolumeSliderRow;
 
   constructor() {
     super(SceneKey.Settings);
@@ -48,63 +52,33 @@ export default class SettingsScene extends Scene {
 
   private initGUI() {
     const gui = new GUIContainer(this);
-    gui.addToContainer(this.createSoundVolumeRow());
-    gui.addToContainer(this.createMusicVolumeRow());
+    this.addMusicRow(gui);
+    this.addSoundRow(gui);
   }
 
-  private createSoundVolumeSlider(musicIcon: GameObjects.Image, iconMatrix: FX.ColorMatrix) {
-    const slider = new Slider(
+  private addMusicRow(gui: GUIContainer) {
+    this.musicRow = new VolumeSliderRow(
       this,
-      { x: 0, y: 0 },
-      (value) => {
-        //change music icon color
-        iconMatrix.grayscale(1 - value);
-        this.settingsController.soundVolume.set(value);
+      TextureKey.Gui.Frames.Icon.Music,
+      this.settingsController.musicVolume,
+      {
+        x: OFFSET_ROW.x,
+        y: 0
       },
-      this.settingsController.soundVolume.get()
+      EventKey.MusicVolumeChanged
     );
-    slider.container.setPosition(musicIcon.x + musicIcon.width + slider.size.width, musicIcon.y);
-
-    return slider.container;
+    gui.addToContainer(this.musicRow.getElements());
   }
 
-  private createSoundVolumeRow(): GameObjects.GameObject[] {
-    const soundIcon = this.add
-      .image(ROW_OFFSET.x + OFFSET_SETTING_ROW.x, ROW_OFFSET.y, TextureKey.Gui.Key, TextureKey.Gui.Frames.Icon.Sound)
-      .setOrigin(0.5);
-    const iconMatrix = soundIcon.preFX.addColorMatrix();
-
-    return [soundIcon, this.createSoundVolumeSlider(soundIcon, iconMatrix)];
-  }
-
-  private createMusicVolumeSlider(musicIcon: GameObjects.Image, iconMatrix: FX.ColorMatrix) {
-    const slider = new Slider(
+  private addSoundRow(gui: GUIContainer) {
+    this.soundRow = new VolumeSliderRow(
       this,
-      { x: 0, y: 0 },
-      (value) => {
-        //change music icon color
-        iconMatrix.grayscale(1 - value);
-        this.settingsController.musicVolume.set(value);
-      },
-      this.settingsController.musicVolume.get()
+      TextureKey.Gui.Frames.Icon.Sound,
+      this.settingsController.soundVolume,
+      OFFSET_ROW,
+      EventKey.SoundVolumeChanged
     );
-    slider.container.setPosition(musicIcon.x + musicIcon.width + slider.size.width, musicIcon.y);
-
-    return slider.container;
-  }
-
-  private createMusicVolumeRow(): GameObjects.GameObject[] {
-    const musicIcon = this.add
-      .image(
-        ROW_OFFSET.x + OFFSET_SETTING_ROW.x,
-        ROW_OFFSET.y + 60,
-        TextureKey.Gui.Key,
-        TextureKey.Gui.Frames.Icon.Music
-      )
-      .setOrigin(0.5);
-    const iconMatrix = musicIcon.preFX.addColorMatrix();
-
-    return [musicIcon, this.createMusicVolumeSlider(musicIcon, iconMatrix)];
+    gui.addToContainer(this.soundRow.getElements());
   }
 
   update() {

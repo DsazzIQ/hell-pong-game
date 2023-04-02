@@ -1,5 +1,5 @@
-enum Event {
+enum EventKey {
   SoundVolumeChanged = 'SoundVolumeChanged',
   MusicVolumeChanged = 'MusicVolumeChanged'
 }
-export default Event;
+export default EventKey;

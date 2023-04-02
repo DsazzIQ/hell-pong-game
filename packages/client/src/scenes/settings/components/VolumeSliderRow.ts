@@ -1,36 +1,68 @@
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
-import { GameObjects, Scene } from 'phaser';
+import { FX, GameObjects, Scene } from 'phaser';
 
 import Button from '../../../components/Button';
 import { ROW_OFFSET } from '../../../components/GUIContainer';
 import Slider from '../../../components/Slider';
-import TextureKey from '../../../constants/TextureKey';
-import { Setting } from '../../../entities/settings/Setting';
+import EventKey from '../../../constants/EventKey';
+import { VolumeSetting } from '../../../entities/settings/VolumeSetting';
 
-export default class SliderRow {
-  private readonly icon: GameObjects.Image;
-  private readonly sliderContainer: GameObjects.Container;
-  constructor(scene: Scene, iconFrame: string, setting: Setting<number>, offset: IPosition) {
-    this.icon = scene.add
-      .image(ROW_OFFSET.x + offset.x, ROW_OFFSET.y + offset.y, TextureKey.Gui.Key, iconFrame)
-      .setOrigin(0.5);
-    const iconButton = new Button(scene, { x: ROW_OFFSET.x + offset.x, y: ROW_OFFSET.y + offset.y }, iconFrame);
-    const iconMatrix = this.icon.preFX.addColorMatrix();
+export default class VolumeSliderRow extends GameObjects.GameObject {
+  private iconButton: Button;
+  private slider: Slider;
+  private readonly onUpdateEvent: EventKey;
+  private iconMatrix: FX.ColorMatrix;
 
-    const slider = new Slider(
+  constructor(scene: Scene, iconFrame: string, setting: VolumeSetting, offset: IPosition, onUpdateEvent: EventKey) {
+    super(scene, 'VolumeSliderRow');
+
+    this.onUpdateEvent = onUpdateEvent;
+
+    this.initIconButton(scene, iconFrame, setting, offset);
+    this.initSlider(scene, setting);
+
+    scene.game.events.on(this.onUpdateEvent, this.handleVolumeChangedEvent, this);
+    scene.events.on(Phaser.Input.Events.SHUTDOWN, this.destroy, this);
+  }
+
+  private initIconButton(scene: Scene, iconFrame: string, setting: VolumeSetting, offset: IPosition): void {
+    const iconPosition = { x: ROW_OFFSET.x + offset.x, y: ROW_OFFSET.y + offset.y };
+    this.iconButton = new Button(scene, iconPosition, iconFrame, () => setting.toggle(), 0xff6d0a);
+    this.iconMatrix = this.iconButton.sprite.postFX.addColorMatrix();
+    this.changeIconGreyScaleByValue(setting.get());
+  }
+
+  private initSlider(scene: Scene, setting: VolumeSetting): void {
+    this.slider = new Slider(
       scene,
       { x: 0, y: 0 },
       (value) => {
-        iconMatrix.grayscale(1 - value); //change icon color
         setting.set(value);
       },
       setting.get()
     );
-    slider.container.setPosition(this.icon.x + this.icon.width + slider.size.width, this.icon.y);
-    this.sliderContainer = slider.container;
+    this.slider.container.setPosition(
+      this.iconButton.container.x + this.iconButton.sprite.width + this.slider.size.width,
+      this.iconButton.container.y
+    );
+  }
+
+  private handleVolumeChangedEvent(value: number) {
+    this.changeIconGreyScaleByValue(value);
+    this.slider.changeThumbPosByValue(value);
+  }
+
+  private changeIconGreyScaleByValue(value: number) {
+    this.iconMatrix.grayscale(1 - value);
+  }
+
+  public destroy(): void {
+    if (this.onUpdateEvent) {
+      this.scene.game.events.off(this.onUpdateEvent, this.handleVolumeChangedEvent, this);
+    }
   }
 
   public getElements(): GameObjects.GameObject[] {
-    return [this.icon, this.sliderContainer];
+    return [this.iconButton.container, this.slider.container];
   }
 }

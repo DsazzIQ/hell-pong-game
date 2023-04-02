@@ -21,4 +21,8 @@ export class VolumeSetting extends Setting<number> {
   protected validate(value: number): number {
     return Math.min(Math.max(value, Value.Min), Value.Max);
   }
+
+  public toggle() {
+    this.set(this.value ^ Value.Max);
+  }
 }
