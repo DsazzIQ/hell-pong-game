@@ -32,7 +32,7 @@ export default {
         },
     },
     optimizeDeps: {
-        include: ['phaser'],
+        include: ['phaser', '@hell-pong/shared'],
     },
     typeCheck: {
         eslint: {
