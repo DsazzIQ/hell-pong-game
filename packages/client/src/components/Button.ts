@@ -1,4 +1,4 @@
-import { FX, GameObjects, Input, Scene, Sound, Types } from 'phaser';
+import { FX, GameObjects, Input, Scene, Types } from 'phaser';
 import TweenBuilderConfig = Types.Tweens.TweenBuilderConfig;
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
 
@@ -8,12 +8,9 @@ import TextureKey from '../constants/TextureKey';
 export default class Button extends GameObjects.GameObject {
   public readonly container: GameObjects.Container;
 
-  protected readonly sprite: GameObjects.Sprite;
+  public readonly sprite: GameObjects.Sprite;
   protected onHoverColor: number;
   private shadow: FX.Shadow;
-
-  private clickSound: Sound.NoAudioSound | Sound.HTML5AudioSound | Sound.WebAudioSound;
-  private hoverSound: Sound.NoAudioSound | Sound.HTML5AudioSound | Sound.WebAudioSound;
 
   constructor(scene: Scene, position: IPosition, frame: string, onClick: () => void, onHoverColor = 0xff0000) {
     super(scene, 'Button');
@@ -29,14 +26,19 @@ export default class Button extends GameObjects.GameObject {
     this.shadow = this.sprite.preFX.addShadow(0.5, 0, 0.15, 1, this.onHoverColor);
     this.stopShadow();
 
-    this.clickSound = scene.sound.add(SoundKey.ButtonClick);
-    this.hoverSound = scene.sound.add(SoundKey.ButtonHover);
-
     this.sprite
       .setInteractive({ useHandCursor: true })
       .on(Input.Events.POINTER_OVER, () => this.onHoverState())
       .on(Input.Events.POINTER_OUT, () => this.onOutState())
       .on(Input.Events.POINTER_DOWN, () => this.onClick(onClick));
+  }
+
+  protected playOnClick() {
+    this.scene.sound.get(SoundKey.ButtonClick).play();
+  }
+
+  protected playOnHover() {
+    this.scene.sound.get(SoundKey.ButtonHover).play();
   }
 
   public setOrigin(x?, y?) {
@@ -75,7 +77,7 @@ export default class Button extends GameObjects.GameObject {
   }
 
   protected onHoverState() {
-    this.hoverSound.play();
+    this.playOnHover();
     this.startShadow();
   }
 
@@ -84,7 +86,7 @@ export default class Button extends GameObjects.GameObject {
   }
 
   protected onClick(onClick: () => void) {
-    this.clickSound.play();
+    this.playOnClick();
 
     const scaleFactor = this.container.scale - 0.1;
     this.sprite.scene.tweens.add({

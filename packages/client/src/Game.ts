@@ -19,6 +19,7 @@ export default class Game extends BaseGame {
         target: sceneName,
         duration: duration,
         moveAbove: true,
+        remove: false,
         data
       });
       fromScene.scene.stop();
