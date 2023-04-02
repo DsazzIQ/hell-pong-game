@@ -16,11 +16,11 @@ import VolumeSliderRow from './components/VolumeSliderRow';
 
 const OFFSET_ROW: IPosition = { x: 140, y: 60 };
 export default class SettingsScene extends Scene {
-  private settingsController: SettingsController;
+  private settingsController!: SettingsController;
 
-  private background: LavaBackground;
-  private soundRow: VolumeSliderRow;
-  private musicRow: VolumeSliderRow;
+  private background!: LavaBackground;
+  private soundRow!: VolumeSliderRow;
+  private musicRow!: VolumeSliderRow;
 
   constructor() {
     super(SceneKey.Settings);
@@ -39,12 +39,14 @@ export default class SettingsScene extends Scene {
   }
 
   public create(): void {
+    const { startTransition } = this.game as Game;
+
     this.playTheme();
     this.background = new LavaBackground(this);
 
     new BackButton(this, () => {
       this.stopTheme();
-      (this.game as Game).startTransition(this, SceneKey.Main);
+      startTransition(this, SceneKey.Main);
     });
     new TitleText(this, 'settings');
     this.initGUI();
@@ -82,6 +84,6 @@ export default class SettingsScene extends Scene {
   }
 
   update() {
-    this.background.move();
+    this.background?.move();
   }
 }

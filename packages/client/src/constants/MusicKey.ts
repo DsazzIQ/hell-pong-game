@@ -4,6 +4,6 @@ enum MusicKey {
   SplashLogo = 'SplashLogo'
 }
 export function isMusicKey(key: string): boolean {
-  return Object.values(MusicKey).includes(key);
+  return Object.values(MusicKey).includes(key as MusicKey);
 }
 export default MusicKey;

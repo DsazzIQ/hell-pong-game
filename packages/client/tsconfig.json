@@ -4,28 +4,41 @@
     "baseUrl": ".",
     "outDir": "dist",
     "rootDir": "src",
-    "target": "es2021",
-    "module": "commonjs",
+    "target": "esnext",
+    "module": "esnext",
     "moduleResolution": "node",
-    "allowJs": true,
+    "allowJs": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["es2021", "dom", "dom.iterable"],
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "noImplicitAny": false,
+    "noEmit": true,
+    "jsx": "preserve",
+    "importHelpers": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "types": ["vite/client"],
+    "strict": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
     "paths": {
       "@hell-pong/shared/*": ["../shared/src/*"]
-    }
+    },
+    "typeRoots": [
+      "../../node_modules/@types",
+      "../../node_modules/phaser/types"
+    ]
   },
   "references": [
     {
       "path": "../shared"
     }
   ],
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "vite.config.js"],
   "exclude": [
     "node_modules",
-    "src/index.html",
-    "webpack.config.js",
     "dist"
   ]
 }

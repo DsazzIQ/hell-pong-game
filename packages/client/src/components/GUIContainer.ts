@@ -85,7 +85,7 @@ export default class GUIContainer extends GameObjects.GameObject {
   ): GameObjects.Image[] {
     const top = this.createFragment(scene, {
       frame: TextureKey.Gui.Frames.Backstage.Top,
-      position: { x: topLeft.getTopRight().x, y: GUI_MARGIN.y },
+      position: { x: topLeft.getTopRight().x ?? 0, y: GUI_MARGIN.y },
       origin: { x: 0, y: 0 },
       display: {
         width: width - topLeft.displayWidth - topRight.displayWidth - GUI_MARGIN.x * 2,
@@ -95,7 +95,7 @@ export default class GUIContainer extends GameObjects.GameObject {
 
     const bottom = this.createFragment(scene, {
       frame: TextureKey.Gui.Frames.Backstage.Bottom,
-      position: { x: bottomLeft.getTopRight().x, y: height - GUI_MARGIN.y },
+      position: { x: bottomLeft.getTopRight().x ?? 0, y: height - GUI_MARGIN.y },
       origin: { x: 0, y: 1 },
       display: {
         width: width - bottomLeft.displayWidth - bottomRight.displayWidth - GUI_MARGIN.x * 2,
@@ -105,7 +105,7 @@ export default class GUIContainer extends GameObjects.GameObject {
 
     const left = this.createFragment(scene, {
       frame: TextureKey.Gui.Frames.Backstage.Left,
-      position: { x: GUI_MARGIN.x, y: topLeft.getBottomLeft().y },
+      position: { x: GUI_MARGIN.x, y: topLeft.getBottomLeft().y ?? 0 },
       origin: { x: 0, y: 0 },
       display: {
         width: topLeft.displayWidth,
@@ -117,7 +117,7 @@ export default class GUIContainer extends GameObjects.GameObject {
       frame: TextureKey.Gui.Frames.Backstage.Right,
       position: {
         x: width - GUI_MARGIN.x,
-        y: topRight.getBottomLeft().y
+        y: topRight.getBottomLeft().y ?? 0
       },
       origin: { x: 1, y: 0 },
       display: {
@@ -132,7 +132,7 @@ export default class GUIContainer extends GameObjects.GameObject {
   private createCenterFragment(scene: Scene, [top, , left]: GameObjects.Image[]): GameObjects.Image {
     return this.createFragment(scene, {
       frame: TextureKey.Gui.Frames.Backstage.Center,
-      position: { x: left.getTopRight().x, y: top.getBottomLeft().y },
+      position: { x: left.getTopRight().x ?? 0, y: top.getBottomLeft().y ?? 0 },
       origin: { x: 0, y: 0 },
       display: { width: top.displayWidth, height: left.displayHeight }
     });

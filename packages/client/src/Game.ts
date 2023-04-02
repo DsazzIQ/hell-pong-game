@@ -6,8 +6,8 @@ export default class Game extends BaseGame {
   constructor(config: Types.Core.GameConfig) {
     super(config);
 
-    this.centerX = config.width * 0.5;
-    this.centerY = config.height * 0.5;
+    this.centerX = (config.width as number) * 0.5;
+    this.centerY = (config.height as number) * 0.5;
   }
 
   startTransition(fromScene: Scene, sceneName: string, data?: unknown, duration = 500) {

@@ -3,24 +3,9 @@
   "extends": [
     "../../.eslintrc.base.json"
   ],
-  "ignorePatterns": ["webpack.config.js"],
+  "ignorePatterns": ["vite.config.js"],
   "parserOptions": {
     "project": "./tsconfig.json"
-  },
-  "settings": {
-    "import/resolver": {
-      "typescript": {
-        "project": "./tsconfig.json",
-        "alwaysTryTypes": true
-      },
-      "node": {
-        "extensions": [".js", ".ts"]
-      }
-    },
-    "import/parsers": {
-      "@typescript-eslint/parser": [".ts"]
-    },
-    "import/extensions": [".js", ".ts"]
   },
   "rules": {
     "@typescript-eslint/explicit-module-boundary-types": "off",

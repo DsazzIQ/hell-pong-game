@@ -13,7 +13,7 @@ import RoundedProgressBar from './components/RoundedProgressBar';
 const SOCKET_URL = 'http://localhost:3000';
 
 export default class PreloaderScene extends Scene {
-  private lineProgress: RoundedProgressBar;
+  private lineProgress!: RoundedProgressBar;
 
   constructor() {
     super(SceneKey.Preloader);
@@ -39,8 +39,8 @@ export default class PreloaderScene extends Scene {
         this.initRegistry(socket);
 
         //TODO commented for development
-        startTransition(this, SceneKey.Splash);
-        // startTransition(this, SceneKey.Main);
+        // startTransition(this, SceneKey.Splash);
+        startTransition(this, SceneKey.Main);
       });
     });
   }

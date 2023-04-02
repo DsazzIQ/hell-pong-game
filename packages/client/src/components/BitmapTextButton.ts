@@ -18,10 +18,10 @@ export default class BitmapTextButton extends Button {
   ) {
     super(scene, position, frame, onClick);
 
-    this.text = scene.add.bitmapText(0, 0, FontFamily.Retro, textConfig.text, textConfig.fontSize).setOrigin(0.5);
-    this.container.add(this.text);
+    this.text = this.scene.add.bitmapText(0, 0, FontFamily.Retro, textConfig.text, textConfig.fontSize).setOrigin(0.5);
+    this.add(this.text);
 
-    this.container.setScale(scale);
+    this.setScale(scale);
   }
 
   public setTextOrigin(x?, y?) {

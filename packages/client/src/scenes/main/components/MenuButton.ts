@@ -5,6 +5,7 @@ import BitmapTextButton from '../../../components/BitmapTextButton';
 import FontSize from '../../../constants/FontSize';
 import TextureKey from '../../../constants/TextureKey';
 import Game from '../../../Game';
+import TweenBuilderConfig = Phaser.Types.Tweens.TweenBuilderConfig;
 
 const BUTTON_SCALE = 2;
 export default class MenuButton extends BitmapTextButton {
@@ -19,10 +20,10 @@ export default class MenuButton extends BitmapTextButton {
     );
 
     this.addAnimation(scene, {
-      targets: this.container,
+      targets: this,
       x: (scene.game as Game).centerX,
       duration: 500,
       ease: Math.Easing.Linear
-    });
+    } as TweenBuilderConfig);
   }
 }

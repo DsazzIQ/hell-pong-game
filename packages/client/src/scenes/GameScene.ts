@@ -34,7 +34,7 @@ export default class GameScene extends Scene {
 
   private ball!: Physics.Matter.Image;
   private players: GamePlayer[] = [];
-  private cursors!: Types.Input.Keyboard.CursorKeys;
+  private cursors?: Types.Input.Keyboard.CursorKeys;
 
   private playersScoreText!: GameObjects.Text;
 
@@ -54,8 +54,10 @@ export default class GameScene extends Scene {
 
   public init(data: IGameState): void {
     this.roomId = data.roomId;
+    console.log('[roomId]', this.roomId);
+
     this.initData = data;
-    this.socket = this.registry.get<Socket>(RegistryKey.Socket);
+    this.socket = this.registry.get(RegistryKey.Socket) as Socket;
     this.pane = new Pane({
       title: 'GameState'
     });
@@ -107,6 +109,7 @@ export default class GameScene extends Scene {
       })
       .setOrigin(0.5)
       .setName('score');
+    console.log('[player score] score', this.playersScoreText);
   }
 
   private initPlayers(): void {
@@ -148,7 +151,7 @@ export default class GameScene extends Scene {
     this.matter.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT, 1);
 
     // Set up keyboard controls
-    this.cursors = this.input.keyboard.createCursorKeys();
+    this.cursors = this.input.keyboard?.createCursorKeys();
 
     this.initBackground();
 
@@ -182,10 +185,10 @@ export default class GameScene extends Scene {
       return;
     }
     let key: PlayerMove = PlayerMove.STOP;
-    if (this.cursors.up.isDown) {
+    if (this.cursors?.up.isDown) {
       key = PlayerMove.UP;
     }
-    if (this.cursors.down.isDown) {
+    if (this.cursors?.down.isDown) {
       key = PlayerMove.DOWN;
     }
 

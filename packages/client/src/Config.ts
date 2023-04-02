@@ -11,7 +11,7 @@ import SettingsScene from './scenes/settings/SettingsScene';
 import SplashScene from './scenes/splash/SplashScene';
 
 const GameConfig: Types.Core.GameConfig = {
-  parent: 'game-container',
+  parent: 'game',
   type: AUTO,
   width: GAME_WIDTH,
   height: GAME_HEIGHT,
