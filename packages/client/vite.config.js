@@ -7,7 +7,6 @@ export default {
     base: './',
     build: {
         outDir: 'dist',
-        clean: true
     },
     clearScreen: false,
     plugins: [
@@ -38,5 +37,5 @@ export default {
         eslint: {
             files: ['./src/**/*.{ts,js}'],
         },
-    },
+    }
 };

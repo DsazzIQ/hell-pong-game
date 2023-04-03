@@ -1,8 +1,8 @@
 const TextureKey = Object.freeze({
   Background: {
     Key: 'background',
-    TextureUrl: 'assets/textures/background.png',
-    AtlasUrl: 'assets/textures/background.json',
+    TextureUrl: 'textures/background.png',
+    AtlasUrl: 'textures/background.json',
     Frames: {
       Menu: {
         First: 'menu/0000',
@@ -22,8 +22,8 @@ const TextureKey = Object.freeze({
   },
   Gui: {
     Key: 'gui',
-    TextureUrl: 'assets/textures/gui.png',
-    AtlasUrl: 'assets/textures/gui.json',
+    TextureUrl: 'textures/gui.png',
+    AtlasUrl: 'textures/gui.json',
     Frames: {
       Backstage: {
         Bottom: 'backstage/bottom',
