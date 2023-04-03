@@ -1,3 +1,5 @@
+/// <reference types="vitest" />
+
 import Checker from 'vite-plugin-checker';
 import path from 'path';
 import replace from '@rollup/plugin-replace';
@@ -11,6 +13,7 @@ export default {
     clearScreen: false,
     plugins: [
         [Checker({ typescript: true })],
+        //  Toggle the booleans here to enable / disable Phaser 3 features:
         replace({
             'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
             'typeof CANVAS_RENDERER': "'true'",
@@ -31,11 +34,17 @@ export default {
         },
     },
     optimizeDeps: {
-        include: ['phaser', '@hell-pong/shared'],
+        include: ['canvas', 'phaser', '@hell-pong/shared'],
     },
     typeCheck: {
         eslint: {
             files: ['./src/**/*.{ts,js}'],
         },
+    },
+    test: {
+        setupFiles: ["./src/__tests__/vitest.setup.ts"],
+        environment: "jsdom",
+        threads: false,
+        include: ['**/__tests__/*.test.ts'],
     }
 };

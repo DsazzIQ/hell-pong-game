@@ -19,7 +19,7 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-    "types": ["vite/client"],
+    "types": ["vite/client", "phaser"],
     "strict": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -30,7 +30,6 @@
     "typeRoots": [
       "../../node_modules/@types",
       "../../node_modules/phaser/types",
-      "../../node_modules/vite/client",
     ]
   },
   "references": [
@@ -38,7 +37,9 @@
       "path": "../shared"
     }
   ],
-  "include": ["src/**/*", "vite.config.js"],
+  "include": ["src/**/*", "vite.config.js",
+    "src/__tests__/vitest.setup.ts"
+  ],
   "exclude": [
     "node_modules",
     "dist"

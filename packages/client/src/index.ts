@@ -1,4 +1,5 @@
 import GameConfig from './Config';
 import Game from './Game';
 
-new Game(GameConfig);
+const game = new Game(GameConfig);
+export default game;

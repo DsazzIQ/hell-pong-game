@@ -13,6 +13,7 @@
     "start:server": "lerna run start --scope=@hell-pong/{shared,server} --parallel",
     "lint": "lerna run lint --parallel",
     "lint:fix": "lerna run lint:fix --parallel",
+    "test": "lerna run test --scope=@hell-pong/client",
     "clean": "lerna clean",
     "clean:update": "lerna clean && lerna bootstrap"
   },
