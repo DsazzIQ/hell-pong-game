@@ -11,8 +11,8 @@ export default class BackButton extends Button {
   }
 
   private setMarginBySize(): this {
-    this.x = this.width;
-    this.y = this.height;
+    this.x = this.sprite.width;
+    this.y = this.sprite.height;
     return this;
   }
 }

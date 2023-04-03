@@ -4,18 +4,10 @@ import TextureKey from '../../../constants/TextureKey';
 import Game from '../../../Game';
 
 const BACKGROUND_LABEL = 'menu_bg_animation';
-export default class Background extends GameObjects.GameObject {
+export default class Background extends GameObjects.Sprite {
   constructor(scene: Scene) {
-    super(scene, 'MainBackground');
-
     const { centerX, centerY, canvas } = scene.game as Game;
-
-    const background = scene.add.sprite(
-      centerX,
-      centerY,
-      TextureKey.Background.Key,
-      TextureKey.Background.Frames.Menu.First
-    );
+    super(scene, centerX, centerY, TextureKey.Background.Key, TextureKey.Background.Frames.Menu.First);
 
     scene.anims.create({
       key: BACKGROUND_LABEL,
@@ -24,10 +16,11 @@ export default class Background extends GameObjects.GameObject {
       frameRate: 6
     });
 
-    background.displayHeight = canvas.height as number;
-    const scale = background.displayHeight / background.height;
-    background.displayWidth = background.width * scale;
+    this.displayHeight = canvas.height as number;
+    const scale = this.displayHeight / this.height;
+    this.displayWidth = this.width * scale;
 
-    background.setDepth(-1).setOrigin(0.5).play(BACKGROUND_LABEL);
+    this.setDepth(-1).setOrigin(0.5).play(BACKGROUND_LABEL);
+    this.scene.add.existing(this);
   }
 }

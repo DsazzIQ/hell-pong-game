@@ -13,7 +13,7 @@ import RoundedProgressBar from './components/RoundedProgressBar';
 const SOCKET_URL = 'http://localhost:3000';
 
 export default class PreloaderScene extends Scene {
-  private lineProgress: RoundedProgressBar;
+  private lineProgress!: RoundedProgressBar;
 
   constructor() {
     super(SceneKey.Preloader);
@@ -39,8 +39,8 @@ export default class PreloaderScene extends Scene {
         this.initRegistry(socket);
 
         //TODO commented for development
-        startTransition(this, SceneKey.Splash);
-        // startTransition(this, SceneKey.Main);
+        // startTransition(this, SceneKey.Splash);
+        startTransition(this, SceneKey.Main);
       });
     });
   }
@@ -60,17 +60,17 @@ export default class PreloaderScene extends Scene {
   }
 
   private loadAudios() {
-    this.load.audio(MusicKey.MainTheme, 'assets/sounds/main_theme.mp3');
-    this.load.audio(MusicKey.SecondaryTheme, 'assets/sounds/secondary_theme.mp3');
-    this.load.audio(MusicKey.SplashLogo, 'assets/sounds/splash.mp3');
+    this.load.audio(MusicKey.MainTheme, 'sounds/main_theme.mp3');
+    this.load.audio(MusicKey.SecondaryTheme, 'sounds/secondary_theme.mp3');
+    this.load.audio(MusicKey.SplashLogo, 'sounds/splash.mp3');
 
-    this.load.audio(SoundKey.ButtonClick, 'assets/sounds/button_click.mp3');
-    this.load.audio(SoundKey.ButtonHover, 'assets/sounds/button_hover.mp3');
-    this.load.audio(SoundKey.ChangeSelection, 'assets/sounds/change_selection.mp3');
-    this.load.audio(SoundKey.Touch, 'assets/sounds/touch.mp3');
-    this.load.audio(SoundKey.StartGame, 'assets/sounds/start_game.mp3');
-    this.load.audio(SoundKey.PaddleHit, 'assets/sounds/paddle_hit.mp3');
-    this.load.audio(SoundKey.BallHit, 'assets/sounds/ball_hit.mp3');
+    this.load.audio(SoundKey.ButtonClick, 'sounds/button_click.mp3');
+    this.load.audio(SoundKey.ButtonHover, 'sounds/button_hover.mp3');
+    this.load.audio(SoundKey.ChangeSelection, 'sounds/change_selection.mp3');
+    this.load.audio(SoundKey.Touch, 'sounds/touch.mp3');
+    this.load.audio(SoundKey.StartGame, 'sounds/start_game.mp3');
+    this.load.audio(SoundKey.PaddleHit, 'sounds/paddle_hit.mp3');
+    this.load.audio(SoundKey.BallHit, 'sounds/ball_hit.mp3');
   }
 
   private registerAudios() {
@@ -87,8 +87,8 @@ export default class PreloaderScene extends Scene {
   }
 
   private loadFonts() {
-    this.loadFont(FontFamily.Text, 'assets/fonts/rexlia.otf');
-    this.load.bitmapFont(FontFamily.Retro, 'assets/fonts/retro.png', 'assets/fonts/retro.xml');
+    this.loadFont(FontFamily.Text, 'fonts/rexlia.otf');
+    this.load.bitmapFont(FontFamily.Retro, 'fonts/retro.png', 'fonts/retro.xml');
   }
 
   private loadFont(name: string, url: string) {

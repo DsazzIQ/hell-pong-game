@@ -7,14 +7,14 @@ import Slider from '../../../components/Slider';
 import EventKey from '../../../constants/EventKey';
 import { VolumeSetting } from '../../../entities/settings/VolumeSetting';
 
-export default class VolumeSliderRow extends GameObjects.GameObject {
-  private iconButton: Button;
-  private slider: Slider;
+export default class VolumeSliderRow extends GameObjects.Container {
+  private iconButton!: Button;
+  private slider!: Slider;
   private readonly onUpdateEvent: EventKey;
-  private iconMatrix: FX.ColorMatrix;
+  private iconMatrix!: FX.ColorMatrix;
 
   constructor(scene: Scene, iconFrame: string, setting: VolumeSetting, offset: IPosition, onUpdateEvent: EventKey) {
-    super(scene, 'VolumeSliderRow');
+    super(scene);
 
     this.onUpdateEvent = onUpdateEvent;
 
@@ -41,9 +41,9 @@ export default class VolumeSliderRow extends GameObjects.GameObject {
       },
       setting.get()
     );
-    this.slider.container.setPosition(
-      this.iconButton.container.x + this.iconButton.sprite.width + this.slider.size.width,
-      this.iconButton.container.y
+    this.slider.setPosition(
+      this.iconButton.x + this.iconButton.sprite.width + this.slider.size.width,
+      this.iconButton.y
     );
   }
 
@@ -63,6 +63,6 @@ export default class VolumeSliderRow extends GameObjects.GameObject {
   }
 
   public getElements(): GameObjects.GameObject[] {
-    return [this.iconButton.container, this.slider.container];
+    return [this.iconButton, this.slider];
   }
 }

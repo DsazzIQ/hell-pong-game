@@ -9,7 +9,7 @@ enum SoundKey {
   BallHit = 'BallHit'
 }
 export function isSoundKey(key: string): boolean {
-  return Object.values(SoundKey).includes(key);
+  return Object.values(SoundKey).includes(key as SoundKey);
 }
 
 export default SoundKey;

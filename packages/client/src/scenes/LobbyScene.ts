@@ -17,7 +17,7 @@ import Game from '../Game';
 
 export default class LobbyScene extends Scene {
   private socket!: Socket;
-  private background: LavaBackground;
+  private background!: LavaBackground;
   private roomsContainer!: GameObjects.Container;
 
   constructor() {
@@ -25,7 +25,7 @@ export default class LobbyScene extends Scene {
   }
 
   public init(): void {
-    this.socket = this.registry.get<Socket>(RegistryKey.Socket);
+    this.socket = this.registry.get(RegistryKey.Socket) as Socket;
   }
 
   playTheme() {
@@ -96,7 +96,7 @@ export default class LobbyScene extends Scene {
     );
     createRoomButton.setOrigin(0, 1).setTextOrigin(-0.2, 1.75);
 
-    return createRoomButton.container;
+    return createRoomButton;
   }
 
   updateRoomList(rooms: IRoomInfo[]) {

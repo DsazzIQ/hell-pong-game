@@ -1,41 +1,35 @@
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
 import { ISize, Size } from '@hell-pong/shared/entities/component/Size';
-import { GameObjects, Geom, Input, Math, Scene, Sound } from 'phaser';
+import { GameObjects, Geom, Input, Math, Scene } from 'phaser';
 
-import Depth from '../constants/Depth';
 import SoundKey from '../constants/SoundKey';
 import TextureKey from '../constants/TextureKey';
 
 const SLIDER_SCALE = 2;
-export default class Slider extends GameObjects.GameObject {
+export default class Slider extends GameObjects.Container {
   private readonly trackContainer: GameObjects.Container;
-  private readonly _container: GameObjects.Container;
 
-  private value: number;
+  private value!: number;
 
-  private trackLeft: GameObjects.Image;
-  private trackCenter: GameObjects.Image;
-  private trackRight: GameObjects.Image;
-  private trackSize: Size;
+  private trackLeft!: GameObjects.Image;
+  private trackCenter!: GameObjects.Image;
+  private trackRight!: GameObjects.Image;
+  private trackSize!: Size;
 
-  private thumb: GameObjects.Image;
+  private thumb!: GameObjects.Image;
 
   private readonly onValueChanged: (value: number) => void;
-  private arrowLeft: GameObjects.Image;
-  private arrowRight: GameObjects.Image;
-
-  private touchSound: Sound.NoAudioSound | Sound.HTML5AudioSound | Sound.WebAudioSound;
+  private arrowLeft!: GameObjects.Image;
+  private arrowRight!: GameObjects.Image;
 
   constructor(scene: Scene, position: IPosition, onValueChanged: (value: number) => void, startValue = 0) {
-    super(scene, 'Slider');
+    super(scene, position.x, position.y);
+    this.setScale(SLIDER_SCALE);
 
     this.onValueChanged = onValueChanged;
 
-    this.touchSound = scene.sound.add(SoundKey.Touch);
-
     this.trackContainer = scene.add.container(0, 0);
-    this._container = scene.add.container(position.x, position.y).setDepth(Depth.Base).setScale(SLIDER_SCALE);
-    this._container.add(this.trackContainer);
+    this.add(this.trackContainer);
 
     this.initializeTrack(scene);
     this.initializeThumb(scene);
@@ -49,15 +43,11 @@ export default class Slider extends GameObjects.GameObject {
 
     this.setValue(startValue);
 
-    scene.input.enableDebug(this._container, 0xff00ff);
+    scene.input.enableDebug(this, 0xff00ff);
   }
 
   public get size(): ISize {
     return { width: this.trackSize.width + this.arrowLeft.width * 2, height: this.arrowLeft.height };
-  }
-
-  public get container() {
-    return this._container;
   }
 
   private initializeTrack(scene: Scene) {
@@ -85,7 +75,7 @@ export default class Slider extends GameObjects.GameObject {
       TextureKey.Gui.Frames.Slider.ArrowLeftOut
     );
     this.arrowLeft.setInteractive({ useHandCursor: true }).setOrigin(1, 0.5);
-    this._container.add(this.arrowLeft);
+    this.add(this.arrowLeft);
   }
 
   private initRightArrow(scene: Scene) {
@@ -96,7 +86,7 @@ export default class Slider extends GameObjects.GameObject {
       TextureKey.Gui.Frames.Slider.ArrowRightOut
     );
     this.arrowRight.setInteractive({ useHandCursor: true }).setOrigin(0, 0.5);
-    this._container.add(this.arrowRight);
+    this.add(this.arrowRight);
   }
 
   private initTrackSize() {
@@ -196,11 +186,11 @@ export default class Slider extends GameObjects.GameObject {
   }
 
   private get leftDraggableBorder(): number {
-    return this.trackLeft.getLeftCenter().x + this.thumb.width * 0.5;
+    return (this.trackLeft.getLeftCenter().x ?? 0) + this.thumb.width * 0.5;
   }
 
   private get rightDraggableBorder(): number {
-    return this.trackRight.getRightCenter().x - this.thumb.width * 0.5;
+    return (this.trackRight?.getRightCenter().x ?? 0) - (this.thumb?.width ?? 0) * 0.5;
   }
 
   private updateThumbPosition(x: number) {
@@ -226,6 +216,6 @@ export default class Slider extends GameObjects.GameObject {
   }
 
   private playTouch() {
-    this.touchSound.play();
+    this.scene.sound.get(SoundKey.Touch).play();
   }
 }

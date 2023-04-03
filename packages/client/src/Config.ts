@@ -1,7 +1,6 @@
 import { GAME_FPS, GAME_HEIGHT, GAME_WIDTH } from '@hell-pong/shared/constants';
 import { AUTO, Scale, Types } from 'phaser';
 import AwaitLoaderPlugin from 'phaser3-rex-plugins/plugins/awaitloader-plugin.js';
-import GlowFilterPipelinePlugin from 'phaser3-rex-plugins/plugins/glowfilter2pipeline-plugin';
 
 import GameScene from './scenes/GameScene';
 import LobbyScene from './scenes/LobbyScene';
@@ -11,7 +10,7 @@ import SettingsScene from './scenes/settings/SettingsScene';
 import SplashScene from './scenes/splash/SplashScene';
 
 const GameConfig: Types.Core.GameConfig = {
-  parent: 'game-container',
+  parent: 'game',
   type: AUTO,
   width: GAME_WIDTH,
   height: GAME_HEIGHT,
@@ -37,11 +36,6 @@ const GameConfig: Types.Core.GameConfig = {
       {
         key: 'rexAwaitLoader',
         plugin: AwaitLoaderPlugin,
-        start: true
-      },
-      {
-        key: 'rexGlowFilterPipeline',
-        plugin: GlowFilterPipelinePlugin,
         start: true
       }
     ]

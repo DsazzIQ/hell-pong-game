@@ -7,12 +7,13 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "lerna run build --scope=@hell-pong/{shared,server,client} --parallel",
-    "start": "lerna run start --scope=@hell-pong/{shared,server,client} --parallel",
+    "build": "lerna run build --scope=@hell-pong/shared && lerna run build --scope=@hell-pong/{server,client} --parallel",
+    "start": "lerna run start ---scope=@hell-pong/shared && lerna run start --scope=@hell-pong/{server,client} --parallel",
     "start:client": "lerna run start --scope=@hell-pong/{shared,client} --parallel",
     "start:server": "lerna run start --scope=@hell-pong/{shared,server} --parallel",
     "lint": "lerna run lint --parallel",
     "lint:fix": "lerna run lint:fix --parallel",
+    "test": "lerna run test --scope=@hell-pong/client",
     "clean": "lerna clean",
     "clean:update": "lerna clean && lerna bootstrap"
   },

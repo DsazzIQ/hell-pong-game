@@ -5,10 +5,13 @@
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
-    "start": "webpack serve --mode development --open",
-    "build": "webpack --mode production",
+    "start": "vite --open",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
     "lint": "eslint . --ext .ts --ext .js",
-    "lint:fix": "eslint . --ext .ts --ext .js --fix"
+    "lint:fix": "eslint . --ext .ts --ext .js --fix",
+    "test": "vitest --run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@hell-pong/shared": "^1.0.0",
@@ -18,15 +21,13 @@
     "tweakpane": "^3.1.7"
   },
   "devDependencies": {
+    "@rollup/plugin-replace": "^5.0.2",
     "@tweakpane/core": "^1.1.6",
-    "clean-webpack-plugin": "^4.0.0",
-    "compression-webpack-plugin": "^10.0.0",
-    "copy-webpack-plugin": "^11.0.0",
-    "html-webpack-plugin": "^5.5.0",
-    "ts-loader": "^9.2.6",
-    "tsconfig-paths-webpack-plugin": "^4.0.1",
-    "webpack": "^5.65.0",
-    "webpack-cli": "^4.9.1",
-    "webpack-dev-server": "^4.7.3"
+    "canvas": "^2.11.2",
+    "jsdom": "^21.1.1",
+    "phaser3spectorjs": "^0.0.8",
+    "vite": "^4.2.1",
+    "vite-plugin-checker": "^0.5.6",
+    "vitest": "^0.29.8"
   }
 }
