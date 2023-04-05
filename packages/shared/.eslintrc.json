@@ -4,7 +4,7 @@
     "node": true
   },
   "extends": [
-    "../../.eslintrc.base.json"
+    "../../.eslintrc.json"
   ],
   "parserOptions": {
     "project": "./tsconfig.json"
