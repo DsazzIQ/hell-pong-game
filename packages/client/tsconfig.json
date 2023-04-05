@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "dist",
@@ -19,7 +19,7 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-    "types": ["vite/client", "phaser"],
+    "types": ["vite/client"],
     "strict": true,
     "resolveJsonModule": true,
     "isolatedModules": true,

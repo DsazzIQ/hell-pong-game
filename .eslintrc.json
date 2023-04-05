@@ -5,6 +5,7 @@
     "import",
     "node",
     "promise",
+    "eslint-plugin-prettier",
     "prettier",
     "simple-import-sort"
   ],

@@ -4,3 +4,5 @@ node_modules/
 /packages/**/tsconfig.tsbuildinfo
 /yarn-error.log
 /packages/shared/yarn-error.log
+.vscode
+.idea
