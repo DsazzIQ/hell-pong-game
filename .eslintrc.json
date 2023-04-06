@@ -9,7 +9,6 @@
     "prettier",
     "simple-import-sort"
   ],
-
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
