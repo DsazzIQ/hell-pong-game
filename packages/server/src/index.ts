@@ -3,7 +3,7 @@ import { PlayerMove } from '@hell-pong/shared/gameData/Player';
 import express from 'express';
 import http from 'http';
 import path from 'path';
-import { Server as SocketIOServer, Socket } from 'socket.io';
+import { Socket, Server as SocketIOServer } from 'socket.io';
 
 import { ServerToClientEvents } from '../../shared/src/types/socket.io';
 import GameRoomHandler from './handlers/GameRoomHandler';

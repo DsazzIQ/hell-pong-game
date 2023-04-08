@@ -5,7 +5,16 @@
   ],
   "ignorePatterns": ["vite.config.js"],
   "parserOptions": {
-    "project": "./tsconfig.json"
+    "project": [
+      "./tsconfig.json"
+    ]
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "project": "./tsconfig.json"
+      }
+    }
   },
   "rules": {
     "@typescript-eslint/explicit-module-boundary-types": "off",

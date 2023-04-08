@@ -102,26 +102,76 @@ export default class LobbyScene extends Scene {
   updateRoomList(rooms: IRoomInfo[]) {
     this.roomsContainer.removeAll(true);
 
-    rooms.forEach((room: IRoomInfo, index: number) => {
-      const roomInfo = this.add.text(
-        0,
-        index * 50,
-        `Room ID: ${room.id.slice(0, 15)}\n  Players: ${room.players
-          .map((player) => player.id.slice(0, 10))
-          .join(' \n')}`,
-        { fontSize: '20px', color: '#FFF' }
-      );
-      this.roomsContainer.add(roomInfo);
+    const TABLE_OFFSET = { x: 40, y: 20 };
+    const TEXT_OFFSET = 15;
+    const tableX = ROW_OFFSET.x - TABLE_OFFSET.x;
+    const tableY = ROW_OFFSET.y - TABLE_OFFSET.y;
+    const colWidth = 320;
+    const rowHeight = 40;
+    const rowColor = [0x202020, 0x303030];
 
-      const joinBtn = this.add.text(roomInfo.width + 20, index * 50, 'Join', {
+    const graphics = this.add.graphics();
+
+    // Draw table headers
+    graphics.fillStyle(0x000000, 1);
+    graphics.fillRect(tableX, tableY, colWidth, rowHeight);
+    graphics.fillRect(tableX + colWidth, tableY, colWidth, rowHeight);
+
+    const headerTextX = tableX + 10;
+    const headerTextY = tableY + 20;
+    const headerRoomId = this.add
+      .text(headerTextX, headerTextY, 'Room ID', { fontFamily: FontFamily.Text, fontSize: '20px', color: '#FFF' })
+      .setOrigin(0, 0.5);
+    const headerPlayers = this.add
+      .text(headerTextX + colWidth, headerTextY, 'Players', {
+        fontFamily: FontFamily.Text,
         fontSize: '20px',
-        color: '#0F0'
-      });
+        color: '#FFF'
+      })
+      .setOrigin(0, 0.5);
+
+    this.roomsContainer.add([graphics, headerRoomId, headerPlayers]);
+
+    // Draw table rows
+    rooms.forEach((room: IRoomInfo, index: number) => {
+      const rowY = tableY + (index + 1) * rowHeight;
+
+      graphics.fillStyle(rowColor[index % 2], 0.7);
+      graphics.fillRect(tableX, rowY, colWidth, rowHeight);
+      graphics.fillRect(tableX + colWidth, rowY, colWidth, rowHeight);
+
+      const roomIdText = this.add
+        .text(tableX + TEXT_OFFSET, rowY + rowHeight / 2, `${room.id.slice(0, 15)}`, {
+          fontFamily: FontFamily.Text,
+          fontSize: '20px',
+          color: '#FFF'
+        })
+        .setOrigin(0, 0.5);
+
+      const playersText = this.add
+        .text(tableX + colWidth + TEXT_OFFSET, rowY + rowHeight / 2, `${room.players.length}`, {
+          fontFamily: FontFamily.Text,
+          fontSize: '20px',
+          color: '#FFF'
+        })
+        .setOrigin(0, 0.5);
+
+      const joinBtn = this.add
+        .text(tableX + 2 * colWidth - 70, rowY + rowHeight / 2, 'Join', {
+          fontFamily: FontFamily.Text,
+          fontSize: '20px',
+          color: '#0F0'
+        })
+        .setOrigin(0, 0.5);
+
       joinBtn.setInteractive();
-      joinBtn.on('pointerdown', () => {
-        this.joinRoom(room.id);
-      });
-      this.roomsContainer.add(joinBtn);
+      joinBtn
+        .on('pointerdown', () => {
+          this.joinRoom(room.id);
+        })
+        .setOrigin(0, 0.5);
+
+      this.roomsContainer.add([roomIdText, playersText, joinBtn]);
     });
   }
 

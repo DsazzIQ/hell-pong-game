@@ -16,7 +16,11 @@
     "removeComments": true,
     "paths": {
       "@hell-pong/shared/*": ["../shared/src/*"]
-    }
+    },
+    "typeRoots": [
+      "node_module",
+      "types"
+    ],
   },
   "references": [
     {

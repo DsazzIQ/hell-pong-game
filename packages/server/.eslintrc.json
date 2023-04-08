@@ -9,10 +9,12 @@
   "settings": {
     "import/resolver": {
       "typescript": {
-        "project": "./tsconfig.json",
-        "alwaysTryTypes": true
+        "project": [
+          "./tsconfig.json",
+          "../../tsconfig.json"
+        ]
       }
-    },
+  },
     "import/parsers": {
       "@typescript-eslint/parser": [".ts"]
     },
