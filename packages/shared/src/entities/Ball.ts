@@ -40,7 +40,6 @@ export class Ball extends Entity {
     this.setVelocity(new Velocity(velocityX, velocityY));
   }
 
-  // Function to limit the ball's velocity
   limitMaxSpeed() {
     const { x, y } = this.body.velocity;
     const currentSpeed = this.body.speed;
@@ -48,8 +47,11 @@ export class Ball extends Entity {
     if (currentSpeed > BALL_MAX_SPEED) {
       // Calculate the scaling factor to limit the ball's speed
       const scaleFactor = BALL_MAX_SPEED / currentSpeed;
-
       // Set the ball's velocity to the scaled velocity
+      this.setVelocity(new Velocity(x * scaleFactor, y * scaleFactor));
+    } else if (currentSpeed < BALL_SPEED) {
+      // Set the ball's velocity to the minimum speed
+      const scaleFactor = BALL_SPEED / currentSpeed;
       this.setVelocity(new Velocity(x * scaleFactor, y * scaleFactor));
     }
   }
@@ -61,26 +63,47 @@ export class Ball extends Entity {
 
     if (this.collidesInPairWith(pair, PADDLE_LABEL_ONE)) {
       console.log('BALL COLLIDED WITH', PADDLE_LABEL_ONE);
-      // const paddle = [pair.bodyA, pair.bodyB].find(b => b.label === PADDLE_LABEL_ONE)!;
       return this.invertVelocityX();
     }
 
     if (this.collidesInPairWith(pair, PADDLE_LABEL_TWO)) {
       console.log('BALL COLLIDED WITH', PADDLE_LABEL_TWO);
-      // const paddle = [pair.bodyA, pair.bodyB].find(b => b.label === PADDLE_LABEL_TWO)!;
       return this.invertVelocityX();
     }
 
     if (this.collidingWithVerticalWalls(pair)) {
-      // console.log('BALL COLLIDED WITH: VERTICAL WALL');
-      // return this.invertVelocityY();
+      console.log('BALL COLLIDED WITH: VERTICAL WALL');
+      return this.invertVelocityY().applyRandomForce();
     }
 
     if (this.collidingWithHorizontalWalls(pair)) {
-      // console.log('BALL COLLIDED WITH: HORIZONT WALL');
-      // return this.invertVelocityX();
+      console.log('BALL COLLIDED WITH: HORIZONT WALL');
+      return this.invertVelocityX().applyRandomForce();
     }
 
+    return this;
+  }
+
+  // applyRandomForce(): this {
+  //   // Calculate a random angle for the force
+  //   const angle = Math.random() * Math.PI * 2;
+  //
+  //   // Calculate the force vector based on the angle and a random magnitude
+  //   const magnitude = Math.random() * 0.05;
+  //   const force = { x: Math.cos(angle) * magnitude, y: Math.sin(angle) * magnitude };
+  //
+  //   // Apply the force to the ball
+  //   Body.applyForce(this.body, this.body.position, force);
+  //
+  //   return this;
+  applyRandomForce(): this {
+    const randomX = Math.random() * 0.01;
+    const randomY = Math.random() * 0.01;
+    const force = {
+      x: randomX,
+      y: randomY
+    };
+    Body.applyForce(this.body, this.body.position, force);
     return this;
   }
 

@@ -1,4 +1,4 @@
-import { Bodies, Body, Vector } from 'matter-js';
+import { Bodies, Body, Vector, World } from 'matter-js';
 
 import {
   GAME_HEIGHT,
@@ -116,11 +116,8 @@ export class Paddle extends Entity {
     return new Position(paddleX, paddleY);
   }
 
-  resetPosition(): this {
-    const initialPosition = this.calculateInitialPosition(this.playerIndex);
-    Body.setPosition(this.body, Vector.create(initialPosition.x, initialPosition.y));
-    Body.setVelocity(this.body, Vector.create(0, 0));
-    return this;
+  removeFromWorld(world: World): void {
+    World.remove(world, this.body);
   }
 
   static fromJson({ playerIndex, position, velocity, size }: IPaddle): Paddle {
