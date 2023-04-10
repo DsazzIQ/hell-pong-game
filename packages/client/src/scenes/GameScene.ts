@@ -30,7 +30,6 @@ interface GamePlayer {
   paddle: Physics.Matter.Image;
 }
 export default class GameScene extends Scene {
-  private roomId!: string;
   private initData!: IGameState;
 
   private ball!: Physics.Matter.Image;
@@ -47,30 +46,48 @@ export default class GameScene extends Scene {
 
   private pane!: Pane;
 
-  private isPaused = false;
+  private isPaused = true;
 
   constructor() {
     super(SceneKey.Game);
   }
 
   private stopGame() {
-    this.pane.hidden = true;
-    this.isPaused = true;
-    this.isPaused = false;
+    this.pauseGame();
+    this.pane.dispose();
     this.lastReceivedTime = null;
-    this.gameStateBuffer = [];
+    this.gameStateBuffer.length = 0;
+
+    this.players.forEach((player) => player.paddle.destroy());
+    this.ball.destroy();
+
+    this.initData = {
+      roomId: '',
+      ball: { position: { x: 0, y: 0 }, velocity: { x: 0, y: 0 } },
+      players: [],
+      lastUpdateTime: 0
+    };
+  }
+
+  private pauseGame() {
+    this.isPaused = true;
+  }
+
+  private continueGame() {
+    this.isPaused = false;
   }
 
   public init(data: IGameState): void {
-    this.roomId = data.roomId;
-    console.log('[roomId]', this.roomId);
+    this.continueGame();
+    console.log('>> INIT GAME SCENE <<');
+    console.log('    ', data);
 
     this.initData = data;
     this.socket = this.registry.get(RegistryKey.Socket) as Socket;
+
     this.pane = new Pane({
       title: 'GameState'
     });
-    this.pane.hidden = false;
     this.pane.addMonitor(this.game.loop, 'actualFps', { view: 'graph' });
     this.pane.addFolder({ title: 'Buffer Size' }).addMonitor(this.gameStateBuffer, 'length');
   }
@@ -158,6 +175,8 @@ export default class GameScene extends Scene {
   }
 
   public create(): void {
+    console.log('>> CREATE GAME SCENE <<');
+    console.log('    ', this);
     this.matter.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT, 1);
 
     // Set up keyboard controls
@@ -221,8 +240,16 @@ export default class GameScene extends Scene {
       console.log('[onGameStateUpdate] game is on pause');
       return;
     }
-    this.gameStateBuffer.push(gameState);
+    this.addToBuffer(gameState);
     this.lastReceivedTime = this.getCurrentTime();
+  }
+
+  private addToBuffer(gameState: GameState) {
+    this.gameStateBuffer.push(gameState);
+
+    if (this.gameStateBuffer.length > MAX_BUFFER_SIZE) {
+      this.gameStateBuffer.shift(); // remove the oldest element
+    }
   }
 
   private calculateInterpolationDelta() {
@@ -248,20 +275,11 @@ export default class GameScene extends Scene {
     }
   }
 
-  private clearOldGameBufferOnMaxSize() {
-    // Buffer management: remove the oldest state if the buffer size exceeds the limit
-    if (this.gameStateBuffer.length > MAX_BUFFER_SIZE) {
-      this.gameStateBuffer.shift();
-    }
-  }
-
   private applyServerReconciliation() {
     if (!this.lastReceivedTime || this.gameStateBuffer.length < MIN_BUFFER_SIZE_INTERPOLATION) {
       console.log('[applyServerReconciliation]: skip');
       return;
     }
-
-    this.clearOldGameBufferOnMaxSize();
 
     const previousState = this.gameStateBuffer[0];
     const nextState = this.gameStateBuffer[1];
@@ -297,6 +315,7 @@ export default class GameScene extends Scene {
   public update(): void {
     if (this.isPaused) {
       // Don't update the game loop if the game is paused
+      console.log('[Update prevented]');
       return;
     }
 
@@ -307,6 +326,7 @@ export default class GameScene extends Scene {
   public destroy(): void {
     // Remove the visibility change event listener
     document.removeEventListener('visibilitychange', this.handleVisibilityChange.bind(this));
+    this.stopGame();
     // ...rest of the destroy method
   }
 }

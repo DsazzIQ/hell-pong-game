@@ -19,8 +19,8 @@ export default class GameRoom {
   private players: Player[] = [];
   private ball!: Ball;
 
-  private readonly engine: Engine;
-  private readonly world: World;
+  private engine!: Engine;
+  private world!: World;
   private topWall!: Body;
   private bottomWall!: Body;
   private leftWall!: Body;
@@ -32,6 +32,10 @@ export default class GameRoom {
   constructor(roomId: string) {
     this.id = roomId;
 
+    this.resetEngine();
+  }
+
+  private resetEngine(): void {
     this.engine = Engine.create();
     this.engine.gravity.x = 0;
     this.engine.gravity.y = 0;
@@ -122,12 +126,13 @@ export default class GameRoom {
 
   stopGame(io: Server): void {
     this.gameStarted = false;
+    this.lastUpdateTime = 0;
+
+    this.resetEngine();
     this.players.forEach((player) => {
-      player.resetPaddle();
+      player.resetPaddle(this.world);
       player.setNotReady();
     });
-    this.ball.resetPosition();
-    this.lastUpdateTime = 0;
 
     io.to(this.id).emit('gameStopped');
   }
@@ -145,10 +150,15 @@ export default class GameRoom {
   }
 
   private addPlayer(id: string): Player {
-    const playerIndex = this.players.length ? PlayerIndex.FIRST : PlayerIndex.SECOND;
+    const usedIndexes = this.players.map((player) => player.index);
+    let playerIndex = PlayerIndex.FIRST;
+
+    if (usedIndexes.includes(PlayerIndex.FIRST)) {
+      playerIndex = PlayerIndex.SECOND;
+    }
+
     const player = new Player(id, playerIndex);
     player.paddle.addToWorld(this.world);
-
     this.players.push(player);
 
     return player;
@@ -181,6 +191,8 @@ export default class GameRoom {
     const playerIndex = this.players.findIndex((player) => player.id === playerId);
 
     if (playerIndex !== -1) {
+      const player = this.players[playerIndex];
+      player.paddle.removeFromWorld(this.world);
       this.players.splice(playerIndex, 1);
       return true;
     }

@@ -1,4 +1,5 @@
 import { IPaddle, Paddle } from '../entities/Paddle';
+import { World } from 'matter-js';
 
 export enum PlayerMove {
   UP = 'UP',
@@ -51,8 +52,10 @@ export default class Player implements IPlayer {
     return this.readyState === PlayerReadyState.NOT_READY;
   }
 
-  resetPaddle(): this {
-    this.paddle.resetPosition();
+  resetPaddle(world: World): this {
+    this.paddle.removeFromWorld(world);
+    this.paddle = new Paddle(this.index);
+    this.paddle.addToWorld(world);
     return this;
   }
 

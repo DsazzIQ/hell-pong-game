@@ -27,6 +27,8 @@ export default class LobbyScene extends Scene {
   private socket!: Socket;
   private background!: LavaBackground;
   private roomsContainer!: GameObjects.Container;
+  private myRoom: IRoomInfo | undefined;
+  private createRoomButton!: BitmapTextButton;
 
   constructor() {
     super(SceneKey.Lobby);
@@ -91,9 +93,9 @@ export default class LobbyScene extends Scene {
     return [title, id];
   }
 
-  private initCreateRoomButton() {
+  private initCreateRoomButton(): BitmapTextButton {
     const BUTTON_OFFSET = { y: 30 };
-    const createRoomButton = new BitmapTextButton(
+    this.createRoomButton = new BitmapTextButton(
       this,
       { x: ROW_OFFSET.x, y: ROW_OFFSET.y + BUTTON_OFFSET.y },
       TextureKey.Gui.Frames.Button.Main,
@@ -104,11 +106,12 @@ export default class LobbyScene extends Scene {
       1.2,
       () => {
         this.socket.emit('createRoom');
+        this.createRoomButton.setVisible(false);
       }
     );
-    createRoomButton.setOrigin(0, 1).setTextOrigin(-0.2, 1.75);
+    this.createRoomButton.setOrigin(0, 1).setTextOrigin(-0.2, 1.75);
 
-    return createRoomButton;
+    return this.createRoomButton;
   }
 
   private hasRoomPlayer(room: IRoomInfo, playerId: string): boolean {
@@ -139,24 +142,25 @@ export default class LobbyScene extends Scene {
     const colWidth = 320;
     const rowHeight = 40;
 
-    const myRoom = this.findMyRoom(rooms);
+    this.myRoom = this.findMyRoom(rooms);
     let me: Player | undefined;
     const rows: Array<{ priority: number; row: GameObjects.Container }> = [];
 
     let index = 0;
-    if (myRoom) {
-      me = this.findRoomPlayer(myRoom, this.myId());
+    if (this.myRoom) {
+      me = this.findRoomPlayer(this.myRoom, this.myId());
       const readVisible = me !== undefined && me.isNotReady();
 
       rows.push({
         priority: RowPriority.HIGH,
-        row: this.createRoomRow(myRoom, index, tablePos, colWidth, rowHeight, false, readVisible, true)
+        row: this.createRoomRow(this.myRoom, index, tablePos, colWidth, rowHeight, false, readVisible, true)
       });
       index++;
     }
 
     rooms.forEach((room: IRoomInfo) => {
-      if (room.id === myRoom?.id) return;
+      if (room.id === this.myRoom?.id) return;
+
       const isJoinable = me === undefined;
       const priority = room.players.length === 1 ? RowPriority.MIDDLE : RowPriority.LOW;
       rows.push({
@@ -311,5 +315,6 @@ export default class LobbyScene extends Scene {
 
   update() {
     this.background.move();
+    this.createRoomButton.setVisible(this.myRoom === undefined);
   }
 }

@@ -65,6 +65,14 @@ export default class Button extends GameObjects.Container {
   }
 
   protected onClick(onClick: () => void) {
+    if (!this.active) return; // Prevent multiple clicks
+
+    // Disable the button for a certain amount of time
+    this.active = false;
+    setTimeout(() => {
+      this.active = true;
+    }, 1000);
+
     this.playOnClick();
 
     const scaleFactor = this.scale - 0.1;
