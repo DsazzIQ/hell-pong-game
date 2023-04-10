@@ -3,7 +3,6 @@
   "extends": [
     "../../.eslintrc.json"
   ],
-  "ignorePatterns": ["vite.config.js"],
   "parserOptions": {
     "project": [
       "./tsconfig.json"
@@ -16,6 +15,7 @@
       }
     }
   },
+  "ignorePatterns": ["vite.config.js"],
   "rules": {
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-empty-interface": "off"

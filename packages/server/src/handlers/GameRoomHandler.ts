@@ -39,6 +39,39 @@ export default class GameRoomHandler {
     return room;
   }
 
+  playerReady(socket: Socket, roomId: string): void {
+    console.log(`[GameRoomHandler:playerReady]`);
+    const room = this.getRoom(roomId);
+
+    if (!room) {
+      console.log(`    Room ${roomId} not found.`);
+      socket.emit('playerReadyFailed', {
+        roomId,
+        message: `Room ${roomId} not found.`
+      });
+      return;
+    }
+
+    const player = room.findPlayer(socket.id);
+    if (!player) {
+      console.log(`    You are not in room ${roomId}`);
+      socket.emit('playerReadyFailed', {
+        roomId,
+        message: `You are not in room ${roomId}`
+      });
+      return;
+    }
+
+    console.log(`    Player ${socket.id} ready for game in room ${roomId}.`);
+    player.imReady();
+    this.emitRoomListUpdate();
+
+    if (room.arePlayersReady()) {
+      console.log(`    Starts game in the room ${roomId}.`);
+      room.startGame(this.io);
+    }
+  }
+
   joinRoom(socket: Socket, roomId: string): GameRoom | null {
     console.log(`[GameRoomHandler:joinRoom]`);
     const room = this.getRoom(roomId);
@@ -65,8 +98,7 @@ export default class GameRoomHandler {
 
     socket.join(roomId);
     console.log(`    Player ${socket.id} joined room ${roomId}.`);
-    socket.emit('joinedRoom', room.toJson());
-    room.startGame(this.io);
+    this.emitRoomListUpdate();
 
     return room;
   }
@@ -114,12 +146,16 @@ export default class GameRoomHandler {
         console.log(`   Player ${playerId} has left the room ${room.id}`);
       }
 
-      // Remove the room if it's empty
       if (room.isEmpty()) {
-        console.log(`   Room with ID ${room.id} is empty, removing the room`);
+        console.log(`   Room ID ${room.id} is empty, removing the room`);
         this.removeRoom(room.id);
+      } else if (room.isGameStarted()) {
+        console.log(`   Stopping the game for room ${room.id}`);
+        room.stopGame(this.io);
       }
     }
+
+    this.emitRoomListUpdate();
 
     return true;
   }

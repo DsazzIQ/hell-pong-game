@@ -9,8 +9,7 @@ import {
   TOP_WALL_LABEL
 } from '@hell-pong/shared/constants';
 import { Ball } from '@hell-pong/shared/entities/Ball';
-import GameState from '@hell-pong/shared/gameData/GameState';
-import { IGameState, IRoomInfo } from '@hell-pong/shared/gameData/GameState';
+import GameState, { IGameState, IRoomInfo } from '@hell-pong/shared/gameData/GameState';
 import Player, { PlayerIndex } from '@hell-pong/shared/gameData/Player';
 import { Bodies, Body, Engine, Events, Pair, World } from 'matter-js';
 import { Server } from 'socket.io';
@@ -64,6 +63,7 @@ export default class GameRoom {
       x: bounds.width * 0.5,
       y: bounds.height + bounds.thickness * 0.5
     });
+
     this.bottomWall.label = BOTTOM_WALL_LABEL;
 
     this.leftWall = Bodies.rectangle(0, 0, bounds.thickness, bounds.thickness, bounds.options);
@@ -120,8 +120,24 @@ export default class GameRoom {
     io.to(this.id).emit('startGame', this.getGameState());
   }
 
+  stopGame(io: Server): void {
+    this.gameStarted = false;
+    this.players.forEach((player) => {
+      player.resetPaddle();
+      player.setNotReady();
+    });
+    this.ball.resetPosition();
+    this.lastUpdateTime = 0;
+
+    io.to(this.id).emit('gameStopped');
+  }
+
   isFull(): boolean {
-    return this.players.length >= MAX_ROOM_PLAYERS;
+    return this.players.length === MAX_ROOM_PLAYERS;
+  }
+
+  arePlayersReady(): boolean {
+    return this.isFull() && this.players.every((player: Player) => player.isReady());
   }
 
   isEmpty(): boolean {
@@ -134,7 +150,6 @@ export default class GameRoom {
     player.paddle.addToWorld(this.world);
 
     this.players.push(player);
-    // World.add(this.world, player.paddle.getBody());
 
     return player;
   }

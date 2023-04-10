@@ -39,7 +39,6 @@ export class Paddle extends Entity {
     const width = size ? size.width : initialSize.width;
     const height = size ? size.height : initialSize.height;
 
-    console.log('CREATE PADDLE');
     const options = {
       friction: 0,
       frictionAir: 0,
@@ -117,7 +116,14 @@ export class Paddle extends Entity {
     return new Position(paddleX, paddleY);
   }
 
-  fromJson({ playerIndex, position, velocity, size }: IPaddle): Paddle {
+  resetPosition(): this {
+    const initialPosition = this.calculateInitialPosition(this.playerIndex);
+    Body.setPosition(this.body, Vector.create(initialPosition.x, initialPosition.y));
+    Body.setVelocity(this.body, Vector.create(0, 0));
+    return this;
+  }
+
+  static fromJson({ playerIndex, position, velocity, size }: IPaddle): Paddle {
     return new Paddle(playerIndex, position, velocity, size);
   }
 

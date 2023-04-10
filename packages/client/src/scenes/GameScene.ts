@@ -18,6 +18,7 @@ import FontSize from '../constants/FontSize';
 import RegistryKey from '../constants/RegistryKey';
 import SceneKey from '../constants/SceneKey';
 import TextureKey from '../constants/TextureKey';
+import Game from '../Game';
 
 const ALPHA_THRESHOLD = 1;
 const MIN_BUFFER_SIZE_INTERPOLATION = 2;
@@ -52,6 +53,14 @@ export default class GameScene extends Scene {
     super(SceneKey.Game);
   }
 
+  private stopGame() {
+    this.pane.hidden = true;
+    this.isPaused = true;
+    this.isPaused = false;
+    this.lastReceivedTime = null;
+    this.gameStateBuffer = [];
+  }
+
   public init(data: IGameState): void {
     this.roomId = data.roomId;
     console.log('[roomId]', this.roomId);
@@ -61,6 +70,7 @@ export default class GameScene extends Scene {
     this.pane = new Pane({
       title: 'GameState'
     });
+    this.pane.hidden = false;
     this.pane.addMonitor(this.game.loop, 'actualFps', { view: 'graph' });
     this.pane.addFolder({ title: 'Buffer Size' }).addMonitor(this.gameStateBuffer, 'length');
   }
@@ -164,6 +174,12 @@ export default class GameScene extends Scene {
     // Listen for game updates from the server and handle server reconciliation
     this.socket.on('gameStateUpdate', (gameState: IGameState) => {
       this.onGameStateUpdate(gameState);
+    });
+
+    this.socket.once('gameStopped', () => {
+      const { startTransition } = this.game as Game;
+      this.stopGame();
+      startTransition(this, SceneKey.Lobby);
     });
 
     // Add visibility change event listeners

@@ -43,6 +43,10 @@ io.on('connection', (socket: Socket) => {
     roomManager.joinRoom(socket, roomId);
   });
 
+  socket.on('playerReady', (data: { roomId: string }) => {
+    roomManager.playerReady(socket, data.roomId);
+  });
+
   socket.on('playerMoved', (data: { key: PlayerMove }) => {
     roomManager.onPlayerMoved(socket, data.key);
   });

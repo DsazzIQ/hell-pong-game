@@ -106,6 +106,12 @@ export class Ball extends Entity {
     return this;
   }
 
+  resetPosition(): this {
+    const initialPosition = new Position(this.initX, this.initY);
+    Body.setPosition(this.body, initialPosition.toJson());
+    return this;
+  }
+
   private setVelocity(velocity: Velocity): this {
     Body.setVelocity(this.body, velocity.toJson());
     return this;
