@@ -12,7 +12,10 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "composite": true,
-    "target": "es2021"
+    "target": "es2021",
+    "paths": {
+      "@hell-pong/shared/*": ["src/*"]
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["**/node_modules/**", "node_modules", "dist"]

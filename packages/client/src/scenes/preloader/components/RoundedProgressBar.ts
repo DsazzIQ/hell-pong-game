@@ -1,5 +1,4 @@
 import LineProgress from 'phaser3-rex-plugins/plugins/gameobjects/canvas/lineprogress/LineProgress';
-
 import Game from '../../../Game';
 
 const PROGRESS_BOX_WIDTH = 250;

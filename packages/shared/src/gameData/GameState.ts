@@ -1,13 +1,9 @@
 import { Ball, IBall } from '../entities/Ball';
 import Player, { IPlayer } from './Player';
 
-export interface IPlayerInfo {
-  id: string;
-}
-
 export interface IRoomInfo {
   id: string;
-  players: Array<IPlayerInfo>;
+  players: Array<IPlayer>;
 }
 
 export interface IGameState {
