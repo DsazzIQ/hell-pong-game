@@ -19,6 +19,7 @@
     "project": "./tsconfig.json"
   },
   "rules": {
+    "import/no-named-as-default-member": "off",
     "import/no-extraneous-dependencies": "off",
     "import/named": "off",
     "import/namespace": "off",
