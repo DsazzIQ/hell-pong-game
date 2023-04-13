@@ -34,7 +34,7 @@ export default {
         },
     },
     optimizeDeps: {
-        include: ['canvas', 'phaser', '@hell-pong/shared'],
+        include: ['canvas', 'phaser'],
     },
     typeCheck: {
         eslint: {
