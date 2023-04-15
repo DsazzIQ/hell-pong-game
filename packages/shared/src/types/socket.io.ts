@@ -7,4 +7,5 @@ export interface ServerToClientEvents {
 }
 export interface ClientToServerEvents {
   //TODO: add all types
+  hello: () => void;
 }
