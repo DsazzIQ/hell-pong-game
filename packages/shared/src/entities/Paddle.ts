@@ -1,20 +1,11 @@
 import { Bodies, Body, Vector, World } from 'matter-js';
 
-import {
-  GAME_HEIGHT,
-  GAME_WIDTH,
-  PADDLE_HEIGHT,
-  PADDLE_LABEL_ONE,
-  PADDLE_LABEL_TWO,
-  PADDLE_OFFSET,
-  PADDLE_SPEED,
-  PADDLE_WIDTH
-} from '../constants';
 import { PlayerIndex, PlayerMove } from '../gameData/Player';
 import { IPosition, Position } from './component/Position';
 import { ISize, Size } from './component/Size';
 import { IVelocity, Velocity } from './component/Velocity';
 import { Entity } from './Entity';
+import { Game } from '@hell-pong/shared/constants/game';
 
 export interface IPaddle {
   playerIndex: PlayerIndex;
@@ -25,7 +16,7 @@ export interface IPaddle {
 
 export class Paddle extends Entity {
   playerIndex: PlayerIndex;
-  private readonly speed: number = PADDLE_SPEED;
+  private readonly speed: number = Game.Paddle.Speed;
 
   constructor(playerIndex: PlayerIndex, position?: IPosition, velocity?: IVelocity, size?: ISize) {
     super();
@@ -35,7 +26,7 @@ export class Paddle extends Entity {
     const x = position ? position.x : initialPosition.x;
     const y = position ? position.y : initialPosition.y;
 
-    const initialSize = new Size(PADDLE_WIDTH, PADDLE_HEIGHT);
+    const initialSize = new Size(Game.Paddle.Width, Game.Paddle.Height);
     const width = size ? size.width : initialSize.width;
     const height = size ? size.height : initialSize.height;
 
@@ -45,7 +36,7 @@ export class Paddle extends Entity {
       restitution: 0,
       inertia: Number.MAX_SAFE_INTEGER,
       mass: Number.MAX_SAFE_INTEGER,
-      label: playerIndex === PlayerIndex.FIRST ? PADDLE_LABEL_ONE : PADDLE_LABEL_TWO
+      label: playerIndex === PlayerIndex.FIRST ? Game.Paddle.Label.One : Game.Paddle.Label.Two
     };
     this.body = Bodies.rectangle(x, y, width, height, options);
 
@@ -95,14 +86,12 @@ export class Paddle extends Entity {
     let paddleX;
     switch (playerIndex) {
       case PlayerIndex.FIRST:
-        paddleX = PADDLE_OFFSET + PADDLE_WIDTH;
+        paddleX = Game.Paddle.Offset + Game.Paddle.Width;
         break;
       case PlayerIndex.SECOND:
-        paddleX = GAME_WIDTH - PADDLE_WIDTH - PADDLE_OFFSET;
+        paddleX = Game.Width - Game.Paddle.Width - Game.Paddle.Offset;
         break;
       case PlayerIndex.UNKNOWN:
-        paddleX = 0;
-        break;
       default:
         paddleX = 0;
     }
@@ -111,7 +100,7 @@ export class Paddle extends Entity {
 
   private calculateInitialPosition(playerIndex: PlayerIndex): Position {
     const paddleX = Paddle.getInitialPositionX(playerIndex);
-    const paddleY = (GAME_HEIGHT - PADDLE_HEIGHT) * 0.5;
+    const paddleY = (Game.Height - Game.Paddle.Height) * 0.5;
 
     return new Position(paddleX, paddleY);
   }

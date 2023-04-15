@@ -1,18 +1,9 @@
 import { Bodies, Body, Pair } from 'matter-js';
 
-import {
-  BALL_LABEL,
-  BALL_MAX_SPEED,
-  BALL_RADIUS,
-  BALL_SPEED,
-  GAME_HEIGHT,
-  GAME_WIDTH,
-  PADDLE_LABEL_ONE,
-  PADDLE_LABEL_TWO
-} from '../constants';
 import { IPosition, Position } from './component/Position';
 import { IVelocity, Velocity } from './component/Velocity';
 import { Entity } from './Entity';
+import { Game } from '@hell-pong/shared/constants/game';
 
 export interface IBall {
   position: IPosition;
@@ -30,13 +21,13 @@ export class Ball extends Entity {
       frictionAir: 0,
       friction: 0,
       restitution: 1,
-      label: BALL_LABEL
+      label: Game.Ball.Label
     };
-    this.body = Bodies.circle(x, y, BALL_RADIUS, options);
+    this.body = Bodies.circle(x, y, Game.Ball.Radius, options);
     // Body.setAngularVelocity(this.body, 0);
 
-    const velocityX = velocity ? velocity.x : BALL_SPEED;
-    const velocityY = velocity ? velocity.y : BALL_SPEED;
+    const velocityX = velocity ? velocity.x : Game.Ball.Speed;
+    const velocityY = velocity ? velocity.y : Game.Ball.Speed;
     this.setVelocity(new Velocity(velocityX, velocityY));
   }
 
@@ -44,14 +35,14 @@ export class Ball extends Entity {
     const { x, y } = this.body.velocity;
     const currentSpeed = this.body.speed;
     // Check if the ball's speed exceeds the maximum speed
-    if (currentSpeed > BALL_MAX_SPEED) {
+    if (currentSpeed > Game.Ball.MaxSpeed) {
       // Calculate the scaling factor to limit the ball's speed
-      const scaleFactor = BALL_MAX_SPEED / currentSpeed;
+      const scaleFactor = Game.Ball.MaxSpeed / currentSpeed;
       // Set the ball's velocity to the scaled velocity
       this.setVelocity(new Velocity(x * scaleFactor, y * scaleFactor));
-    } else if (currentSpeed < BALL_SPEED) {
+    } else if (currentSpeed < Game.Ball.Speed) {
       // Set the ball's velocity to the minimum speed
-      const scaleFactor = BALL_SPEED / currentSpeed;
+      const scaleFactor = Game.Ball.Speed / currentSpeed;
       this.setVelocity(new Velocity(x * scaleFactor, y * scaleFactor));
     }
   }
@@ -61,13 +52,13 @@ export class Ball extends Entity {
       return this;
     }
 
-    if (this.collidesInPairWith(pair, PADDLE_LABEL_ONE)) {
-      console.log('BALL COLLIDED WITH', PADDLE_LABEL_ONE);
+    if (this.collidesInPairWith(pair, Game.Paddle.Label.One)) {
+      console.log('BALL COLLIDED WITH', Game.Paddle.Label.One);
       return this.invertVelocityX();
     }
 
-    if (this.collidesInPairWith(pair, PADDLE_LABEL_TWO)) {
-      console.log('BALL COLLIDED WITH', PADDLE_LABEL_TWO);
+    if (this.collidesInPairWith(pair, Game.Paddle.Label.Two)) {
+      console.log('BALL COLLIDED WITH', Game.Paddle.Label.Two);
       return this.invertVelocityX();
     }
 
@@ -108,11 +99,11 @@ export class Ball extends Entity {
   }
 
   private get initX(): number {
-    return GAME_WIDTH * 0.5 - BALL_RADIUS;
+    return Game.WidthCenter - Game.Ball.Radius;
   }
 
   private get initY(): number {
-    return GAME_HEIGHT * 0.5 - BALL_RADIUS;
+    return Game.HeightCenter - Game.Ball.Radius;
   }
 
   invertVelocityY(): this {

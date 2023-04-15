@@ -1,9 +1,9 @@
 import { Body, Pair, World } from 'matter-js';
 
-import { BOTTOM_WALL_LABEL, LEFT_WALL_LABEL, RIGHT_WALL_LABEL, TOP_WALL_LABEL } from '../constants';
 import { Position } from './component/Position';
 import { Size } from './component/Size';
 import { Velocity } from './component/Velocity';
+import { Game } from '@hell-pong/shared/constants/game';
 
 export abstract class Entity {
   protected body!: Body;
@@ -53,10 +53,10 @@ export abstract class Entity {
   }
 
   protected collidingWithHorizontalWalls(pair: Pair): boolean {
-    return this.collidesInPairWith(pair, LEFT_WALL_LABEL) || this.collidesInPairWith(pair, RIGHT_WALL_LABEL);
+    return this.collidesInPairWith(pair, Game.Wall.LeftLabel) || this.collidesInPairWith(pair, Game.Wall.RightLabel);
   }
 
   protected collidingWithVerticalWalls(pair: Pair): boolean {
-    return this.collidesInPairWith(pair, TOP_WALL_LABEL) || this.collidesInPairWith(pair, BOTTOM_WALL_LABEL);
+    return this.collidesInPairWith(pair, Game.Wall.TopLabel) || this.collidesInPairWith(pair, Game.Wall.BottomLabel);
   }
 }

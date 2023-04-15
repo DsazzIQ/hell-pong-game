@@ -16,6 +16,7 @@ import TextureKey from '../constants/TextureKey';
 import Game from '../Game';
 import Player from '@hell-pong/shared/gameData/Player';
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
+import { SocketEvents } from '@hell-pong/shared/constants/socket';
 
 enum RowPriority {
   HIGH = 100,
@@ -60,10 +61,14 @@ export default class LobbyScene extends Scene {
     this.initGUI();
 
     this.roomsContainer = this.add.container(100, 200);
-    this.socket.on('roomListUpdate', (rooms: IRoomInfo[]) => this.updateRoomList(rooms));
-    this.socket.emit('getRooms');
-    this.socket.on('startGame', (state: IGameState) => {
+    this.socket.on(SocketEvents.Room.UpdateList, (rooms: IRoomInfo[]) => this.updateRoomList(rooms));
+    this.socket.emit(SocketEvents.Room.List);
+    this.socket.on(SocketEvents.Game.Start, (state: IGameState) => {
       startTransition(this, SceneKey.Game, state);
+    });
+    this.socket.on(SocketEvents.Game.Error, (data) => {
+      console.log(`Socket:Error`, data);
+      this.showErrorMessage(data.message);
     });
   }
 
@@ -105,7 +110,7 @@ export default class LobbyScene extends Scene {
       },
       1.2,
       () => {
-        this.socket.emit('createRoom');
+        this.socket.emit(SocketEvents.Room.Create);
         this.createRoomButton.setVisible(false);
       }
     );
@@ -273,33 +278,15 @@ export default class LobbyScene extends Scene {
   }
 
   private joinRoom(roomId: string) {
-    this.socket.emit('joinRoom', { roomId });
-
-    // Listen for the 'joinFailed' event
-    this.socket.once('joinFailed', (data) => {
-      console.log(`Failed to join room ${data.roomId}: ${data.message}`);
-
-      // Display an error message to the user or perform other actions.
-      // For example, you could show a popup or update the UI with the error message
-      this.showJoinFailedMessage(data.message);
-    });
+    this.socket.emit(SocketEvents.Room.Join, { roomId });
   }
 
   private readyForGameRoom(roomId: string) {
-    this.socket.emit('playerReady', { roomId });
-
-    // Listen for the 'joinFailed' event
-    this.socket.once('playerReadyFailed', (data) => {
-      console.log(`Failed to set ready status in room ${data.roomId}: ${data.message}`);
-
-      // Display an error message to the user or perform other actions.
-      // For example, you could show a popup or update the UI with the error message
-      this.showJoinFailedMessage(data.message);
-    });
+    this.socket.emit(SocketEvents.Room.PlayerReady, { roomId });
   }
 
-  // Function to display an error message when joining a room fails
-  private showJoinFailedMessage(message: string) {
+  // Function to display an error message
+  private showErrorMessage(message: string) {
     // Create and display a text element or a popup with the error message
     // You can customize this according to your game's UI and design
     const errorMessage = this.add.text(50, 300, message, {

@@ -5,6 +5,7 @@ import { Server, Socket } from 'socket.io';
 import { v4 as uuid } from 'uuid';
 
 import GameRoom from '../gameLogic/GameRoom';
+import { SocketEvents } from '@hell-pong/shared/constants/socket';
 
 export default class GameRoomHandler {
   private readonly rooms: Map<string, GameRoom>;
@@ -45,7 +46,7 @@ export default class GameRoomHandler {
 
     if (!room) {
       console.log(`    Room ${roomId} not found.`);
-      socket.emit('playerReadyFailed', {
+      socket.emit(SocketEvents.Game.Error, {
         roomId,
         message: `Room ${roomId} not found.`
       });
@@ -55,7 +56,7 @@ export default class GameRoomHandler {
     const player = room.findPlayer(socket.id);
     if (!player) {
       console.log(`    You are not in room ${roomId}`);
-      socket.emit('playerReadyFailed', {
+      socket.emit(SocketEvents.Game.Error, {
         roomId,
         message: `You are not in room ${roomId}`
       });
@@ -78,7 +79,7 @@ export default class GameRoomHandler {
 
     if (!room) {
       console.log(`    Room ${roomId} not found.`);
-      socket.emit('joinFailed', {
+      socket.emit(SocketEvents.Game.Error, {
         roomId,
         message: `Room ${roomId} not found.`
       });
@@ -88,7 +89,7 @@ export default class GameRoomHandler {
 
     if (!room.tryAddPlayer(socket.id)) {
       console.log(`    You can not join room ${roomId}`);
-      socket.emit('joinFailed', {
+      socket.emit(SocketEvents.Game.Error, {
         roomId,
         message: `You can not join room ${roomId}`
       });
@@ -183,12 +184,12 @@ export default class GameRoomHandler {
     this.rooms.forEach((room) => {
       if (room.isGameStarted()) {
         const state = room.update().getGameState();
-        io.to(room.id).emit('gameStateUpdate', state);
+        io.to(room.id).emit(SocketEvents.Game.StateUpdate, state);
       }
     });
   }
 
   emitRoomListUpdate() {
-    this.io.emit('roomListUpdate', this.getRoomList());
+    this.io.emit(SocketEvents.Room.UpdateList, this.getRoomList());
   }
 }

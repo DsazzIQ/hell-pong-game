@@ -1,4 +1,4 @@
-import { GAME_FPS, GAME_HEIGHT, GAME_WIDTH } from '@hell-pong/shared/constants';
+import { Game } from '@hell-pong/shared/constants/game';
 import { AUTO, Scale, Types } from 'phaser';
 import AwaitLoaderPlugin from 'phaser3-rex-plugins/plugins/awaitloader-plugin.js';
 
@@ -12,10 +12,10 @@ import SplashScene from './scenes/splash/SplashScene';
 const GameConfig: Types.Core.GameConfig = {
   parent: 'game',
   type: AUTO,
-  width: GAME_WIDTH,
-  height: GAME_HEIGHT,
+  width: Game.Width,
+  height: Game.Height,
   fps: {
-    target: GAME_FPS,
+    target: Game.FPS,
     forceSetTimeOut: true
   },
   scale: {

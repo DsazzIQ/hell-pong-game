@@ -1,4 +1,3 @@
-import { GAME_UPDATE_INTERVAL } from '@hell-pong/shared/constants';
 import { PlayerMove } from '@hell-pong/shared/gameData/Player';
 import express from 'express';
 import http from 'http';
@@ -7,6 +6,8 @@ import { Socket, Server as SocketIOServer } from 'socket.io';
 
 import { ServerToClientEvents } from '../../shared/src/types/socket.io';
 import GameRoomHandler from './handlers/GameRoomHandler';
+import { SocketEvents } from '@hell-pong/shared/constants/socket';
+import { Game } from '@hell-pong/shared/constants/game';
 
 const app = express();
 const server = http.createServer(app);
@@ -21,33 +22,33 @@ app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
 
 const roomManager = new GameRoomHandler(io);
 
-io.on('connection', (socket: Socket) => {
+io.on(SocketEvents.Base.Connection, (socket: Socket) => {
   const playerId = socket.id;
-  console.log('[Server:connection]', playerId);
+  console.log(`[Server:${SocketEvents.Base.Connection}] player ID`, playerId);
 
-  socket.on('disconnect', () => {
-    console.log(`[Server:disconnect] Player with ID ${playerId} disconnected`);
+  socket.on(SocketEvents.Base.Disconnect, () => {
+    console.log(`[Server:${SocketEvents.Base.Disconnect}] player ID ${playerId}`);
     roomManager.removePlayerFromRoom(socket);
   });
 
-  socket.on('createRoom', () => {
+  socket.on(SocketEvents.Room.Create, () => {
     roomManager.createRoom(socket);
   });
 
-  socket.on('getRooms', () => {
+  socket.on(SocketEvents.Room.List, () => {
     roomManager.emitRoomListUpdate();
   });
 
-  socket.on('joinRoom', (data: { roomId: string }) => {
+  socket.on(SocketEvents.Room.Join, (data: { roomId: string }) => {
     const roomId = data.roomId;
     roomManager.joinRoom(socket, roomId);
   });
 
-  socket.on('playerReady', (data: { roomId: string }) => {
+  socket.on(SocketEvents.Room.PlayerReady, (data: { roomId: string }) => {
     roomManager.playerReady(socket, data.roomId);
   });
 
-  socket.on('playerMoved', (data: { key: PlayerMove }) => {
+  socket.on(SocketEvents.Game.PlayerMoved, (data: { key: PlayerMove }) => {
     roomManager.onPlayerMoved(socket, data.key);
   });
 
@@ -57,7 +58,7 @@ io.on('connection', (socket: Socket) => {
 // Game loop
 setInterval(() => {
   roomManager.updateAndEmitState(io);
-}, GAME_UPDATE_INTERVAL);
+}, Game.UpdateInterval);
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));

@@ -10,6 +10,7 @@ import TextureKey from '../../constants/TextureKey';
 import { SettingsController } from '../../entities/settings/SettingsController';
 import Game from '../../Game';
 import RoundedProgressBar from './components/RoundedProgressBar';
+import { SocketEvents } from '@hell-pong/shared/constants/socket';
 const SOCKET_URL = 'http://localhost:3000';
 
 export default class PreloaderScene extends Scene {
@@ -35,7 +36,7 @@ export default class PreloaderScene extends Scene {
     this.load.on('complete', () => {
       const socket = io(SOCKET_URL);
 
-      socket.on('connect', () => {
+      socket.on(SocketEvents.Base.Connect, () => {
         this.initRegistry(socket);
 
         //TODO commented for development

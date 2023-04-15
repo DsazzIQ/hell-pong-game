@@ -1,11 +1,4 @@
-import {
-  BALL_RADIUS,
-  GAME_HEIGHT,
-  GAME_UPDATE_INTERVAL,
-  GAME_WIDTH,
-  PADDLE_HEIGHT,
-  PADDLE_WIDTH
-} from '@hell-pong/shared/constants';
+import { Game as GameConstants } from '@hell-pong/shared/constants/game';
 import { Position } from '@hell-pong/shared/entities/component/Position';
 import GameState, { IGameState } from '@hell-pong/shared/gameData/GameState';
 import { IPlayer, PlayerIndex, PlayerMove } from '@hell-pong/shared/gameData/Player';
@@ -19,6 +12,7 @@ import RegistryKey from '../constants/RegistryKey';
 import SceneKey from '../constants/SceneKey';
 import TextureKey from '../constants/TextureKey';
 import Game from '../Game';
+import { SocketEvents } from '@hell-pong/shared/constants/socket';
 
 const ALPHA_THRESHOLD = 1;
 const MIN_BUFFER_SIZE_INTERPOLATION = 2;
@@ -104,7 +98,7 @@ export default class GameScene extends Scene {
       TextureKey.Gui.Key,
       TextureKey.Gui.Frames.Gameplay.Ball
     );
-    this.ball.setCircle(BALL_RADIUS);
+    this.ball.setCircle(GameConstants.Ball.Radius);
 
     this.ball.setFrictionAir(0);
     this.ball.setFriction(0);
@@ -147,7 +141,7 @@ export default class GameScene extends Scene {
         TextureKey.Gui.Key,
         TextureKey.Gui.Frames.Gameplay.Paddle
       );
-      paddle.setRectangle(PADDLE_WIDTH, PADDLE_HEIGHT);
+      paddle.setRectangle(GameConstants.Paddle.Width, GameConstants.Paddle.Height);
       paddle.setStatic(true);
       // paddle.setFrictionAir(0);
       paddle.setBounce(1);
@@ -177,7 +171,7 @@ export default class GameScene extends Scene {
   public create(): void {
     console.log('>> CREATE GAME SCENE <<');
     console.log('    ', this);
-    this.matter.world.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT, 1);
+    this.matter.world.setBounds(0, 0, GameConstants.Width, GameConstants.Height, 1);
 
     // Set up keyboard controls
     this.cursors = this.input.keyboard?.createCursorKeys();
@@ -191,11 +185,11 @@ export default class GameScene extends Scene {
     this.initDebugMonitor();
 
     // Listen for game updates from the server and handle server reconciliation
-    this.socket.on('gameStateUpdate', (gameState: IGameState) => {
+    this.socket.on(SocketEvents.Game.StateUpdate, (gameState: IGameState) => {
       this.onGameStateUpdate(gameState);
     });
 
-    this.socket.once('gameStopped', () => {
+    this.socket.once(SocketEvents.Game.Stopped, () => {
       const { startTransition } = this.game as Game;
       this.stopGame();
       startTransition(this, SceneKey.Lobby);
@@ -227,7 +221,7 @@ export default class GameScene extends Scene {
       key = PlayerMove.DOWN;
     }
 
-    this.socket.emit('playerMoved', { key });
+    this.socket.emit(SocketEvents.Game.PlayerMoved, { key });
   }
 
   private getCurrentTime() {
@@ -269,7 +263,7 @@ export default class GameScene extends Scene {
   }
 
   handleInterpolationCompletion(alpha: number) {
-    if (alpha >= ALPHA_THRESHOLD && this.calculateInterpolationDelta() > GAME_UPDATE_INTERVAL) {
+    if (alpha >= ALPHA_THRESHOLD && this.calculateInterpolationDelta() > GameConstants.UpdateInterval) {
       this.gameStateBuffer.shift();
       this.lastReceivedTime = this.getCurrentTime();
     }

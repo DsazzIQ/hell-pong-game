@@ -1,8 +1,10 @@
 import { IRoomInfo } from 'src/gameData/GameState';
+import { SocketEvents } from '@hell-pong/shared/constants/socket';
 
 export interface ServerToClientEvents {
-  roomListUpdate: (roomInfos: IRoomInfo[]) => void;
+  [SocketEvents.Room.UpdateList]: (roomInfos: IRoomInfo[]) => void;
+  //TODO: add all types
 }
 export interface ClientToServerEvents {
-  hello: () => void;
+  //TODO: add all types
 }
