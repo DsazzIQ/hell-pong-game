@@ -1,6 +1,6 @@
 import { IRoomInfo } from '@hell-pong/shared/gameData/GameState';
 import { PlayerMove } from '@hell-pong/shared/gameData/Player';
-import { ServerToClientEvents } from '@hell-pong/shared/types/socket.io';
+import { ClientToServerEvents, ServerToClientEvents } from '@hell-pong/shared/types/socket.io';
 import { Server, Socket } from 'socket.io';
 import { v4 as uuid } from 'uuid';
 
@@ -10,7 +10,7 @@ import { SocketEvents } from '@hell-pong/shared/constants/socket';
 export default class GameRoomHandler {
   private readonly rooms: Map<string, GameRoom>;
 
-  constructor(private io: Server<ServerToClientEvents>) {
+  constructor(private io: Server<ClientToServerEvents, ServerToClientEvents>) {
     this.rooms = new Map<string, GameRoom>();
   }
 

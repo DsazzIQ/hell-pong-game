@@ -11,6 +11,7 @@ import { SettingsController } from '../../entities/settings/SettingsController';
 import Game from '../../Game';
 import RoundedProgressBar from './components/RoundedProgressBar';
 import { SocketEvents } from '@hell-pong/shared/constants/socket';
+import { ClientToServerEvents, ServerToClientEvents } from '@hell-pong/shared/types/socket.io';
 const SOCKET_URL = 'http://localhost:3000';
 
 export default class PreloaderScene extends Scene {
@@ -34,7 +35,7 @@ export default class PreloaderScene extends Scene {
 
     const { startTransition } = this.game as Game;
     this.load.on('complete', () => {
-      const socket = io(SOCKET_URL);
+      const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(SOCKET_URL);
 
       socket.on(SocketEvents.Base.Connect, () => {
         this.initRegistry(socket);

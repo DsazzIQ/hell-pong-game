@@ -8,10 +8,11 @@ import { ServerToClientEvents } from '../../shared/src/types/socket.io';
 import GameRoomHandler from './handlers/GameRoomHandler';
 import { SocketEvents } from '@hell-pong/shared/constants/socket';
 import { Game } from '@hell-pong/shared/constants/game';
+import { ClientToServerEvents } from '@hell-pong/shared/dist/types/socket.io';
 
 const app = express();
 const server = http.createServer(app);
-const io = new SocketIOServer<ServerToClientEvents>(server, {
+const io = new SocketIOServer<ClientToServerEvents, ServerToClientEvents>(server, {
   cors: {
     origin: '*', // or specify the allowed origins 'http://localhost:8080'
     methods: ['GET', 'POST'],
@@ -22,7 +23,7 @@ app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
 
 const roomManager = new GameRoomHandler(io);
 
-io.on(SocketEvents.Base.Connection, (socket: Socket) => {
+io.on(SocketEvents.Base.Connection, (socket: Socket<ClientToServerEvents, ServerToClientEvents>) => {
   const playerId = socket.id;
   console.log(`[Server:${SocketEvents.Base.Connection}] player ID`, playerId);
 
@@ -39,17 +40,16 @@ io.on(SocketEvents.Base.Connection, (socket: Socket) => {
     roomManager.emitRoomListUpdate();
   });
 
-  socket.on(SocketEvents.Room.Join, (data: { roomId: string }) => {
-    const roomId = data.roomId;
+  socket.on(SocketEvents.Room.Join, (roomId: string) => {
     roomManager.joinRoom(socket, roomId);
   });
 
-  socket.on(SocketEvents.Room.PlayerReady, (data: { roomId: string }) => {
-    roomManager.playerReady(socket, data.roomId);
+  socket.on(SocketEvents.Room.PlayerReady, (roomId: string) => {
+    roomManager.playerReady(socket, roomId);
   });
 
-  socket.on(SocketEvents.Game.PlayerMoved, (data: { key: PlayerMove }) => {
-    roomManager.onPlayerMoved(socket, data.key);
+  socket.on(SocketEvents.Game.PlayerMoved, (key: PlayerMove) => {
+    roomManager.onPlayerMoved(socket, key);
   });
 
   // ... (Other event listeners and logic)
