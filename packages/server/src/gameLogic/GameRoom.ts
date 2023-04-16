@@ -5,6 +5,7 @@ import { Bodies, Body, Engine, Events, Pair, World } from 'matter-js';
 import { Server } from 'socket.io';
 import { Game } from '@hell-pong/shared/constants/game';
 import { SocketEvents } from '@hell-pong/shared/constants/socket';
+import logger from '../logger';
 
 export default class GameRoom {
   readonly id: string;
@@ -112,6 +113,7 @@ export default class GameRoom {
   }
 
   startGame(io: Server) {
+    logger.info(`start game for the room [${this.id}]`);
     this.gameStarted = true;
     io.to(this.id).emit(SocketEvents.Game.Start, this.getGameState());
   }
@@ -166,16 +168,17 @@ export default class GameRoom {
 
   tryAddPlayer(playerId: string): boolean {
     if (this.hasPlayer(playerId)) {
-      console.log(`[GameRoom:tryAddPlayer] you (${playerId}) already in this room`);
+      logger.warn(`player [${playerId}] already in the room [${this.id}]`);
       return false;
     }
 
     if (this.isFull()) {
-      console.log(`[GameRoom:tryAddPlayer] ${this.id} is full.`);
+      logger.warn(`the room [${this.id}] is full`);
       return false;
     }
 
     this.addPlayer(playerId);
+    logger.info(`player [${playerId}] added to the room [${this.id}]`);
     return true;
   }
 

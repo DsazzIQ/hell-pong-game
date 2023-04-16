@@ -35,6 +35,8 @@
     "ts-node": "^10.9.1"
   },
   "dependencies": {
+    "rotating-file-stream": "^3.1.0",
+    "tslog": "^4.8.2",
     "typescript": "^5.0.4"
   }
 }

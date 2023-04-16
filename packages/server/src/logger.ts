@@ -1,40 +1,55 @@
-import { createLogger, format, transports } from 'winston';
+import { Logger, ILogObj, IMeta } from 'tslog';
+import * as path from 'path';
+import { createStream } from 'rotating-file-stream';
+interface ILogObjMeta {
+  [name: string]: IMeta;
+}
+enum LogLevel {
+  Silly,
+  Trace,
+  Debug,
+  Info,
+  Warn,
+  Error,
+  Fatal
+}
 
-const logger = createLogger({
-  level: 'info',
-  format: format.combine(
-    format.timestamp(),
-    format.printf(info => {
-      const { message } = info;
-      const { name, line } = info.position;
-      const method = info.method ? `:${info.method}` : '';
-      return `[${name}${method}:${line}] ${message}`;
-    })
-  ),
-  defaultMeta: { service: 'server' },
-  transports: [
-    new transports.Console({
-      format: format.combine(
-        format.colorize(),
-        format.simple()
-      )
-    }),
-    new transports.File({
-      filename: 'logs/info.log',
-      format: format.combine(
-        format.timestamp(),
-        format.json()
-      )
-    }),
-    new transports.File({
-      level: 'error',
-      filename: 'logs/error.log',
-      format: format.combine(
-        format.timestamp(),
-        format.json()
-      )
-    })
-  ]
+const logDirectory = path.join(__dirname, '..', 'logs');
+
+const infoStream = createStream('info.log', {
+  size: '10M', // rotate every 10 MegaBytes
+  interval: '1d', // rotate daily
+  path: logDirectory
+});
+
+const errorStream = createStream('error.log', {
+  size: '10M', // rotate every 10 MegaBytes
+  interval: '1d', // rotate daily
+  path: logDirectory
+});
+
+const logger: Logger<ILogObj> = new Logger();
+
+const logFormatter = (logObject: ILogObj & ILogObjMeta) => {
+  const message = logObject[0];
+  const { hostname, path, logLevelName, date } = logObject['_meta'];
+  return `${date.toISOString()}|${hostname}|${logLevelName}| ${message} ${
+    path ? '[' + path.filePathWithLine + ']' : ''
+  }\n`;
+};
+
+logger.attachTransport((logObject) => {
+  const { logLevelId } = logObject['_meta'];
+  if (logLevelId <= LogLevel.Warn) {
+    infoStream.write(logFormatter(logObject));
+  }
+});
+
+logger.attachTransport((logObject) => {
+  const { logLevelId } = logObject['_meta'];
+  if (logLevelId >= LogLevel.Error) {
+    errorStream.write(logFormatter(logObject));
+  }
 });
 
 export default logger;

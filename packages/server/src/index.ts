@@ -9,6 +9,7 @@ import GameRoomHandler from './handlers/GameRoomHandler';
 import { SocketEvents } from '@hell-pong/shared/constants/socket';
 import { Game } from '@hell-pong/shared/constants/game';
 import { ClientToServerEvents } from '@hell-pong/shared/dist/types/socket.io';
+import logger from './logger';
 
 const app = express();
 const server = http.createServer(app);
@@ -19,16 +20,17 @@ const io = new SocketIOServer<ClientToServerEvents, ServerToClientEvents>(server
     credentials: true
   }
 });
+
 app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
 
 const roomManager = new GameRoomHandler(io);
 
 io.on(SocketEvents.Base.Connection, (socket: Socket<ClientToServerEvents, ServerToClientEvents>) => {
   const playerId = socket.id;
-  console.log(`[Server:${SocketEvents.Base.Connection}] player ID`, playerId);
+  logger.info(`[${SocketEvents.Base.Connection}] player [${playerId}]`);
 
   socket.on(SocketEvents.Base.Disconnect, () => {
-    console.log(`[Server:${SocketEvents.Base.Disconnect}] player ID ${playerId}`);
+    logger.info(`[${SocketEvents.Base.Disconnect}] player [${playerId}]`);
     roomManager.removePlayerFromRoom(socket);
   });
 
@@ -61,4 +63,4 @@ setInterval(() => {
 }, Game.UpdateInterval);
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
+server.listen(PORT, () => logger.info(`server is listening on port ${PORT}`));

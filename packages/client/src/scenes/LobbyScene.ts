@@ -18,6 +18,7 @@ import Player from '@hell-pong/shared/gameData/Player';
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
 import { SocketEvents } from '@hell-pong/shared/constants/socket';
 import { ClientToServerEvents, ServerToClientEvents } from '@hell-pong/shared/types/socket.io';
+import logger from '../logger';
 
 enum RowPriority {
   HIGH = 100,
@@ -68,7 +69,7 @@ export default class LobbyScene extends Scene {
       startTransition(this, SceneKey.Game, state);
     });
     this.socket.on(SocketEvents.Game.Error, (error: IGameError) => {
-      console.log(`Socket:Error`, error);
+      logger.error('socket:error', error);
       this.showErrorMessage(error.message);
     });
   }
