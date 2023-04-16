@@ -53,22 +53,18 @@ export class Ball extends Entity {
     }
 
     if (this.collidesInPairWith(pair, Game.Paddle.Label.One)) {
-      console.log('BALL COLLIDED WITH', Game.Paddle.Label.One);
       return this.invertVelocityX();
     }
 
     if (this.collidesInPairWith(pair, Game.Paddle.Label.Two)) {
-      console.log('BALL COLLIDED WITH', Game.Paddle.Label.Two);
       return this.invertVelocityX();
     }
 
     if (this.collidingWithVerticalWalls(pair)) {
-      console.log('BALL COLLIDED WITH: VERTICAL WALL');
       return this.invertVelocityY().applyRandomForce();
     }
 
     if (this.collidingWithHorizontalWalls(pair)) {
-      console.log('BALL COLLIDED WITH: HORIZONT WALL');
       return this.invertVelocityX().applyRandomForce();
     }
 

@@ -2,7 +2,7 @@ import { Game as GameConstants } from '@hell-pong/shared/constants/game';
 import { Position } from '@hell-pong/shared/entities/component/Position';
 import GameState, { IGameState } from '@hell-pong/shared/gameData/GameState';
 import { IPlayer, PlayerIndex, PlayerMove } from '@hell-pong/shared/gameData/Player';
-import { GameObjects, Physics, Scene, Types } from 'phaser';
+import { Physics, Scene, Types } from 'phaser';
 import { Socket } from 'socket.io-client';
 import { Pane } from 'tweakpane';
 
@@ -14,6 +14,7 @@ import TextureKey from '../constants/TextureKey';
 import Game from '../Game';
 import { SocketEvents } from '@hell-pong/shared/constants/socket';
 import { ClientToServerEvents, ServerToClientEvents } from '@hell-pong/shared/types/socket.io';
+import logger from '../logger';
 
 const ALPHA_THRESHOLD = 1;
 const MIN_BUFFER_SIZE_INTERPOLATION = 2;
@@ -31,7 +32,7 @@ export default class GameScene extends Scene {
   private players: GamePlayer[] = [];
   private cursors?: Types.Input.Keyboard.CursorKeys;
 
-  private playersScoreText!: GameObjects.Text;
+  // private playersScoreText!: GameObjects.Text;
 
   private socket!: Socket<ServerToClientEvents, ClientToServerEvents>;
 
@@ -74,8 +75,7 @@ export default class GameScene extends Scene {
 
   public init(data: IGameState): void {
     this.continueGame();
-    console.log('>> INIT GAME SCENE <<');
-    console.log('    ', data);
+    logger.debug('>> init Game scene <<', data);
 
     this.initData = data;
     this.socket = this.registry.get(RegistryKey.Socket) as Socket<ServerToClientEvents, ClientToServerEvents>;
@@ -88,7 +88,7 @@ export default class GameScene extends Scene {
   }
 
   private handleVisibilityChange(): void {
-    console.log('[handleVisibilityChange] set game on pause', document.hidden);
+    console.info(`set game on pause: ${document.hidden}`);
     this.isPaused = document.hidden;
   }
 
@@ -123,7 +123,7 @@ export default class GameScene extends Scene {
   }
 
   private initGameScore(): void {
-    this.playersScoreText = this.add
+    this.add
       .text(this.game.canvas.width * 0.5, 20, `0 - 0`, {
         fontFamily: FontFamily.Text,
         fontSize: FontSize.Title,
@@ -131,7 +131,6 @@ export default class GameScene extends Scene {
       })
       .setOrigin(0.5)
       .setName('score');
-    console.log('[player score] score', this.playersScoreText);
   }
 
   private initPlayers(): void {
@@ -170,8 +169,6 @@ export default class GameScene extends Scene {
   }
 
   public create(): void {
-    console.log('>> CREATE GAME SCENE <<');
-    console.log('    ', this);
     this.matter.world.setBounds(0, 0, GameConstants.Width, GameConstants.Height, 1);
 
     // Set up keyboard controls
@@ -211,7 +208,7 @@ export default class GameScene extends Scene {
   private handlePlayerMovement() {
     const localPlayer = this.getLocalPlayer();
     if (!localPlayer) {
-      console.log('[handlePlayerMovement] no local player');
+      logger.error(`not found local player [${this.socket.id}] in the current room`);
       return;
     }
     let key: PlayerMove = PlayerMove.STOP;
@@ -232,7 +229,7 @@ export default class GameScene extends Scene {
   private onGameStateUpdate(gameState: GameState): void {
     if (this.isPaused) {
       // Don't update the game loop if the game is paused
-      console.log('[onGameStateUpdate] game is on pause');
+      logger.info('Prevent state updating. Game is on pause');
       return;
     }
     this.addToBuffer(gameState);
@@ -272,7 +269,7 @@ export default class GameScene extends Scene {
 
   private applyServerReconciliation() {
     if (!this.lastReceivedTime || this.gameStateBuffer.length < MIN_BUFFER_SIZE_INTERPOLATION) {
-      console.log('[applyServerReconciliation]: skip');
+      logger.warn('not enough data for server reconciliation');
       return;
     }
 
@@ -309,8 +306,7 @@ export default class GameScene extends Scene {
 
   public update(): void {
     if (this.isPaused) {
-      // Don't update the game loop if the game is paused
-      console.log('[Update prevented]');
+      logger.info('Prevent game loop updating. Game is on pause');
       return;
     }
 

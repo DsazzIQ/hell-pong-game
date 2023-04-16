@@ -6,6 +6,7 @@ import { v4 as uuid } from 'uuid';
 
 import GameRoom from '../gameLogic/GameRoom';
 import { SocketEvents } from '@hell-pong/shared/constants/socket';
+import logger from '../logger';
 
 export default class GameRoomHandler {
   private readonly rooms: Map<string, GameRoom>;
@@ -25,80 +26,78 @@ export default class GameRoomHandler {
   }
 
   createRoom(socket: Socket): GameRoom {
-    console.log(`[GameRoomHandler:createRoom]`);
-
     const roomId = this.generateUniqueRoomId();
     const room = new GameRoom(roomId);
     this.rooms.set(roomId, room);
+    logger.info(`created room [${roomId}]`);
 
     room.tryAddPlayer(socket.id);
 
     socket.join(roomId);
-    console.log(`    Room ${roomId} created and player ${socket.id} joined.`);
     this.emitRoomListUpdate(); // Emit the updated room list
 
     return room;
   }
 
   playerReady(socket: Socket, roomId: string): void {
-    console.log(`[GameRoomHandler:playerReady]`);
     const room = this.getRoom(roomId);
-
     if (!room) {
-      console.log(`    Room ${roomId} not found.`);
+      const message = `room [${roomId}] not found`;
+      logger.error(message);
       socket.emit(SocketEvents.Game.Error, {
         roomId,
-        message: `Room ${roomId} not found.`
+        message
       });
       return;
     }
 
-    const player = room.findPlayer(socket.id);
+    const playerId = socket.id;
+    const player = room.findPlayer(playerId);
     if (!player) {
-      console.log(`    You are not in room ${roomId}`);
+      const message = `player [${playerId}] not in the room [${roomId}]`;
+      logger.error(message);
       socket.emit(SocketEvents.Game.Error, {
         roomId,
-        message: `You are not in room ${roomId}`
+        message
       });
       return;
     }
 
-    console.log(`    Player ${socket.id} ready for game in room ${roomId}.`);
+    logger.info(`player [${playerId}] ready for game in the room [${roomId}]`);
     player.imReady();
     this.emitRoomListUpdate();
 
     if (room.arePlayersReady()) {
-      console.log(`    Starts game in the room ${roomId}.`);
       room.startGame(this.io);
     }
   }
 
   joinRoom(socket: Socket, roomId: string): GameRoom | null {
-    console.log(`[GameRoomHandler:joinRoom]`);
     const room = this.getRoom(roomId);
-
     if (!room) {
-      console.log(`    Room ${roomId} not found.`);
+      const message = `room [${roomId}] not found.`;
+      logger.error(message);
       socket.emit(SocketEvents.Game.Error, {
         roomId,
-        message: `Room ${roomId} not found.`
+        message
       });
 
       return null;
     }
 
-    if (!room.tryAddPlayer(socket.id)) {
-      console.log(`    You can not join room ${roomId}`);
+    const playerId = socket.id;
+    if (!room.tryAddPlayer(playerId)) {
+      const message = `player [${playerId}] can not join room [${roomId}]`;
       socket.emit(SocketEvents.Game.Error, {
         roomId,
-        message: `You can not join room ${roomId}`
+        message
       });
 
       return null;
     }
 
     socket.join(roomId);
-    console.log(`    Player ${socket.id} joined room ${roomId}.`);
+    logger.info(`player [${playerId}] joined room [${roomId}]`);
     this.emitRoomListUpdate();
 
     return room;
@@ -114,7 +113,9 @@ export default class GameRoomHandler {
 
   removeRoom(roomId: string): boolean {
     this.rooms.delete(roomId);
-    this.emitRoomListUpdate(); // Emit the updated room list
+    logger.info(`room [${roomId}] has been removed`);
+
+    this.emitRoomListUpdate();
     return true;
   }
 
@@ -133,25 +134,23 @@ export default class GameRoomHandler {
   }
 
   removePlayerFromRoom(socket: Socket): boolean {
-    console.log(`[GameRoomHandler:removePlayerFromRoom]`);
-
     const playerId = socket.id;
     const room = this.findRoomByPlayerId(playerId);
     if (!room) {
-      console.log(`   Not found player's room`);
+      logger.info(`not found player's room for player [${playerId}]`);
       return false;
     }
 
     if (room.hasPlayer(playerId)) {
       if (room.removePlayer(playerId)) {
-        console.log(`   Player ${playerId} has left the room ${room.id}`);
+        logger.info(`player [${playerId}] has left the room [${room.id}]`);
       }
 
       if (room.isEmpty()) {
-        console.log(`   Room ID ${room.id} is empty, removing the room`);
+        logger.info(`room [${room.id}] is empty`);
         this.removeRoom(room.id);
       } else if (room.isGameStarted()) {
-        console.log(`   Stopping the game for room ${room.id}`);
+        logger.info(`stopping the game for room [${room.id}]`);
         room.stopGame(this.io);
       }
     }
@@ -163,15 +162,15 @@ export default class GameRoomHandler {
 
   onPlayerMoved(socket: Socket, key: PlayerMove): boolean {
     const playerId = socket.id;
-    const room = this.findRoomByPlayerId(socket.id);
+    const room = this.findRoomByPlayerId(playerId);
     if (!room) {
-      console.log(`[Server:playerMoved] room for player ${playerId} not found!`);
+      logger.error(`room for player [${playerId}] not found!`);
       return false;
     }
 
     const player = room.findPlayer(playerId);
     if (!player) {
-      console.log(`[Server:playerMoved] player ${playerId} in room ${room.id} not found!`);
+      logger.error(`not found player [${playerId}] in room ${room.id}!`);
       return false;
     }
 
