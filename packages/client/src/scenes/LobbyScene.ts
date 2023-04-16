@@ -1,4 +1,4 @@
-import { IGameState, IRoomInfo } from '@hell-pong/shared/gameData/GameState';
+import { IGameError, IGameState, IRoomInfo } from '@hell-pong/shared/gameData/GameState';
 import { GameObjects, Scene } from 'phaser';
 import { Socket } from 'socket.io-client';
 
@@ -17,6 +17,7 @@ import Game from '../Game';
 import Player from '@hell-pong/shared/gameData/Player';
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
 import { SocketEvents } from '@hell-pong/shared/constants/socket';
+import { ClientToServerEvents, ServerToClientEvents } from '@hell-pong/shared/types/socket.io';
 
 enum RowPriority {
   HIGH = 100,
@@ -25,7 +26,7 @@ enum RowPriority {
 }
 
 export default class LobbyScene extends Scene {
-  private socket!: Socket;
+  private socket!: Socket<ServerToClientEvents, ClientToServerEvents>;
   private background!: LavaBackground;
   private roomsContainer!: GameObjects.Container;
   private myRoom: IRoomInfo | undefined;
@@ -36,7 +37,7 @@ export default class LobbyScene extends Scene {
   }
 
   public init(): void {
-    this.socket = this.registry.get(RegistryKey.Socket) as Socket;
+    this.socket = this.registry.get(RegistryKey.Socket) as Socket<ServerToClientEvents, ClientToServerEvents>;
   }
 
   playTheme() {
@@ -66,9 +67,9 @@ export default class LobbyScene extends Scene {
     this.socket.on(SocketEvents.Game.Start, (state: IGameState) => {
       startTransition(this, SceneKey.Game, state);
     });
-    this.socket.on(SocketEvents.Game.Error, (data) => {
-      console.log(`Socket:Error`, data);
-      this.showErrorMessage(data.message);
+    this.socket.on(SocketEvents.Game.Error, (error: IGameError) => {
+      console.log(`Socket:Error`, error);
+      this.showErrorMessage(error.message);
     });
   }
 
@@ -278,11 +279,11 @@ export default class LobbyScene extends Scene {
   }
 
   private joinRoom(roomId: string) {
-    this.socket.emit(SocketEvents.Room.Join, { roomId });
+    this.socket.emit(SocketEvents.Room.Join, roomId);
   }
 
   private readyForGameRoom(roomId: string) {
-    this.socket.emit(SocketEvents.Room.PlayerReady, { roomId });
+    this.socket.emit(SocketEvents.Room.PlayerReady, roomId);
   }
 
   // Function to display an error message

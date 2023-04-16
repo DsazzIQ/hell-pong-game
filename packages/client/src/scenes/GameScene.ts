@@ -13,6 +13,7 @@ import SceneKey from '../constants/SceneKey';
 import TextureKey from '../constants/TextureKey';
 import Game from '../Game';
 import { SocketEvents } from '@hell-pong/shared/constants/socket';
+import { ClientToServerEvents, ServerToClientEvents } from '@hell-pong/shared/types/socket.io';
 
 const ALPHA_THRESHOLD = 1;
 const MIN_BUFFER_SIZE_INTERPOLATION = 2;
@@ -32,7 +33,7 @@ export default class GameScene extends Scene {
 
   private playersScoreText!: GameObjects.Text;
 
-  private socket!: Socket;
+  private socket!: Socket<ServerToClientEvents, ClientToServerEvents>;
 
   private gameStateBuffer: IGameState[] = [];
 
@@ -77,7 +78,7 @@ export default class GameScene extends Scene {
     console.log('    ', data);
 
     this.initData = data;
-    this.socket = this.registry.get(RegistryKey.Socket) as Socket;
+    this.socket = this.registry.get(RegistryKey.Socket) as Socket<ServerToClientEvents, ClientToServerEvents>;
 
     this.pane = new Pane({
       title: 'GameState'
@@ -221,7 +222,7 @@ export default class GameScene extends Scene {
       key = PlayerMove.DOWN;
     }
 
-    this.socket.emit(SocketEvents.Game.PlayerMoved, { key });
+    this.socket.emit(SocketEvents.Game.PlayerMoved, key);
   }
 
   private getCurrentTime() {

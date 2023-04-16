@@ -13,6 +13,11 @@ export interface IGameState {
   lastUpdateTime: number;
 }
 
+export interface IGameError {
+  roomId: string;
+  message: string;
+}
+
 export default class GameState implements IGameState {
   roomId: string;
   ball: IBall;

@@ -1,11 +1,18 @@
-import { IRoomInfo } from 'src/gameData/GameState';
+import { IGameError, IGameState, IRoomInfo } from 'src/gameData/GameState';
 import { SocketEvents } from '@hell-pong/shared/constants/socket';
+import { PlayerMove } from '@hell-pong/shared/gameData/Player';
 
 export interface ServerToClientEvents {
   [SocketEvents.Room.UpdateList]: (roomInfos: IRoomInfo[]) => void;
-  //TODO: add all types
+  [SocketEvents.Game.StateUpdate]: (gameState: IGameState) => void;
+  [SocketEvents.Game.Start]: (state: IGameState) => void;
+  [SocketEvents.Game.Stopped]: () => void;
+  [SocketEvents.Game.Error]: (error: IGameError) => void;
 }
 export interface ClientToServerEvents {
-  //TODO: add all types
-  hello: () => void;
+  [SocketEvents.Room.List]: () => void;
+  [SocketEvents.Room.Create]: () => void;
+  [SocketEvents.Room.Join]: (roomId: string) => void;
+  [SocketEvents.Room.PlayerReady]: (roomId: string) => void;
+  [SocketEvents.Game.PlayerMoved]: (key: PlayerMove) => void;
 }
