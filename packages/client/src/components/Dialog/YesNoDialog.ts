@@ -8,6 +8,7 @@ import FontSize from '../../constants/FontSize';
 import Color from '@hell-pong/shared/constants/color';
 import IConfig = Dialog.IConfig;
 import DialogButton from './DialogButton';
+import logger from '../../logger';
 
 export default class YesNoDialog extends Dialog {
   constructor(scene: Scene, title: string, text: string, onYesClick: () => void) {
@@ -56,7 +57,14 @@ export default class YesNoDialog extends Dialog {
       }),
       actions: [
         new DialogButton(scene, TextureKey.Gui.Frames.Button.Ok, onYesClick, Color.Green),
-        new DialogButton(scene, TextureKey.Gui.Frames.Button.Cancel, () => {}, Color.Red)
+        new DialogButton(
+          scene,
+          TextureKey.Gui.Frames.Button.Cancel,
+          () => {
+            logger.info('Cancel action');
+          },
+          Color.Red
+        )
       ]
     };
 
