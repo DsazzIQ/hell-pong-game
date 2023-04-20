@@ -1,4 +1,3 @@
-import { IRoomInfo } from '@hell-pong/shared/gameData/GameState';
 import { PlayerMove } from '@hell-pong/shared/gameData/Player';
 import { ClientToServerEvents, ServerToClientEvents } from '@hell-pong/shared/types/socket.io';
 import { Server, Socket } from 'socket.io';
@@ -7,6 +6,7 @@ import { v4 as uuid } from 'uuid';
 import GameRoom from '../gameLogic/GameRoom';
 import { SocketEvents } from '@hell-pong/shared/constants/socket';
 import logger from '../logger';
+import { IRoomInfo } from '@hell-pong/shared/gameData/RoomInfo';
 
 export default class GameRoomHandler {
   private readonly rooms: Map<string, GameRoom>;
@@ -133,9 +133,9 @@ export default class GameRoomHandler {
     return undefined;
   }
 
-  removePlayerFromRoom(socket: Socket): boolean {
+  removePlayerFromRoom(socket: Socket, roomId?: string): boolean {
     const playerId = socket.id;
-    const room = this.findRoomByPlayerId(playerId);
+    const room = roomId ? this.getRoom(roomId) : this.findRoomByPlayerId(playerId);
     if (!room) {
       logger.info(`not found player's room for player [${playerId}]`);
       return false;
