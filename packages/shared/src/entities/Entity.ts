@@ -3,7 +3,7 @@ import { Body, Pair, World } from 'matter-js';
 import { Position } from './component/Position';
 import { Size } from './component/Size';
 import { Velocity } from './component/Velocity';
-import { Game } from '@hell-pong/shared/constants/game';
+import { GameConstant } from '@hell-pong/shared/constants/game';
 
 export abstract class Entity {
   protected body!: Body;
@@ -53,10 +53,16 @@ export abstract class Entity {
   }
 
   protected collidingWithHorizontalWalls(pair: Pair): boolean {
-    return this.collidesInPairWith(pair, Game.Wall.LeftLabel) || this.collidesInPairWith(pair, Game.Wall.RightLabel);
+    return (
+      this.collidesInPairWith(pair, GameConstant.Wall.LeftLabel) ||
+      this.collidesInPairWith(pair, GameConstant.Wall.RightLabel)
+    );
   }
 
   protected collidingWithVerticalWalls(pair: Pair): boolean {
-    return this.collidesInPairWith(pair, Game.Wall.TopLabel) || this.collidesInPairWith(pair, Game.Wall.BottomLabel);
+    return (
+      this.collidesInPairWith(pair, GameConstant.Wall.TopLabel) ||
+      this.collidesInPairWith(pair, GameConstant.Wall.BottomLabel)
+    );
   }
 }

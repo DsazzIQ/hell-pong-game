@@ -2,10 +2,10 @@ import { IPosition } from '@hell-pong/shared/entities/component/Position';
 import { Math, Scene } from 'phaser';
 
 import BitmapTextButton from '../../../components/BitmapTextButton';
-import FontSize from '../../../constants/FontSize';
 import TextureKey from '../../../constants/TextureKey';
 import Game from '../../../Game';
 import TweenBuilderConfig = Phaser.Types.Tweens.TweenBuilderConfig;
+import BitmapSize from '../../../constants/BitmapSize';
 
 const BUTTON_SCALE = 2;
 export default class MenuButton extends BitmapTextButton {
@@ -14,7 +14,7 @@ export default class MenuButton extends BitmapTextButton {
       scene,
       position,
       TextureKey.Gui.Frames.Button.Main,
-      { text, fontSize: FontSize.ExtraSmallText },
+      { text, fontSize: BitmapSize.ExtraSmall },
       BUTTON_SCALE,
       onClick
     );
