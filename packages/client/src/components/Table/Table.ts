@@ -3,6 +3,7 @@ import { TableRow } from './TableRow';
 import { TableHeader } from './TableHeader';
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
 import { TableCell } from './TableCell';
+import Color, { colorToHex } from '@hell-pong/shared/constants/color';
 
 interface TableConfig {
   rowHeight?: number;
@@ -12,8 +13,8 @@ interface TableConfig {
 
 const defaultConfig: TableConfig = {
   rowHeight: 28,
-  headerColor: 0x000000,
-  headerTextStyle: { color: '#fff' }
+  headerColor: Color.Black,
+  headerTextStyle: { color: colorToHex(Color.White) }
 };
 
 export class Table extends Phaser.GameObjects.Container {

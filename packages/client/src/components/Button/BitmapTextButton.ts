@@ -2,8 +2,8 @@ import { IPosition } from '@hell-pong/shared/entities/component/Position';
 import { GameObjects, Scene } from 'phaser';
 
 import Button from './Button';
-import BitmapFamily from '../constants/BitmapFamily';
-import BitmapSize from '../constants/BitmapSize';
+import BitmapFamily from '../../constants/BitmapFamily';
+import BitmapSize from '../../constants/BitmapSize';
 
 export default class BitmapTextButton extends Button {
   protected text: GameObjects.BitmapText;

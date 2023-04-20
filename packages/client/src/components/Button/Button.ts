@@ -1,8 +1,8 @@
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
 import { FX, GameObjects, Input, Scene, Types } from 'phaser';
 
-import SoundKey from '../constants/SoundKey';
-import TextureKey from '../constants/TextureKey';
+import SoundKey from '../../constants/SoundKey';
+import TextureKey from '../../constants/TextureKey';
 import Color from '@hell-pong/shared/constants/color';
 
 export default class Button extends GameObjects.Container {

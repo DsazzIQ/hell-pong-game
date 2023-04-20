@@ -15,6 +15,7 @@ import Game from '../Game';
 import { SocketEvents } from '@hell-pong/shared/constants/socket';
 import { ClientToServerEvents, ServerToClientEvents } from '@hell-pong/shared/types/socket.io';
 import logger from '../logger';
+import Color, { colorToHex } from '@hell-pong/shared/constants/color';
 
 const ALPHA_THRESHOLD = 1;
 const MIN_BUFFER_SIZE_INTERPOLATION = 2;
@@ -127,7 +128,7 @@ export default class GameScene extends Scene {
       .text(this.game.canvas.width * 0.5, 20, `0 - 0`, {
         fontFamily: FontFamily.Text,
         fontSize: FontSize.Title,
-        color: '#ffffff'
+        color: colorToHex(Color.White)
       })
       .setOrigin(0.5)
       .setName('score');

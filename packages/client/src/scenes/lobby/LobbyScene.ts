@@ -2,8 +2,8 @@ import { IGameError, IGameState } from '@hell-pong/shared/gameData/GameState';
 import { Scene } from 'phaser';
 import { Socket } from 'socket.io-client';
 
-import BackButton from '../../components/BackButton';
-import BitmapTextButton from '../../components/BitmapTextButton';
+import BackButton from '../../components/Button/BackButton';
+import BitmapTextButton from '../../components/Button/BitmapTextButton';
 import GUIContainer, { ROW_OFFSET } from '../../components/GUIContainer';
 import LavaBackground from '../../components/LavaBackground';
 import TitleText from '../../components/TitleText';
@@ -28,8 +28,9 @@ import TableImageCell from '../../components/Table/TableImageCell';
 import { IRoomInfo, RoomInfo } from '@hell-pong/shared/gameData/RoomInfo';
 import Player from '@hell-pong/shared/gameData/Player';
 import TableButtonCell from '../../components/Table/TableButtonCell';
-import SmallButton from '../../components/SmallButton';
+import SmallButton from '../../components/Button/SmallButton';
 import Color from '@hell-pong/shared/constants/color';
+import YesNoDialog from '../../components/Dialog/YesNoDialog';
 
 export default class LobbyScene extends Scene {
   private socket!: Socket<ServerToClientEvents, ClientToServerEvents>;
@@ -68,50 +69,53 @@ export default class LobbyScene extends Scene {
     this.background = new LavaBackground(this);
     this.initGUI();
 
-    const tablePosition: IPosition = { x: 80, y: 170 };
-    const headerCells = [
-      new TableTextCell(this, 'Room ID', 220, { x: 20, y: 0 }),
-      new TableImageCell(this, TextureKey.Gui.Key, TextureKey.Gui.Frames.Icon.Team, 30, { x: 30, y: 0 }),
-      new TableTextCell(this, 'Status', 120),
-      new TableTextCell(this, 'Actions', 130, { x: 20, y: 0 })
-    ];
-    this.roomsTable = new Table(this, tablePosition, headerCells);
+    this.roomsTable = this.initTable();
 
     // new MyDialog(this);
     this.initEvents();
   }
 
+  private initTable(): Table {
+    const tablePosition: IPosition = { x: 80, y: 170 };
+    const headerCells = [
+      new TableTextCell(this, 'Room ID', 220, { x: 20, y: 0 }),
+      new TableImageCell(this, TextureKey.Gui.Key, TextureKey.Gui.Frames.Icon.Team, 30, { x: 30, y: 1 }),
+      new TableTextCell(this, 'Status', 120),
+      new TableTextCell(this, 'Actions', 130, { x: 20, y: 0 })
+    ];
+    return new Table(this, tablePosition, headerCells);
+  }
+
   private createReadyButton(roomId: string): SmallButton {
-    const button = new SmallButton(
+    return new SmallButton(
       this,
       TextureKey.Gui.Frames.Button.Ok,
       () => {
         this.socket.emit(SocketEvents.Room.PlayerReady, roomId);
-        button.destroy(true);
       },
       Color.Green
     );
-
-    return button;
   }
 
   private createLeaveRoomButton(roomId: string): SmallButton {
-    const button = new SmallButton(this, TextureKey.Gui.Frames.Button.LeaveRoom, () => {
-      this.socket.emit(SocketEvents.Room.PlayerLeave, roomId);
-      button.destroy(true);
+    return new SmallButton(this, TextureKey.Gui.Frames.Button.LeaveRoom, () => {
+      new YesNoDialog(this, 'Confirmation', 'Do you want to leave this room ?', () => {
+        this.socket.emit(SocketEvents.Room.PlayerLeave, roomId);
+      });
     });
-
-    return button;
   }
 
   private createEnterRoomButton(roomId: string): SmallButton {
-    const button = new SmallButton(this, TextureKey.Gui.Frames.Button.EnterRoom, () => {
-      this.socket.emit(SocketEvents.Room.Join, roomId);
-      button.destroy(true);
-    });
-
-    return button;
+    return new SmallButton(
+      this,
+      TextureKey.Gui.Frames.Button.EnterRoom,
+      () => {
+        this.socket.emit(SocketEvents.Room.Join, roomId);
+      },
+      Color.Green
+    );
   }
+
   updateRoomList(rawRooms: IRoomInfo[]) {
     const rooms = RoomInfo.fromJsonList(rawRooms);
 
@@ -133,12 +137,12 @@ export default class LobbyScene extends Scene {
 
       const statusCell: TableCell = notReadyStatus
         ? new TableTextCell(this, 'Ready ?', cellsWidth[2])
-        : new TableImageCell(this, TextureKey.Gui.Key, TextureKey.Gui.Frames.Icon.Wait, cellsWidth[2], { x: 20, y: 3 });
+        : new TableImageCell(this, TextureKey.Gui.Key, TextureKey.Gui.Frames.Icon.Wait, cellsWidth[2], { x: 20, y: 4 });
 
       const actionCells: TableCell[] = notReadyStatus
         ? [
             new TableButtonCell(this, this.createReadyButton(this.myRoom.id), cellsWidth[3], { x: 30, y: 2 }),
-            new TableButtonCell(this, this.createLeaveRoomButton(this.myRoom.id), cellsWidth[3] * 0.5, { x: 10, y: 2 })
+            new TableButtonCell(this, this.createLeaveRoomButton(this.myRoom.id), cellsWidth[3] * 0.5, { x: 0, y: 2 })
           ]
         : [new TableButtonCell(this, this.createLeaveRoomButton(this.myRoom.id), cellsWidth[3], { x: 50, y: 2 })];
 
@@ -160,12 +164,16 @@ export default class LobbyScene extends Scene {
       const isOpenRoom = !room.isFull();
       const isJoinable = !me && isOpenRoom;
 
-      const statusCell: TableCell = isOpenRoom
-        ? new TableTextCell(this, 'Open', cellsWidth[2])
-        : new TableImageCell(this, TextureKey.Gui.Key, TextureKey.Gui.Frames.Icon.Locked, cellsWidth[2], {
-            x: 20,
-            y: 3
-          });
+      const statusCell = new TableImageCell(
+        this,
+        TextureKey.Gui.Key,
+        TextureKey.Gui.Frames.Icon[isOpenRoom ? 'Unlocked' : 'Locked'],
+        cellsWidth[2],
+        {
+          x: 20,
+          y: 4
+        }
+      );
 
       const actionCells: TableCell[] = isJoinable
         ? [new TableButtonCell(this, this.createEnterRoomButton(room.id), cellsWidth[3], { x: 50, y: 2 })]
@@ -178,9 +186,11 @@ export default class LobbyScene extends Scene {
         ...actionCells
       ];
 
-      const priority = room.isFull() ? RowPriority.LOW : RowPriority.MIDDLE;
+      const priority = room.isFull() ? RowPriority.LOW : RowPriority.HIGH;
       const row = new TableRow(this, room.id, index, cells, rowHeight);
       rows.push(row.setPriority(priority));
+
+      index++;
     }
 
     this.roomsTable.rerenderRows(rows);

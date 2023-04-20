@@ -1,7 +1,7 @@
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
 import { Math, Scene } from 'phaser';
 
-import BitmapTextButton from '../../../components/BitmapTextButton';
+import BitmapTextButton from '../../../components/Button/BitmapTextButton';
 import TextureKey from '../../../constants/TextureKey';
 import Game from '../../../Game';
 import TweenBuilderConfig = Phaser.Types.Tweens.TweenBuilderConfig;

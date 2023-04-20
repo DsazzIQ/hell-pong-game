@@ -42,8 +42,6 @@ export default class Slider extends GameObjects.Container {
     this.registerThumbEventHandlers(scene);
 
     this.setValue(startValue);
-
-    scene.input.enableDebug(this, 0xff00ff);
   }
 
   public get size(): ISize {

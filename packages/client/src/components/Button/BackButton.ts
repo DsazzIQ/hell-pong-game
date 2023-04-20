@@ -1,6 +1,6 @@
 import { Scene } from 'phaser';
 
-import TextureKey from '../constants/TextureKey';
+import TextureKey from '../../constants/TextureKey';
 import Button from './Button';
 
 export default class BackButton extends Button {

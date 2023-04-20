@@ -1,7 +1,7 @@
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
 import { Scene } from 'phaser';
 
-import BackButton from '../../components/BackButton';
+import BackButton from '../../components/Button/BackButton';
 import GUIContainer from '../../components/GUIContainer';
 import LavaBackground from '../../components/LavaBackground';
 import TitleText from '../../components/TitleText';

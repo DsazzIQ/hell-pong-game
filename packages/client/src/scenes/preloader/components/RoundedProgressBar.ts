@@ -1,5 +1,6 @@
 import LineProgress from 'phaser3-rex-plugins/plugins/gameobjects/canvas/lineprogress/LineProgress';
 import Game from '../../../Game';
+import Color from '@hell-pong/shared/constants/color';
 
 const PROGRESS_BOX_WIDTH = 250;
 const PROGRESS_BOX_HEIGHT = 25;
@@ -8,7 +9,7 @@ const COLOR_PRIMARY = 0xa42337;
 const COLOR_LIGHT = 0x7b5e57;
 const COLOR_DARK = 0x260e04;
 
-const BORDER_COLOR = 0xff0000;
+const BORDER_COLOR = Color.Red;
 const BORDER_WIDTH = 3;
 
 export default class RoundedProgressBar extends LineProgress {
