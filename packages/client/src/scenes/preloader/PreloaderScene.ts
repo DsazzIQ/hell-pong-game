@@ -12,6 +12,7 @@ import Game from '../../Game';
 import RoundedProgressBar from './components/RoundedProgressBar';
 import { SocketEvents } from '@hell-pong/shared/constants/socket';
 import { ClientToServerEvents, ServerToClientEvents } from '@hell-pong/shared/types/socket.io';
+import BitmapFamily from '../../constants/BitmapFamily';
 const SOCKET_URL = 'http://localhost:3000';
 
 export default class PreloaderScene extends Scene {
@@ -89,8 +90,9 @@ export default class PreloaderScene extends Scene {
   }
 
   private loadFonts() {
-    this.loadFont(FontFamily.Text, 'fonts/rexlia.otf');
-    this.load.bitmapFont(FontFamily.Retro, 'fonts/retro.png', 'fonts/retro.xml');
+    // this.loadFont(FontFamily.Text, 'fonts/gaming.ttf');
+    this.loadFont(FontFamily.Text, 'fonts/PressStart2P.ttf');
+    this.load.bitmapFont(BitmapFamily.Retro, 'fonts/retro.png', 'fonts/retro.xml');
   }
 
   private loadFont(name: string, url: string) {

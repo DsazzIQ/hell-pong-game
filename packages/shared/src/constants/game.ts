@@ -1,11 +1,10 @@
+const BALL_SIZE = 28;
 export const Ball = Object.freeze({
-  Size: 28,
+  Size: BALL_SIZE,
+  Radius: BALL_SIZE * 0.5,
   MaxSpeed: 7,
   Speed: 3,
-  Label: 'ball',
-  get Radius() {
-    return this.Size * 0.5;
-  }
+  Label: 'ball'
 });
 
 export const Paddle = Object.freeze({
@@ -30,21 +29,18 @@ export const Room = Object.freeze({
   MaxPlayers: 2
 });
 
-export const Game = Object.freeze({
-  Width: 800,
-  get WidthCenter() {
-    return this.Width * 0.5;
-  },
-  Height: 600,
-  get HeightCenter() {
-    return this.Height * 0.5;
-  },
+const FPS = 50;
+const WIDTH = 800;
+const HEIGHT = 600;
+export const GameConstant = Object.freeze({
+  Width: WIDTH,
+  WidthCenter: WIDTH * 0.5,
+  Height: HEIGHT,
+  HeightCenter: HEIGHT * 0.5,
   FPS: 50,
+  UpdateInterval: 1000 / FPS,
   Ball,
   Paddle,
   Wall,
-  Room,
-  get UpdateInterval() {
-    return 1000 / this.FPS;
-  }
+  Room
 });

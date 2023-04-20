@@ -1,4 +1,4 @@
-import { Game as GameConstants } from '@hell-pong/shared/constants/game';
+import { GameConstant as GameConstants } from '@hell-pong/shared/constants/game';
 import { Position } from '@hell-pong/shared/entities/component/Position';
 import GameState, { IGameState } from '@hell-pong/shared/gameData/GameState';
 import { IPlayer, PlayerIndex, PlayerMove } from '@hell-pong/shared/gameData/Player';

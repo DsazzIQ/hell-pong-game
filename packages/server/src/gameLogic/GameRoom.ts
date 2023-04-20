@@ -1,11 +1,12 @@
 import { Ball } from '@hell-pong/shared/entities/Ball';
-import GameState, { IGameState, IRoomInfo } from '@hell-pong/shared/gameData/GameState';
+import GameState, { IGameState } from '@hell-pong/shared/gameData/GameState';
 import Player, { PlayerIndex } from '@hell-pong/shared/gameData/Player';
 import { Bodies, Body, Engine, Events, Pair, World } from 'matter-js';
 import { Server } from 'socket.io';
-import { Game } from '@hell-pong/shared/constants/game';
+import { GameConstant } from '@hell-pong/shared/constants/game';
 import { SocketEvents } from '@hell-pong/shared/constants/socket';
 import logger from '../logger';
+import { IRoomInfo, RoomInfo } from '@hell-pong/shared/gameData/RoomInfo';
 
 export default class GameRoom {
   readonly id: string;
@@ -46,8 +47,8 @@ export default class GameRoom {
     const bounds = {
       x: 0,
       y: 0,
-      width: Game.Width,
-      height: Game.Height,
+      width: GameConstant.Width,
+      height: GameConstant.Height,
       thickness: Number.MAX_SAFE_INTEGER,
       options: {
         isStatic: true,
@@ -61,28 +62,28 @@ export default class GameRoom {
       y: bounds.height + bounds.thickness * 0.5
     });
 
-    this.bottomWall.label = Game.Wall.BottomLabel;
+    this.bottomWall.label = GameConstant.Wall.BottomLabel;
 
     this.leftWall = Bodies.rectangle(0, 0, bounds.thickness, bounds.thickness, bounds.options);
     Body.setPosition(this.leftWall, {
       x: -bounds.thickness * 0.5,
       y: bounds.height * 0.5
     });
-    this.leftWall.label = Game.Wall.LeftLabel;
+    this.leftWall.label = GameConstant.Wall.LeftLabel;
 
     this.rightWall = Bodies.rectangle(0, 0, bounds.thickness, bounds.thickness, bounds.options);
     Body.setPosition(this.rightWall, {
       x: bounds.width + bounds.thickness * 0.5,
       y: bounds.height * 0.5
     });
-    this.rightWall.label = Game.Wall.RightLabel;
+    this.rightWall.label = GameConstant.Wall.RightLabel;
 
     this.topWall = Bodies.rectangle(0, 0, bounds.thickness, bounds.thickness, bounds.options);
     Body.setPosition(this.topWall, {
       x: bounds.width * 0.5,
       y: -bounds.thickness * 0.5
     });
-    this.topWall.label = Game.Wall.TopLabel;
+    this.topWall.label = GameConstant.Wall.TopLabel;
 
     World.add(this.world, [this.topWall, this.bottomWall, this.leftWall, this.rightWall]);
   }
@@ -132,7 +133,7 @@ export default class GameRoom {
   }
 
   isFull(): boolean {
-    return this.players.length === Game.Room.MaxPlayers;
+    return this.players.length === GameConstant.Room.MaxPlayers;
   }
 
   arePlayersReady(): boolean {
@@ -211,7 +212,7 @@ export default class GameRoom {
   update(): this {
     // Update game state only if the time since the last update exceeds the game update interval
     const deltaTime = this.calculateInterpolationDelta();
-    if (this.lastUpdateTime && deltaTime > Game.UpdateInterval) {
+    if (this.lastUpdateTime && deltaTime > GameConstant.UpdateInterval) {
       const correction = this.getCurrentTime() / this.lastUpdateTime;
       Engine.update(this.engine, deltaTime, correction);
     }
@@ -225,9 +226,6 @@ export default class GameRoom {
   }
 
   toJson(): IRoomInfo {
-    return {
-      id: this.id,
-      players: Array.from(this.players.values()).map((p) => p.toJson())
-    };
+    return new RoomInfo(this.id, this.players).toJson();
   }
 }

@@ -1,5 +1,4 @@
 enum FontFamily {
-  Text = 'rexlia',
-  Retro = 'Retro'
+  Text = 'text'
 }
 export default FontFamily;

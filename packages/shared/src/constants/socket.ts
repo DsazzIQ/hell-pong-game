@@ -9,9 +9,9 @@ enum RoomEvents {
   Create = 'room:create',
   Join = 'room:join',
   PlayerReady = 'room:player-ready',
+  PlayerLeave = 'room:player-leave',
   List = 'room:list',
   UpdateList = 'game:update-list'
-  // ... other room-related events
 }
 
 enum GameEvents {
@@ -20,7 +20,6 @@ enum GameEvents {
   Start = 'game:start',
   Stopped = 'game:stopped',
   Error = 'game:error'
-  // ... other game-related events
 }
 
 export const SocketEvents = Object.freeze({

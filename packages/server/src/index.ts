@@ -7,7 +7,7 @@ import { Socket, Server as SocketIOServer } from 'socket.io';
 import { ServerToClientEvents } from '../../shared/src/types/socket.io';
 import GameRoomHandler from './handlers/GameRoomHandler';
 import { SocketEvents } from '@hell-pong/shared/constants/socket';
-import { Game } from '@hell-pong/shared/constants/game';
+import { GameConstant } from '@hell-pong/shared/constants/game';
 import { ClientToServerEvents } from '@hell-pong/shared/dist/types/socket.io';
 import logger from './logger';
 
@@ -50,6 +50,10 @@ io.on(SocketEvents.Base.Connection, (socket: Socket<ClientToServerEvents, Server
     roomManager.playerReady(socket, roomId);
   });
 
+  socket.on(SocketEvents.Room.PlayerLeave, (roomId: string) => {
+    roomManager.removePlayerFromRoom(socket, roomId);
+  });
+
   socket.on(SocketEvents.Game.PlayerMoved, (key: PlayerMove) => {
     roomManager.onPlayerMoved(socket, key);
   });
@@ -60,7 +64,7 @@ io.on(SocketEvents.Base.Connection, (socket: Socket<ClientToServerEvents, Server
 // Game loop
 setInterval(() => {
   roomManager.updateAndEmitState(io);
-}, Game.UpdateInterval);
+}, GameConstant.UpdateInterval);
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => logger.info(`server is listening on port ${PORT}`));
