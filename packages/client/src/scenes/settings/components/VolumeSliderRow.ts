@@ -1,11 +1,12 @@
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
 import { FX, GameObjects, Scene } from 'phaser';
 
-import Button from '../../../components/Button';
+import Button from '../../../components/Button/Button';
 import { ROW_OFFSET } from '../../../components/GUIContainer';
 import Slider from '../../../components/Slider';
 import EventKey from '../../../constants/EventKey';
 import { VolumeSetting } from '../../../entities/settings/VolumeSetting';
+import Color from '@hell-pong/shared/constants/color';
 
 export default class VolumeSliderRow extends GameObjects.Container {
   private iconButton!: Button;
@@ -27,7 +28,7 @@ export default class VolumeSliderRow extends GameObjects.Container {
 
   private initIconButton(scene: Scene, iconFrame: string, setting: VolumeSetting, offset: IPosition): void {
     const iconPosition = { x: ROW_OFFSET.x + offset.x, y: ROW_OFFSET.y + offset.y };
-    this.iconButton = new Button(scene, iconPosition, iconFrame, () => setting.toggle(), 0xff6d0a);
+    this.iconButton = new Button(scene, iconPosition, iconFrame, () => setting.toggle(), Color.Orange);
     this.iconMatrix = this.iconButton.sprite.postFX.addColorMatrix();
     this.changeIconGreyScaleByValue(setting.get());
   }

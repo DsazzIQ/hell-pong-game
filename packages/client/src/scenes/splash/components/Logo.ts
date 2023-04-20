@@ -2,9 +2,10 @@ import { GameObjects, Scene, Types } from 'phaser';
 
 import TextureKey from '../../../constants/TextureKey';
 import Game from '../../../Game';
+import Color from '@hell-pong/shared/constants/color';
 
 const GLOW_DISTANCE = 4;
-const GLOW_COLOR = 0xff0000;
+const GLOW_COLOR = Color.Red;
 
 export default class Logo extends GameObjects.Sprite {
   constructor(scene: Scene, onFinish: () => void) {

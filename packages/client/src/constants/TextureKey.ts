@@ -58,7 +58,8 @@ const TextureKey = Object.freeze({
         Setting: 'icon/setting',
         Team: 'icon/team',
         Wait: 'icon/wait',
-        Locked: 'icon/locked'
+        Locked: 'icon/locked',
+        Unlocked: 'icon/unlocked'
       },
       Gameplay: {
         Ball: 'gameplay/ball',

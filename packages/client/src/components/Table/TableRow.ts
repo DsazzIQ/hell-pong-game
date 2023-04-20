@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { TableCell } from './TableCell';
+import Color, { colorToHex } from '@hell-pong/shared/constants/color';
 
 export interface TableRowConfig {
   evenRowColor: number;
@@ -8,16 +9,15 @@ export interface TableRowConfig {
   textStyle: Phaser.Types.GameObjects.Text.TextStyle;
 }
 const defaultConfig: TableRowConfig = {
-  evenRowColor: 0x202020,
-  oddRowColor: 0x303030,
-  selectedRowColor: 0x644700,
-  textStyle: { color: '#fff' }
+  evenRowColor: Color.Gray500,
+  oddRowColor: Color.Gray600,
+  selectedRowColor: Color.Amber600,
+  textStyle: { color: colorToHex(Color.White) }
 };
 
 export enum RowPriority {
   PIN = 999,
   HIGH = 100,
-  MIDDLE = 50,
   LOW = 0
 }
 
@@ -39,7 +39,7 @@ export class TableRow extends Phaser.GameObjects.Container {
     config?: TableRowConfig
   ) {
     super(scene, 0, index * rowHeight);
-    this.priority = RowPriority.MIDDLE;
+    this.priority = RowPriority.HIGH;
 
     this.rowCells = rowCells;
 

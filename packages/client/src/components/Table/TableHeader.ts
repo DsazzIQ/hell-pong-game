@@ -1,16 +1,17 @@
 import Phaser from 'phaser';
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
 import { TableCell } from './TableCell';
+import Color, { colorToHex } from '@hell-pong/shared/constants/color';
 
 // TableHeader.ts
 interface TableHeaderConfig {
-  headerColor: number;
+  headerColor: Color;
   textStyle: Phaser.Types.GameObjects.Text.TextStyle;
 }
 
 const defaultConfig: TableHeaderConfig = {
-  headerColor: 0x000000,
-  textStyle: { color: '#fff' }
+  headerColor: Color.Black,
+  textStyle: { color: colorToHex(Color.White) }
 };
 export class TableHeader extends Phaser.GameObjects.Container {
   private readonly config: TableHeaderConfig;

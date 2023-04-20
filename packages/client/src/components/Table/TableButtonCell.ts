@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { TableCell } from './TableCell';
-import Button from '../Button';
+import Button from '../Button/Button';
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
 
 class TableButtonCell extends TableCell {
