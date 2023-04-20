@@ -3,16 +3,26 @@ import { FX, GameObjects, Input, Scene, Types } from 'phaser';
 
 import SoundKey from '../constants/SoundKey';
 import TextureKey from '../constants/TextureKey';
+import Color from '@hell-pong/shared/constants/color';
 
 export default class Button extends GameObjects.Container {
   public readonly sprite: GameObjects.Sprite;
-  protected onHoverColor: number;
+  protected onHoverColor: Color;
   private readonly shadow?: FX.Shadow;
+  private readonly clickInterval: number;
 
-  constructor(scene: Scene, position: IPosition, frame: string, onClick: () => void, onHoverColor = 0xff0000) {
+  constructor(
+    scene: Scene,
+    position: IPosition,
+    frame: string,
+    onClick: () => void,
+    onHoverColor = Color.Red,
+    clickInterval = 1000
+  ) {
     super(scene, position.x, position.y);
 
     this.onHoverColor = onHoverColor;
+    this.clickInterval = clickInterval;
 
     this.sprite = scene.add.sprite(0, 0, TextureKey.Gui.Key, frame);
     this.sprite.setOrigin(0.5);
@@ -64,14 +74,16 @@ export default class Button extends GameObjects.Container {
     this.stopShadow();
   }
 
-  protected onClick(onClick: () => void) {
-    if (!this.active) return; // Prevent multiple clicks
-
-    // Disable the button for a certain amount of time
+  protected preventMultiClick() {
     this.active = false;
     setTimeout(() => {
       this.active = true;
-    }, 1000);
+    }, this.clickInterval);
+  }
+
+  protected onClick(onClick: () => void) {
+    if (!this.active) return; // Prevent multiple clicks
+    this.preventMultiClick();
 
     this.playOnClick();
 

@@ -1,4 +1,4 @@
-import { Scene } from 'phaser';
+import { Input, Scene } from 'phaser';
 import Dialog from 'phaser3-rex-plugins/templates/ui/dialog/Dialog';
 import TextureKey from '../constants/TextureKey';
 import Label from 'phaser3-rex-plugins/templates/ui/label/Label';
@@ -10,12 +10,12 @@ import FontSize from '../constants/FontSize';
 import Color from '@hell-pong/shared/constants/color';
 import IConfig = Dialog.IConfig;
 
-class MyLabel extends Label {
+class DialogButton extends Label {
   private readonly _background: Phaser.GameObjects.Image;
   private readonly _shadow: Phaser.FX.Shadow | undefined;
 
   // constructor(scene: Scene, config) {
-  constructor(scene: Scene, frame: string, highlight: Color) {
+  constructor(scene: Scene, frame: string, onClick: () => void, highlight: Color) {
     const config: Label.IConfig = {
       align: 'center',
       width: 36,
@@ -29,6 +29,10 @@ class MyLabel extends Label {
     this.addBackground(this._background);
     this._shadow = this._background.preFX?.addShadow(0.5, 0.5, 0.25, 1, highlight);
     this.stopShadow();
+
+    this.on(Input.Events.POINTER_DOWN, () => this._onClick(onClick));
+    this.on(Input.Events.POINTER_OVER, () => this.onHoverState());
+    this.on(Input.Events.POINTER_OUT, () => this.onOutState());
 
     scene.add.existing(this);
   }
@@ -61,11 +65,15 @@ class MyLabel extends Label {
   public onOutState() {
     this.stopShadow();
   }
+
+  protected _onClick(onClick: () => void) {
+    this.playOnClick();
+    onClick();
+  }
 }
 
-export default class MyDialog extends Dialog {
-  // constructor(scene: Scene, config: IConfig) {
-  constructor(scene: Scene) {
+export default class YesNoDialog extends Dialog {
+  constructor(scene: Scene, title: string, text: string, onYesClick: () => void) {
     const config: IConfig = {
       x: GameConstant.WidthCenter,
       y: GameConstant.HeightCenter,
@@ -83,9 +91,9 @@ export default class MyDialog extends Dialog {
         action: 15,
 
         top: 25,
-        right: 20,
+        right: 30,
         bottom: 20,
-        left: 20
+        left: 30
       },
 
       expand: {
@@ -96,23 +104,22 @@ export default class MyDialog extends Dialog {
         // actions: true,
       },
 
-      title: scene.add.text(0, 0, 'Confirmation', {
+      click: {
+        mode: 'pointerdown',
+        clickInterval: 1000
+      },
+
+      title: scene.add.text(0, 0, title, {
         fontFamily: FontFamily.Text,
         fontSize: FontSize.SmallTitle
       }),
-      content: scene.add.text(0, 0, 'Do you want to quit?', {
+      content: scene.add.text(0, 0, text, {
         fontFamily: FontFamily.Text,
         fontSize: FontSize.SmallText
       }),
       actions: [
-        // new OkButton(scene, () => console.log('Yes button clicked')),
-        // new CancelButton(scene, () => console.log('Cancel button clicked'))
-        new MyLabel(scene, TextureKey.Gui.Frames.Button.Ok, Color.Green).on('pointerdown', () => {
-          console.log('Yes button clicked');
-        }),
-        new MyLabel(scene, TextureKey.Gui.Frames.Button.Cancel, Color.Red)
-        // new MyLabel(scene, TextureKey.Gui.Frames.Button.EnterRoom),
-        // new MyLabel(scene, TextureKey.Gui.Frames.Button.ExitRoom)
+        new DialogButton(scene, TextureKey.Gui.Frames.Button.Ok, onYesClick, Color.Green),
+        new DialogButton(scene, TextureKey.Gui.Frames.Button.Cancel, () => {}, Color.Red)
       ]
     };
 
@@ -122,20 +129,6 @@ export default class MyDialog extends Dialog {
     this.layout();
     this.setDepth(Depth.Dialog);
 
-    this.on(
-      'action.over',
-      function (button: MyLabel) {
-        button.onHoverState();
-      },
-      this
-    );
-    this.on(
-      'action.out',
-      function (button: MyLabel) {
-        button.onOutState();
-      },
-      this
-    );
     this.modal({
       manualClose: false
     });
