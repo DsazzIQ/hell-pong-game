@@ -44,6 +44,9 @@ export default class GUIContainer extends GameObjects.GameObject {
   public addToContainer(objects: GameObjects.GameObject[]) {
     this.container.add(objects);
   }
+  public getWidth() {
+    return this.guiContainer.getAt<GameObjects.Image>(1).x;
+  }
 
   private createCornerFragments(scene: Scene, width: number, height: number): GameObjects.Image[] {
     const topLeft = this.createFragment(scene, {

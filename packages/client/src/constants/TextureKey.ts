@@ -17,7 +17,8 @@ const TextureKey = Object.freeze({
         MainTitle: 'text/main-title'
       },
       Logo: 'logo',
-      Main: 'main'
+      Main: 'main',
+      Dialog: 'dialog'
     }
   },
   Gui: {
@@ -39,6 +40,10 @@ const TextureKey = Object.freeze({
       Button: {
         Back: 'button/back',
         Square: 'button/square',
+        Ok: 'button/ok',
+        Cancel: 'button/cancel',
+        LeaveRoom: 'button/leave-room',
+        EnterRoom: 'button/enter-room',
         Main: 'button/main',
         Checked: 'button/checked',
         UnChecked: 'button/unchecked'
@@ -50,7 +55,10 @@ const TextureKey = Object.freeze({
         Music: 'icon/music',
         Sound: 'icon/sound',
         Return: 'icon/return',
-        Setting: 'icon/setting'
+        Setting: 'icon/setting',
+        Team: 'icon/team',
+        Wait: 'icon/wait',
+        Locked: 'icon/locked'
       },
       Gameplay: {
         Ball: 'gameplay/ball',
