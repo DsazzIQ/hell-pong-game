@@ -15,20 +15,12 @@ const defaultConfig: TableRowConfig = {
   textStyle: { color: colorToHex(Color.White) }
 };
 
-export enum RowPriority {
-  PIN = 999,
-  HIGH = 100,
-  LOW = 0
-}
-
 export class TableRow extends Phaser.GameObjects.Container {
   private readonly rowId: string;
   private readonly rowCells: TableCell[];
   private readonly rowHeight: number;
   private readonly isEven: boolean;
   private readonly config: TableRowConfig;
-
-  public priority: RowPriority;
 
   constructor(
     scene: Phaser.Scene,
@@ -39,7 +31,6 @@ export class TableRow extends Phaser.GameObjects.Container {
     config?: TableRowConfig
   ) {
     super(scene, 0, index * rowHeight);
-    this.priority = RowPriority.HIGH;
 
     this.rowCells = rowCells;
 
@@ -49,16 +40,6 @@ export class TableRow extends Phaser.GameObjects.Container {
     this.config = { ...defaultConfig, ...config };
 
     this.render();
-  }
-
-  public setPriority(priority: RowPriority): this {
-    this.priority = priority;
-    return this;
-  }
-
-  public pin(): this {
-    this.priority = RowPriority.PIN;
-    return this;
   }
 
   public isEqual(id: string): boolean {
