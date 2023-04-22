@@ -11,7 +11,7 @@ class PaginationButton extends Phaser.GameObjects.Container {
     text: string,
     disabled: boolean,
     selected: boolean,
-    onClick: () => void
+    onClick?: () => void
   ) {
     super(scene);
 
@@ -19,7 +19,7 @@ class PaginationButton extends Phaser.GameObjects.Container {
     this.add(this.createText(height, text));
   }
 
-  private createBody(height: number, disabled: boolean, selected: boolean, onClick: () => void) {
+  private createBody(height: number, disabled: boolean, selected: boolean, onClick?: () => void) {
     const button = this.scene.add.graphics();
     const buttonColor = selected ? Color.Orange : disabled ? Color.Gray700 : Color.Gray800;
 
@@ -38,7 +38,7 @@ class PaginationButton extends Phaser.GameObjects.Container {
         this.scene.sys.canvas.style.cursor = 'default';
         this.updateButtonColor(button, buttonColor, size);
       });
-      button.on(Phaser.Input.Events.POINTER_DOWN, onClick);
+      onClick && button.on(Phaser.Input.Events.POINTER_DOWN, onClick);
     }
 
     return button;

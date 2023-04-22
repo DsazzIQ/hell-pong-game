@@ -18,7 +18,11 @@ const TextureKey = Object.freeze({
       },
       Logo: 'logo',
       Main: 'main',
-      Dialog: 'dialog'
+      Dialog: 'dialog',
+      Toast: {
+        Info: 'toast/info',
+        Error: 'toast/error'
+      }
     }
   },
   Gui: {
@@ -59,7 +63,9 @@ const TextureKey = Object.freeze({
         Team: 'icon/team',
         Wait: 'icon/wait',
         Locked: 'icon/locked',
-        Unlocked: 'icon/unlocked'
+        Unlocked: 'icon/unlocked',
+        Error: 'icon/error',
+        Info: 'icon/info'
       },
       Gameplay: {
         Ball: 'gameplay/ball',

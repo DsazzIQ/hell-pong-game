@@ -30,6 +30,7 @@ import TableButtonCell from '../../components/Table/TableButtonCell';
 import SmallButton from '../../components/Button/SmallButton';
 import Color from '@hell-pong/shared/constants/color';
 import YesNoDialog from '../../components/Dialog/YesNoDialog';
+import ToastManager from '../../components/Toast/ToastManager';
 
 export default class LobbyScene extends Scene {
   private socket!: Socket<ServerToClientEvents, ClientToServerEvents>;
@@ -39,6 +40,7 @@ export default class LobbyScene extends Scene {
   private createRoomButton!: BitmapTextButton;
   private gui!: GUIContainer;
   private rooms!: RoomInfo[];
+  private toastManager!: ToastManager;
 
   constructor() {
     super(SceneKey.Lobby);
@@ -70,8 +72,8 @@ export default class LobbyScene extends Scene {
     this.initGUI();
 
     this.roomsTable = this.initTable();
+    this.toastManager = new ToastManager(this);
 
-    // new MyDialog(this);
     this.initEvents();
   }
 
@@ -246,7 +248,7 @@ export default class LobbyScene extends Scene {
 
     this.socket.on(SocketEvents.Game.Error, (error: IGameError) => {
       logger.error('socket:error', error);
-      this.showErrorMessage(error.message);
+      this.toastManager.showToast('Error', `Error\n${error.message}`);
     });
   }
 
@@ -295,21 +297,6 @@ export default class LobbyScene extends Scene {
     this.createRoomButton.setOrigin(0, 1).setTextOrigin(-0.2, 1.75);
 
     return this.createRoomButton;
-  }
-
-  // Function to display an error message
-  private showErrorMessage(message: string) {
-    // Create and display a text element or a popup with the error message
-    // You can customize this according to your game's UI and design
-    const errorMessage = this.add.text(50, 300, message, {
-      color: '#ff0000',
-      fontSize: '32px'
-    });
-
-    // Remove the error message after a few seconds
-    setTimeout(() => {
-      errorMessage.destroy();
-    }, 3000);
   }
 
   update() {

@@ -9,14 +9,16 @@ import Color from '@hell-pong/shared/constants/color';
 import IConfig = Dialog.IConfig;
 import DialogButton from './DialogButton';
 import logger from '../../logger';
+import { ISize } from '@hell-pong/shared/entities/component/Size';
 
 export default class YesNoDialog extends Dialog {
   constructor(scene: Scene, title: string, text: string, onYesClick: () => void) {
+    const size: ISize = { width: 400, height: 200 };
     const config: IConfig = {
       x: GameConstant.WidthCenter,
       y: GameConstant.HeightCenter,
-      width: 400,
-      height: 200,
+      width: size.width,
+      height: size.height,
       background: scene.add.image(0, 0, TextureKey.Background.Key, TextureKey.Background.Frames.Dialog),
 
       align: {
@@ -49,7 +51,8 @@ export default class YesNoDialog extends Dialog {
 
       title: scene.add.text(0, 0, title, {
         fontFamily: FontFamily.Text,
-        fontSize: FontSize.SmallTitle
+        fontSize: FontSize.SmallTitle,
+        wordWrap: { width: size.width - 30 * 2 }
       }),
       content: scene.add.text(0, 0, text, {
         fontFamily: FontFamily.Text,

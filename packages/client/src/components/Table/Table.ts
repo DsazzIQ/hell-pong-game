@@ -20,10 +20,11 @@ const defaultConfig: TableConfig = {
   headerTextStyle: { color: colorToHex(Color.White) }
 };
 
+const MIN_START_PAGE = 1;
 const MAX_FIRST_VISIBLE_PAGES = 15;
 const BUTTON_SPACING = 30;
 const START_PAGE_OFFSET = 2;
-const END_PAGE_OFFSET = 1;
+
 export class Table extends Phaser.GameObjects.Container {
   private readonly headerContainer: Phaser.GameObjects.Container;
   private readonly rowsContainer: Phaser.GameObjects.Container;
@@ -88,7 +89,7 @@ export class Table extends Phaser.GameObjects.Container {
     this.paginationContainer.removeAll(true);
 
     const totalPages = this.totalPages(rowsCount);
-    if (totalPages <= 1) return;
+    if (totalPages <= MIN_START_PAGE) return;
 
     const { rowHeight, rowsPerPage } = this.config;
     const offset: IPosition = { x: 10, y: 4 };
@@ -97,7 +98,7 @@ export class Table extends Phaser.GameObjects.Container {
       label: string,
       disabled: boolean,
       selected: boolean,
-      callback: () => void
+      callback?: () => void
     ): PaginationButton => {
       const button = new PaginationButton(this.scene, rowHeight!, label, disabled, selected, callback);
       this.paginationContainer.add(button);
@@ -110,10 +111,10 @@ export class Table extends Phaser.GameObjects.Container {
     createButton('<', isFirstPage, false, () => this.goToPreviousPage(doAction));
     createButton('1', isFirstPage, isFirstPage, () => this.goToPage(0, totalPages, doAction));
 
-    const createDotsButton = () => createButton('..', true, false, () => {});
+    const createDotsButton = () => createButton('..', true, false);
     // Create "..." button for left side
     const pageRange = this.calculatePageRange(totalPages);
-    if (pageRange.start > 1) createDotsButton();
+    if (pageRange.start > MIN_START_PAGE) createDotsButton();
 
     // Create page buttons
     for (let i = pageRange.start; i < pageRange.end; i++) {
@@ -121,12 +122,14 @@ export class Table extends Phaser.GameObjects.Container {
       createButton(`${i + 1}`, isCurrentPage, isCurrentPage, () => this.goToPage(i, totalPages, doAction));
     }
 
-    // Create "..." button for right side
-    if (pageRange.end < totalPages - 1) createDotsButton();
+    const lastPageIndex = totalPages - 1;
 
-    const isLastPage = totalPages - 1 === this.currentPage;
+    // Create "..." button for right side
+    if (pageRange.end < lastPageIndex) createDotsButton();
+
+    const isLastPage = lastPageIndex === this.currentPage;
     // Create last page button
-    createButton(`${totalPages}`, isLastPage, isLastPage, () => this.goToPage(totalPages - 1, totalPages, doAction));
+    createButton(`${totalPages}`, isLastPage, isLastPage, () => this.goToPage(lastPageIndex, totalPages, doAction));
 
     // Create goToNext ">" button
     createButton('>', isLastPage, false, () => this.goToNextPage(rowsCount, doAction));
@@ -135,8 +138,9 @@ export class Table extends Phaser.GameObjects.Container {
   }
 
   private calculatePageRange(totalPages: number): { start: number; end: number } {
-    const start = Math.max(1, this.currentPage - MAX_FIRST_VISIBLE_PAGES + START_PAGE_OFFSET);
-    const end = Math.min(totalPages - 1, start + MAX_FIRST_VISIBLE_PAGES - END_PAGE_OFFSET);
+    const lastPageIndex = totalPages - 1;
+    const start = Math.max(MIN_START_PAGE, this.currentPage - MAX_FIRST_VISIBLE_PAGES + START_PAGE_OFFSET);
+    const end = Math.min(lastPageIndex, start + MAX_FIRST_VISIBLE_PAGES - MIN_START_PAGE);
     return { start, end };
   }
 
@@ -158,8 +162,9 @@ export class Table extends Phaser.GameObjects.Container {
 
   public correctCurrentPage(rowsCount: number): number {
     const totalPages = this.totalPages(rowsCount);
-    if (totalPages && this.currentPage > totalPages - 1) {
-      this._currentPage = totalPages - 1;
+    const lastPageIndex = totalPages - 1;
+    if (totalPages && this.currentPage > lastPageIndex) {
+      this._currentPage = lastPageIndex;
     }
     return this._currentPage;
   }
