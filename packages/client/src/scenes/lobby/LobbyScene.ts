@@ -180,7 +180,7 @@ export default class LobbyScene extends Scene {
       ];
     }
 
-    return [new TableTextCell(this, '---', cellWidth, { x: 20, y: 0 })];
+    return [new TableTextCell(this, '---', cellWidth, { x: 40, y: 2 })];
   }
 
   private createTableRow(room: RoomInfo, isMyRoom: boolean, isNotReady: boolean, index: number) {

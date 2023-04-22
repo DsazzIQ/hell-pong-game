@@ -20,12 +20,17 @@ const defaultConfig: TableConfig = {
   headerTextStyle: { color: colorToHex(Color.White) }
 };
 
+const MAX_FIRST_VISIBLE_PAGES = 15;
+const BUTTON_SPACING = 30;
+const START_PAGE_OFFSET = 2;
+const END_PAGE_OFFSET = 1;
 export class Table extends Phaser.GameObjects.Container {
   private readonly headerContainer: Phaser.GameObjects.Container;
   private readonly rowsContainer: Phaser.GameObjects.Container;
   private readonly paginationContainer: Phaser.GameObjects.Container;
 
   protected selectedRowId?: string;
+
   protected _currentPage: number;
 
   public readonly headerCellsWidth: number[];
@@ -43,6 +48,7 @@ export class Table extends Phaser.GameObjects.Container {
     scene.add.existing(this);
 
     this.selectedRowId = selectedRowId;
+
     this._currentPage = 0;
 
     this.config = { ...defaultConfig, ...config };
@@ -87,23 +93,51 @@ export class Table extends Phaser.GameObjects.Container {
     const { rowHeight, rowsPerPage } = this.config;
     const offset: IPosition = { x: 10, y: 4 };
 
-    for (let i = 0; i < totalPages; i++) {
-      const button = new PaginationButton(this.scene, rowHeight!, i, i === this.currentPage, () => {
-        this.goToPage(i, totalPages, doAction);
-      });
-      const buttonPosition = this.getPaginationButtonPosition(offset, i);
-      button.setPosition(buttonPosition.x, buttonPosition.y);
+    const createButton = (
+      label: string,
+      disabled: boolean,
+      selected: boolean,
+      callback: () => void
+    ): PaginationButton => {
+      const button = new PaginationButton(this.scene, rowHeight!, label, disabled, selected, callback);
       this.paginationContainer.add(button);
+      button.setPosition(offset.x, offset.y);
+      offset.x += BUTTON_SPACING;
+      return button;
+    };
+
+    const isFirstPage = 0 === this.currentPage;
+    createButton('<', isFirstPage, false, () => this.goToPreviousPage(doAction));
+    createButton('1', isFirstPage, isFirstPage, () => this.goToPage(0, totalPages, doAction));
+
+    const createDotsButton = () => createButton('..', true, false, () => {});
+    // Create "..." button for left side
+    const pageRange = this.calculatePageRange(totalPages);
+    if (pageRange.start > 1) createDotsButton();
+
+    // Create page buttons
+    for (let i = pageRange.start; i < pageRange.end; i++) {
+      const isCurrentPage = i === this.currentPage;
+      createButton(`${i + 1}`, isCurrentPage, isCurrentPage, () => this.goToPage(i, totalPages, doAction));
     }
 
-    this.paginationContainer.setPosition(offset.x, rowHeight! + rowHeight! * rowsPerPage!);
+    // Create "..." button for right side
+    if (pageRange.end < totalPages - 1) createDotsButton();
+
+    const isLastPage = totalPages - 1 === this.currentPage;
+    // Create last page button
+    createButton(`${totalPages}`, isLastPage, isLastPage, () => this.goToPage(totalPages - 1, totalPages, doAction));
+
+    // Create goToNext ">" button
+    createButton('>', isLastPage, false, () => this.goToNextPage(rowsCount, doAction));
+
+    this.paginationContainer.setPosition(0, rowHeight! + rowHeight! * rowsPerPage!);
   }
 
-  private getPaginationButtonPosition(offset: IPosition, index: number): IPosition {
-    return {
-      x: offset.x + index * 30,
-      y: offset.y
-    };
+  private calculatePageRange(totalPages: number): { start: number; end: number } {
+    const start = Math.max(1, this.currentPage - MAX_FIRST_VISIBLE_PAGES + START_PAGE_OFFSET);
+    const end = Math.min(totalPages - 1, start + MAX_FIRST_VISIBLE_PAGES - END_PAGE_OFFSET);
+    return { start, end };
   }
 
   public get startIndex(): number {
