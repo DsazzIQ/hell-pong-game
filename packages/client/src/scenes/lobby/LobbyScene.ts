@@ -22,8 +22,7 @@ import BitmapSize from '../../constants/BitmapSize';
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
 import Table from '../../components/Table/Table';
 import TableTextCell from '../../components/Table/TableTextCell';
-import { RowPriority, TableRow } from '../../components/Table/TableRow';
-import { TableCell } from '../../components/Table/TableCell';
+import { TableRow } from '../../components/Table/TableRow';
 import TableImageCell from '../../components/Table/TableImageCell';
 import { IRoomInfo, RoomInfo } from '@hell-pong/shared/gameData/RoomInfo';
 import Player from '@hell-pong/shared/gameData/Player';
@@ -39,6 +38,7 @@ export default class LobbyScene extends Scene {
   private myRoom: RoomInfo | undefined;
   private createRoomButton!: BitmapTextButton;
   private gui!: GUIContainer;
+  private rooms!: RoomInfo[];
 
   constructor() {
     super(SceneKey.Lobby);
@@ -116,90 +116,128 @@ export default class LobbyScene extends Scene {
     );
   }
 
-  updateRoomList(rawRooms: IRoomInfo[]) {
-    const rooms = RoomInfo.fromJsonList(rawRooms);
+  private createStatusCell(room, isMyRoom, notReadyStatus) {
+    const cellWidth = this.roomsTable.headerCellsWidth[2];
+    if (isMyRoom) {
+      return notReadyStatus
+        ? new TableTextCell(this, 'Ready ?', cellWidth)
+        : new TableImageCell(
+            this,
+            TextureKey.Gui.Key,
+            TextureKey.Gui.Frames.Icon.Wait,
+            this.roomsTable.headerCellsWidth[2],
+            {
+              x: 20,
+              y: 4
+            }
+          );
+    }
 
-    const rowHeight = this.roomsTable.config.rowHeight!;
-    const cellsWidth = this.roomsTable.headerCellsWidth;
+    const isOpenRoom = !room.isFull();
+    return new TableImageCell(
+      this,
+      TextureKey.Gui.Key,
+      TextureKey.Gui.Frames.Icon[isOpenRoom ? 'Unlocked' : 'Locked'],
+      cellWidth,
+      {
+        x: 20,
+        y: 4
+      }
+    );
+  }
+
+  private createActionCells(room, isMyRoom, notReadyStatus) {
+    const cellWidth = this.roomsTable.headerCellsWidth[3];
+    if (isMyRoom) {
+      if (notReadyStatus) {
+        return [
+          new TableButtonCell(this, this.createReadyButton(room.id), cellWidth, {
+            x: 30,
+            y: 2
+          }),
+          new TableButtonCell(this, this.createLeaveRoomButton(room.id), cellWidth * 0.5, {
+            x: 0,
+            y: 2
+          })
+        ];
+      }
+
+      return [
+        new TableButtonCell(this, this.createLeaveRoomButton(room.id), cellWidth, {
+          x: 50,
+          y: 2
+        })
+      ];
+    }
+
+    const isJoinable = !this.myRoom && !room.isFull();
+    if (isJoinable) {
+      return [
+        new TableButtonCell(this, this.createEnterRoomButton(room.id), cellWidth, {
+          x: 50,
+          y: 2
+        })
+      ];
+    }
+
+    return [new TableTextCell(this, '---', cellWidth, { x: 20, y: 0 })];
+  }
+
+  private createTableRow(room: RoomInfo, isMyRoom: boolean, isNotReady: boolean, index: number) {
+    const roomId = room.shortId;
+    const statusCell = this.createStatusCell(room, isMyRoom, isNotReady);
+    const actionCells = this.createActionCells(room, isMyRoom, isNotReady);
+
+    const { headerCellsWidth, config } = this.roomsTable;
+    const cells = [
+      new TableTextCell(this, roomId, headerCellsWidth[0], { x: 20, y: 0 }),
+      new TableTextCell(this, room.playersLength.toString(), headerCellsWidth[1], { x: 37, y: 0 }),
+      statusCell,
+      ...actionCells
+    ];
+
+    return new TableRow(this, room.id, index, cells, config.rowHeight!);
+  }
+
+  updateRoomList() {
+    const rooms = this.rooms.slice(this.roomsTable.startIndex, this.roomsTable.endIndex);
 
     const myId = this.myId();
-    this.myRoom = rooms.find((room) => room.hasPlayer(myId));
-
-    this.roomsTable.setSelectedRowId(this.myRoom?.id);
-
     let me: Player | null = null;
-    let index = 0;
 
-    const rows: TableRow[] = [];
-    if (this.myRoom) {
-      me = this.myRoom.findPlayer(this.myId());
-      const notReadyStatus = me !== null && me.isNotReady();
+    const rows = rooms.map((room, index) => {
+      const isMyRoom = this.myRoom ? room.isEqual(this.myRoom.id) : false;
+      if (isMyRoom) {
+        me = this.myRoom ? this.myRoom.findPlayer(myId) : null;
+      }
 
-      const statusCell: TableCell = notReadyStatus
-        ? new TableTextCell(this, 'Ready ?', cellsWidth[2])
-        : new TableImageCell(this, TextureKey.Gui.Key, TextureKey.Gui.Frames.Icon.Wait, cellsWidth[2], { x: 20, y: 4 });
+      const notReadyStatus = isMyRoom && me !== null && me.isNotReady();
+      return this.createTableRow(room, isMyRoom, notReadyStatus, index);
+    });
 
-      const actionCells: TableCell[] = notReadyStatus
-        ? [
-            new TableButtonCell(this, this.createReadyButton(this.myRoom.id), cellsWidth[3], { x: 30, y: 2 }),
-            new TableButtonCell(this, this.createLeaveRoomButton(this.myRoom.id), cellsWidth[3] * 0.5, { x: 0, y: 2 })
-          ]
-        : [new TableButtonCell(this, this.createLeaveRoomButton(this.myRoom.id), cellsWidth[3], { x: 50, y: 2 })];
-
-      const cells: TableCell[] = [
-        new TableTextCell(this, this.myRoom.shortId, cellsWidth[0], { x: 20, y: 0 }),
-        new TableTextCell(this, this.myRoom.playersLength.toString(), cellsWidth[1], { x: 37, y: 0 }),
-        statusCell,
-        ...actionCells
-      ];
-
-      const row = new TableRow(this, this.myRoom.id, index, cells, rowHeight);
-      rows.push(row.pin());
-
-      index++;
-    }
-
-    for (const room of rooms) {
-      if (room.isEqual(this.myRoom?.id)) continue;
-      const isOpenRoom = !room.isFull();
-      const isJoinable = !me && isOpenRoom;
-
-      const statusCell = new TableImageCell(
-        this,
-        TextureKey.Gui.Key,
-        TextureKey.Gui.Frames.Icon[isOpenRoom ? 'Unlocked' : 'Locked'],
-        cellsWidth[2],
-        {
-          x: 20,
-          y: 4
-        }
-      );
-
-      const actionCells: TableCell[] = isJoinable
-        ? [new TableButtonCell(this, this.createEnterRoomButton(room.id), cellsWidth[3], { x: 50, y: 2 })]
-        : [new TableTextCell(this, '---', cellsWidth[3], { x: 20, y: 0 })];
-
-      const cells: TableCell[] = [
-        new TableTextCell(this, room.id.slice(0, 15), cellsWidth[0], { x: 20, y: 0 }),
-        new TableTextCell(this, room.playersLength.toString(), cellsWidth[1], { x: 37, y: 0 }),
-        statusCell,
-        ...actionCells
-      ];
-
-      const priority = room.isFull() ? RowPriority.LOW : RowPriority.HIGH;
-      const row = new TableRow(this, room.id, index, cells, rowHeight);
-      rows.push(row.setPriority(priority));
-
-      index++;
-    }
-
-    this.roomsTable.rerenderRows(rows);
+    this.roomsTable.renderRows(rows);
+    this.roomsTable.renderPaginationButtons(this.rooms.length, () => {
+      this.updateRoomList();
+    });
   }
 
   private initEvents() {
     const { startTransition } = this.game as Game;
 
-    this.socket.on(SocketEvents.Room.UpdateList, (rooms: IRoomInfo[]) => this.updateRoomList(rooms));
+    this.socket.on(SocketEvents.Room.UpdateList, (rooms: IRoomInfo[]) => {
+      this.rooms = RoomInfo.fromJsonList(rooms, this.myId());
+
+      const myId = this.myId();
+      this.myRoom = this.rooms.find((room) => room.hasPlayer(myId));
+      this.roomsTable.correctCurrentPage(this.rooms.length);
+      this.roomsTable.setSelectedRowId(this.myRoom?.id);
+
+      // Sort the rows by priority in descending order
+      this.rooms.sort((a, b) => b.priority - a.priority);
+
+      this.updateRoomList();
+    });
+
     this.socket.emit(SocketEvents.Room.List);
 
     this.socket.on(SocketEvents.Game.Start, (state: IGameState) => {
