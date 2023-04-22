@@ -100,6 +100,7 @@ export default class LobbyScene extends Scene {
   private createLeaveRoomButton(roomId: string): SmallButton {
     return new SmallButton(this, TextureKey.Gui.Frames.Button.LeaveRoom, () => {
       new YesNoDialog(this, 'Confirmation', 'Do you want to leave this room ?', () => {
+        this.myRoom = undefined;
         this.socket.emit(SocketEvents.Room.PlayerLeave, roomId);
       });
     });
