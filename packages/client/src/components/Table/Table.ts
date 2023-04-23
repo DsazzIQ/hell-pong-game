@@ -5,6 +5,7 @@ import { IPosition } from '@hell-pong/shared/entities/component/Position';
 import { TableCell } from './TableCell';
 import Color, { colorToHex } from '@hell-pong/shared/constants/color';
 import PaginationButton from './PaginationButton';
+import TableNoRows from './TableNoRows';
 
 interface TableConfig {
   rowsPerPage?: number;
@@ -79,6 +80,14 @@ export class Table extends Phaser.GameObjects.Container {
 
   public renderRows(rows: TableRow[]): void {
     this.rowsContainer.removeAll(true);
+
+    if (rows.length === 0) {
+      const tableHeader = this.headerContainer.list[0] as TableHeader;
+      const noDataMessage = 'No active games yet';
+      const noRowsComponent = new TableNoRows(this.scene, { x: 0, y: 0 }, tableHeader.getSize(), noDataMessage);
+      this.rowsContainer.add(noRowsComponent);
+    }
+
     for (const row of rows) {
       this.rowsContainer.add(row);
     }

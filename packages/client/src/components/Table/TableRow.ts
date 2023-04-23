@@ -1,11 +1,12 @@
 import Phaser from 'phaser';
 import { TableCell } from './TableCell';
 import Color, { colorToHex } from '@hell-pong/shared/constants/color';
+import BaseTableRow from './BaseTableRow';
 
 export interface TableRowConfig {
-  evenRowColor: number;
-  oddRowColor: number;
-  selectedRowColor: number;
+  evenRowColor: Color;
+  oddRowColor: Color;
+  selectedRowColor: Color;
   textStyle: Phaser.Types.GameObjects.Text.TextStyle;
 }
 const defaultConfig: TableRowConfig = {
@@ -15,29 +16,22 @@ const defaultConfig: TableRowConfig = {
   textStyle: { color: colorToHex(Color.White) }
 };
 
-export class TableRow extends Phaser.GameObjects.Container {
+export class TableRow extends BaseTableRow<TableRowConfig> {
   private readonly rowId: string;
-  private readonly rowCells: TableCell[];
-  private readonly rowHeight: number;
   private readonly isEven: boolean;
-  private readonly config: TableRowConfig;
 
   constructor(
     scene: Phaser.Scene,
     rowId: string,
     index: number,
-    rowCells: TableCell[],
+    cells: TableCell[],
     rowHeight: number,
     config?: TableRowConfig
   ) {
-    super(scene, 0, index * rowHeight);
+    super(scene, { x: 0, y: index * rowHeight }, rowHeight, cells, { ...defaultConfig, ...config });
 
-    this.rowCells = rowCells;
-
-    this.isEven = index % 2 === 0;
     this.rowId = rowId;
-    this.rowHeight = rowHeight;
-    this.config = { ...defaultConfig, ...config };
+    this.isEven = index % 2 === 0;
 
     this.render();
   }
@@ -46,40 +40,7 @@ export class TableRow extends Phaser.GameObjects.Container {
     return this.rowId === id;
   }
 
-  private render(): void {
-    this.addBackground();
-    this.rowCells.forEach((cell, index) => this.addCell(cell, index));
-  }
-
-  private get rowWidth(): number {
-    return this.sumRowWidth(this.rowCells.length);
-  }
-
-  private sumRowWidth = (index: number) => {
-    const { length } = this.rowCells;
-    if (index <= 0 || index > length) {
-      return 0;
-    }
-
-    let totalWidth = 0;
-    if (index === length) {
-      totalWidth = this.rowCells[length - 1].cellWidth;
-      index -= 1;
-    }
-
-    for (let i = 0; i <= index; i++) {
-      totalWidth += this.rowCells[i].cellWidth;
-    }
-
-    return totalWidth;
-  };
-
-  private addCell(cell: TableCell, index: number) {
-    cell.setX(this.sumRowWidth(index));
-    this.add(cell);
-  }
-
-  private addBackground() {
+  protected addBackground() {
     const bgColor = this.isEven ? this.config.evenRowColor : this.config.oddRowColor;
     const bg = new Phaser.GameObjects.Graphics(this.scene);
     bg.fillStyle(bgColor, 1);
