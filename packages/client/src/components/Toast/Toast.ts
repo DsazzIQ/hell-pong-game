@@ -37,6 +37,7 @@ class Toast extends Phaser.GameObjects.Container {
   private createBgImage(scene: Phaser.Scene, status: ToastStatus) {
     const bgImage = scene.add.image(0, 0, TextureKey.Background.Key, TextureKey.Background.Frames.Toast[status]);
     bgImage.setOrigin(0, 0);
+    bgImage.setAlpha(0.9);
     return bgImage;
   }
 
