@@ -24,6 +24,7 @@ const MAX_BUFFER_SIZE = 5;
 interface GamePlayer {
   id: string;
   index: PlayerIndex;
+  score: number;
   paddle: Physics.Matter.Image;
 }
 export default class GameScene extends Scene {
@@ -32,8 +33,6 @@ export default class GameScene extends Scene {
   private ball!: Physics.Matter.Image;
   private players: GamePlayer[] = [];
   private cursors?: Types.Input.Keyboard.CursorKeys;
-
-  // private playersScoreText!: GameObjects.Text;
 
   private socket!: Socket<ServerToClientEvents, ClientToServerEvents>;
 
@@ -44,6 +43,7 @@ export default class GameScene extends Scene {
   private pane!: Pane;
 
   private isPaused = true;
+  private gameScoreText!: Phaser.GameObjects.Text;
 
   constructor() {
     super(SceneKey.Game);
@@ -57,6 +57,7 @@ export default class GameScene extends Scene {
 
     this.players.forEach((player) => player.paddle.destroy());
     this.ball.destroy();
+    this.gameScoreText.destroy();
 
     this.initData = {
       roomId: '',
@@ -124,14 +125,13 @@ export default class GameScene extends Scene {
   }
 
   private initGameScore(): void {
-    this.add
+    this.gameScoreText = this.add
       .text(this.game.canvas.width * 0.5, 20, `0 - 0`, {
         fontFamily: FontFamily.Text,
         fontSize: FontSize.Title,
         color: colorToHex(Color.White)
       })
-      .setOrigin(0.5)
-      .setName('score');
+      .setOrigin(0.5);
   }
 
   private initPlayers(): void {
@@ -149,7 +149,7 @@ export default class GameScene extends Scene {
       paddle.setOrigin(0.5);
       paddle.setName(`paddle-${player.index + 1}`);
 
-      return { id: player.id, index: player.index, paddle };
+      return { id: player.id, index: player.index, score: player.score, paddle };
     });
   }
 
@@ -186,6 +186,9 @@ export default class GameScene extends Scene {
     // Listen for game updates from the server and handle server reconciliation
     this.socket.on(SocketEvents.Game.StateUpdate, (gameState: IGameState) => {
       this.onGameStateUpdate(gameState);
+    });
+    this.socket.on(SocketEvents.Game.ScoreUpdate, (playerOneScore, playerTwoScore) => {
+      this.gameScoreText.setText(`${playerOneScore} - ${playerTwoScore}`);
     });
 
     this.socket.once(SocketEvents.Game.Stopped, () => {
@@ -233,6 +236,7 @@ export default class GameScene extends Scene {
       logger.info('Prevent state updating. Game is on pause');
       return;
     }
+
     this.addToBuffer(gameState);
     this.lastReceivedTime = this.getCurrentTime();
   }

@@ -23,13 +23,13 @@ export default class GameRoom {
   private lastUpdateTime = 0;
   private gameStarted = false;
 
-  constructor(roomId: string) {
+  constructor(roomId: string, io: Server) {
     this.id = roomId;
 
-    this.resetEngine();
+    this.resetEngine(io);
   }
 
-  private resetEngine(): void {
+  private resetEngine(io: Server): void {
     this.engine = Engine.create();
     this.engine.gravity.x = 0;
     this.engine.gravity.y = 0;
@@ -39,7 +39,7 @@ export default class GameRoom {
 
     this.initBall();
 
-    this.initWorldCollisions();
+    this.initWorldCollisions(io);
   }
 
   private setWorldBounds(): void {
@@ -88,13 +88,33 @@ export default class GameRoom {
     World.add(this.world, [this.topWall, this.bottomWall, this.leftWall, this.rightWall]);
   }
 
-  private initWorldCollisions(): void {
+  private initWorldCollisions(io: Server): void {
     Events.on(this.engine, 'collisionStart', (event) => {
       const pairs = event.pairs;
 
       for (let i = 0; i < pairs.length; i++) {
         const pair: Pair = pairs[i];
         this.ball.updateAfterCollisions(pair);
+        if (this.ball.collidingWithHorizontalWalls(pair)) {
+          if (this.ball.collidingWithLeftWall(pair)) {
+            this.players[PlayerIndex.SECOND].incrementScore();
+            logger.info(`add score to SECOND player`);
+          }
+          if (this.ball.collidingWithRightWall(pair)) {
+            this.players[PlayerIndex.FIRST].incrementScore();
+            logger.info(`add score to FIRST player`);
+          }
+          logger.info(`Game score: [${this.players[0].score} : ${this.players[1].score}]`);
+
+          io.to(this.id).emit(
+            SocketEvents.Game.ScoreUpdate,
+            this.players[PlayerIndex.FIRST].score,
+            this.players[PlayerIndex.SECOND].score
+          );
+
+          this.ball.resetPosition();
+          this.checkForGameEnd(io);
+        }
       }
     });
 
@@ -123,13 +143,20 @@ export default class GameRoom {
     this.gameStarted = false;
     this.lastUpdateTime = 0;
 
-    this.resetEngine();
+    this.resetEngine(io);
     this.players.forEach((player) => {
-      player.resetPaddle(this.world);
-      player.setNotReady();
+      player.resetState(this.world);
     });
 
     io.to(this.id).emit(SocketEvents.Game.Stopped);
+  }
+
+  private checkForGameEnd(io: Server): void {
+    for (const player of this.players) {
+      if (player.isMaxScore()) {
+        this.stopGame(io);
+      }
+    }
   }
 
   isFull(): boolean {

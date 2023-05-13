@@ -19,17 +19,20 @@ export interface IPlayer {
   id: string;
   index: PlayerIndex;
   paddle: IPaddle;
+  score: number;
   readyState: PlayerReadyState;
 }
 export default class Player implements IPlayer {
   id: string;
   index: PlayerIndex;
+  score: number;
   readyState: PlayerReadyState;
   paddle: Paddle;
 
   constructor(id: string, index: PlayerIndex) {
     this.id = id;
     this.index = index;
+    this.score = 0;
     this.readyState = PlayerReadyState.NOT_READY;
     this.paddle = new Paddle(index);
   }
@@ -59,10 +62,26 @@ export default class Player implements IPlayer {
     return this;
   }
 
+  resetState(world: World): this {
+    this.resetPaddle(world);
+    this.setNotReady();
+    this.score = 0;
+    return this;
+  }
+
+  public incrementScore(): void {
+    this.score++;
+  }
+
+  public isMaxScore(): boolean {
+    return this.score >= 5;
+  }
+
   toJson(): IPlayer {
     return {
       id: this.id,
       index: this.index,
+      score: this.score,
       readyState: this.readyState,
       paddle: this.paddle.toJson()
     };
@@ -72,6 +91,7 @@ export default class Player implements IPlayer {
     const player = new Player(json.id, json.index);
     player.readyState = json.readyState;
     player.paddle = Paddle.fromJson(json.paddle);
+    player.score = json.score;
     return player;
   }
 }

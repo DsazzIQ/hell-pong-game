@@ -6,6 +6,7 @@ import { IRoomInfo } from '@hell-pong/shared/gameData/RoomInfo';
 export interface ServerToClientEvents {
   [SocketEvents.Room.UpdateList]: (roomInfos: IRoomInfo[]) => void;
   [SocketEvents.Game.StateUpdate]: (gameState: IGameState) => void;
+  [SocketEvents.Game.ScoreUpdate]: (playerOneScore: number, playerTwoScore: number) => void;
   [SocketEvents.Game.Start]: (state: IGameState) => void;
   [SocketEvents.Game.Stopped]: () => void;
   [SocketEvents.Game.Error]: (error: IGameError) => void;

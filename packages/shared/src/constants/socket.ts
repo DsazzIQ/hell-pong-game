@@ -17,6 +17,7 @@ enum RoomEvents {
 enum GameEvents {
   PlayerMoved = 'game:player-moved',
   StateUpdate = 'game:state-update',
+  ScoreUpdate = 'game:score-update',
   Start = 'game:start',
   Stopped = 'game:stopped',
   Error = 'game:error'

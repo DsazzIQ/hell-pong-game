@@ -74,6 +74,9 @@ To start the development server for both client and server, run:
 ```
 yarn start
 ```
+> Important for Apple M-series: 
+arch -arm64 brew install pkg-config cairo pango libpng jpeg giflib librsvg
+
 
 This will start the client and server concurrently, accessible at [http://localhost:8080](http://localhost:8080). Open 
 the URL in your browser to start playing the game.
