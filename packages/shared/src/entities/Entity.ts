@@ -34,10 +34,6 @@ export abstract class Entity {
     return this;
   }
 
-  public bodyEquals(body: Body): boolean {
-    return this.body === body;
-  }
-
   public labelEquals(label: string): boolean {
     return this.body.label === label;
   }
@@ -53,7 +49,7 @@ export abstract class Entity {
   }
 
   public collidingWithHorizontalWalls(pair: Pair): boolean {
-    return (this.collidingWithLeftWall(pair) || this.collidingWithRightWall(pair));
+    return this.collidingWithLeftWall(pair) || this.collidingWithRightWall(pair);
   }
   public collidingWithLeftWall(pair: Pair): boolean {
     return this.collidesInPairWith(pair, GameConstant.Wall.LeftLabel);
