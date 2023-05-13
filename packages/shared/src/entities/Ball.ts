@@ -64,10 +64,6 @@ export class Ball extends Entity {
       return this.invertVelocityY().applyRandomForce();
     }
 
-    if (this.collidingWithHorizontalWalls(pair)) {
-      return this.invertVelocityX().applyRandomForce();
-    }
-
     return this;
   }
 
@@ -119,6 +115,10 @@ export class Ball extends Entity {
   resetPosition(): this {
     const initialPosition = new Position(this.initX, this.initY);
     Body.setPosition(this.body, initialPosition.toJson());
+
+    this.setVelocity(new Velocity(GameConstant.Ball.Speed, GameConstant.Ball.Speed));
+    this.applyRandomForce();
+
     return this;
   }
 

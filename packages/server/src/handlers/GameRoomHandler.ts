@@ -27,7 +27,7 @@ export default class GameRoomHandler {
 
   createRoom(socket: Socket): GameRoom {
     const roomId = this.generateUniqueRoomId();
-    const room = new GameRoom(roomId);
+    const room = new GameRoom(roomId, this.io);
     this.rooms.set(roomId, room);
     logger.info(`created room [${roomId}]`);
 

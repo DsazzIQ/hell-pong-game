@@ -52,14 +52,17 @@ export abstract class Entity {
     return collidesA || collidesB;
   }
 
-  protected collidingWithHorizontalWalls(pair: Pair): boolean {
-    return (
-      this.collidesInPairWith(pair, GameConstant.Wall.LeftLabel) ||
-      this.collidesInPairWith(pair, GameConstant.Wall.RightLabel)
-    );
+  public collidingWithHorizontalWalls(pair: Pair): boolean {
+    return (this.collidingWithLeftWall(pair) || this.collidingWithRightWall(pair));
+  }
+  public collidingWithLeftWall(pair: Pair): boolean {
+    return this.collidesInPairWith(pair, GameConstant.Wall.LeftLabel);
+  }
+  public collidingWithRightWall(pair: Pair): boolean {
+    return this.collidesInPairWith(pair, GameConstant.Wall.RightLabel);
   }
 
-  protected collidingWithVerticalWalls(pair: Pair): boolean {
+  public collidingWithVerticalWalls(pair: Pair): boolean {
     return (
       this.collidesInPairWith(pair, GameConstant.Wall.TopLabel) ||
       this.collidesInPairWith(pair, GameConstant.Wall.BottomLabel)

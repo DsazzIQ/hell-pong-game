@@ -42,8 +42,8 @@ export default class PreloaderScene extends Scene {
         this.initRegistry(socket);
 
         //TODO commented for development
-        // startTransition(this, SceneKey.Splash);
-        startTransition(this, SceneKey.Main);
+        startTransition(this, SceneKey.Splash);
+        // startTransition(this, SceneKey.Main);
       });
     });
   }
