@@ -2,8 +2,8 @@ const BALL_SIZE = 28;
 export const Ball = Object.freeze({
   Size: BALL_SIZE,
   Radius: BALL_SIZE * 0.5,
-  MaxSpeed: 7,
-  Speed: 3,
+  MaxSpeed: 9,
+  Speed: 4,
   Label: 'ball'
 });
 
@@ -29,7 +29,7 @@ export const Room = Object.freeze({
   MaxPlayers: 2
 });
 
-const FPS = 60;
+const FPS = 80;
 const WIDTH = 800;
 const HEIGHT = 600;
 export const GameConstant = Object.freeze({
@@ -38,7 +38,7 @@ export const GameConstant = Object.freeze({
   Height: HEIGHT,
   HeightCenter: HEIGHT * 0.5,
   FPS: FPS,
-  UpdateInterval: 1000 / (FPS * 2),
+  UpdateInterval: 1000 / FPS,
   Ball,
   Paddle,
   Wall,
