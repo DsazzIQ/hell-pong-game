@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "start:prod": "pm2 start --name hell-pong --watch dist/index.js --node-args=\"-r dotenv/config\"",
+    "start:prod": "node -r dotenv/config dist/index.js",
     "start": "nodemon",
     "build": "yarn workspace @hell-pong/shared build && tsc --project tsconfig.json",
     "watch": "tsc -w",
