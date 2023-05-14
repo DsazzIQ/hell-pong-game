@@ -4,6 +4,8 @@ enum Color {
   Green = 0x00ff00,
   Orange = 0xff6d0a,
   Red = 0xff0000,
+  Gray300 = 0xe5e7eb,
+  Gray400 = 0x9ca3af,
   Gray500 = 0x6b7280,
   Gray600 = 0x4b5563,
   Gray700 = 0x384152,

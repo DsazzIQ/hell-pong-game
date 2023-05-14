@@ -2,13 +2,13 @@ const BALL_SIZE = 28;
 export const Ball = Object.freeze({
   Size: BALL_SIZE,
   Radius: BALL_SIZE * 0.5,
-  MaxSpeed: 12,
-  Speed: 8,
+  MaxSpeed: 8,
+  Speed: 4,
   Label: 'ball'
 });
 
 export const Paddle = Object.freeze({
-  Speed: 14,
+  Speed: 10,
   Width: 18,
   Height: 62,
   Offset: 30,

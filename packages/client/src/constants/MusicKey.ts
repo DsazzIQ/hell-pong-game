@@ -1,5 +1,6 @@
 enum MusicKey {
   MainTheme = 'MainTheme',
+  BattleTheme = 'BattleTheme',
   SecondaryTheme = 'SecondaryTheme',
   SplashLogo = 'SplashLogo'
 }
