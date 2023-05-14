@@ -22,6 +22,7 @@ export default class GameRoom {
 
   private lastUpdateTime = 0;
   private gameStarted = false;
+  private gameOver = false;
 
   constructor(roomId: string, io: Server) {
     this.id = roomId;
@@ -133,6 +134,10 @@ export default class GameRoom {
     return this.gameStarted;
   }
 
+  isGameOver() {
+    return this.gameOver;
+  }
+
   startGame(io: Server) {
     logger.info(`start game for the room [${this.id}]`);
     this.gameStarted = true;
@@ -155,6 +160,7 @@ export default class GameRoom {
     for (const player of this.players) {
       if (player.isMaxScore()) {
         this.stopGame(io);
+        this.gameOver = true;
       }
     }
   }

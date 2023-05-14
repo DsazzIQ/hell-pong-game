@@ -185,6 +185,9 @@ export default class GameRoomHandler {
         const state = room.update().getGameState();
         io.to(room.id).emit(SocketEvents.Game.StateUpdate, state);
       }
+      if (room.isGameOver()) {
+        this.removeRoom(room.id);
+      }
     });
   }
 

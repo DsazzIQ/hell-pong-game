@@ -16,6 +16,7 @@ import { SocketEvents } from '@hell-pong/shared/constants/socket';
 import { ClientToServerEvents, ServerToClientEvents } from '@hell-pong/shared/types/socket.io';
 import logger from '../logger';
 import Color, { colorToHex } from '@hell-pong/shared/constants/color';
+import VirtualJoyStick from 'phaser3-rex-plugins/plugins/virtualjoystick';
 
 const ALPHA_THRESHOLD = 1;
 const MIN_BUFFER_SIZE_INTERPOLATION = 2;
@@ -44,6 +45,7 @@ export default class GameScene extends Scene {
 
   private isPaused = true;
   private gameScoreText!: Phaser.GameObjects.Text;
+  private joystick?: VirtualJoyStick;
 
   constructor() {
     super(SceneKey.Game);
@@ -153,19 +155,22 @@ export default class GameScene extends Scene {
     });
   }
 
-  private initDebugMonitor(): void {
-    const ballFolder = this.pane.addFolder({
-      title: 'Ball'
-    });
-    ballFolder.addMonitor(this.ball, 'x', { bufferSize: 100 });
-    ballFolder.addMonitor(this.ball, 'y', { bufferSize: 100 });
+  private initJoystick() {
+    this.joystick = new VirtualJoyStick(this, {
+      x: 100,
+      y: this.game.canvas.height - 100,
+      radius: 100,
+      base: this.add.circle(0, 0, 70, Color.Gray500).setAlpha(0.5),
+      thumb: this.add.circle(0, 0, 35, Color.Gray400).setAlpha(0.75)
+    }).setVisible(false);
 
-    this.players.map((player) => {
-      const playerFolder = this.pane.addFolder({
-        title: `Player ${player.index + 1}`
-      });
-      playerFolder.addMonitor(player.paddle, 'x', { bufferSize: 100 });
-      playerFolder.addMonitor(player.paddle, 'y', { bufferSize: 100 });
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      this.joystick?.setPosition(pointer.x, pointer.y);
+      this.joystick?.setVisible(true);
+    });
+
+    this.input.on('pointerup', () => {
+      this.joystick?.setVisible(false);
     });
   }
 
@@ -181,7 +186,7 @@ export default class GameScene extends Scene {
     this.initBall();
     this.initPlayers();
 
-    this.initDebugMonitor();
+    this.initJoystick();
 
     // Listen for game updates from the server and handle server reconciliation
     this.socket.on(SocketEvents.Game.StateUpdate, (gameState: IGameState) => {
@@ -191,7 +196,7 @@ export default class GameScene extends Scene {
       this.gameScoreText.setText(`${playerOneScore} - ${playerTwoScore}`);
     });
 
-    this.socket.once(SocketEvents.Game.Stopped, () => {
+    this.socket.on(SocketEvents.Game.Stopped, () => {
       const { startTransition } = this.game as Game;
       this.stopGame();
       startTransition(this, SceneKey.Lobby);
@@ -216,10 +221,10 @@ export default class GameScene extends Scene {
       return;
     }
     let key: PlayerMove = PlayerMove.STOP;
-    if (this.cursors?.up.isDown) {
+    if (this.cursors?.up.isDown || this.joystick?.up) {
       key = PlayerMove.UP;
     }
-    if (this.cursors?.down.isDown) {
+    if (this.cursors?.down.isDown || this.joystick?.down) {
       key = PlayerMove.DOWN;
     }
 
