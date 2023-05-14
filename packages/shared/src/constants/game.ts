@@ -29,7 +29,7 @@ export const Room = Object.freeze({
   MaxPlayers: 2
 });
 
-const FPS = 50;
+const FPS = 60;
 const WIDTH = 800;
 const HEIGHT = 600;
 export const GameConstant = Object.freeze({
@@ -37,7 +37,7 @@ export const GameConstant = Object.freeze({
   WidthCenter: WIDTH * 0.5,
   Height: HEIGHT,
   HeightCenter: HEIGHT * 0.5,
-  FPS: 50,
+  FPS: FPS,
   UpdateInterval: 1000 / FPS,
   Ball,
   Paddle,
