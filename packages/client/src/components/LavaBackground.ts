@@ -19,7 +19,6 @@ export default class LavaBackground extends GameObjects.TileSprite {
   }
 
   public move() {
-    // this.tilePositionX++;
     this.tilePositionY--;
   }
 }
