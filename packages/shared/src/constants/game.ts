@@ -2,8 +2,8 @@ const BALL_SIZE = 28;
 export const Ball = Object.freeze({
   Size: BALL_SIZE,
   Radius: BALL_SIZE * 0.5,
-  MaxSpeed: 16,
-  Speed: 13,
+  MaxSpeed: 15,
+  Speed: 11,
   Label: 'ball'
 });
 
