@@ -10,7 +10,6 @@ Welcome to Hell Pong, a fast-paced multiplayer ping-pong game built with Lerna, 
   <img src="./screenshots/menu.gif" alt="Hell Pong Multiplayer Game">
 </div>
 
-
 ## Table of Contents
 
 - [Demo](#demo)
@@ -24,7 +23,12 @@ Welcome to Hell Pong, a fast-paced multiplayer ping-pong game built with Lerna, 
 - [Contributing](#contributing)
 
 ## Demo
+
 You can try to play the game on this [link](https://hell-pong.herokuapp.com)
+
+<div align="center">
+  <img src="./screenshots/demo.gif" alt="Hell Pong Multiplayer Game Demo">
+</div>
 
 ## Features
 

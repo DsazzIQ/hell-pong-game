@@ -18,6 +18,7 @@ import logger from '../logger';
 import Color, { colorToHex } from '@hell-pong/shared/constants/color';
 import VirtualJoyStick from 'phaser3-rex-plugins/plugins/virtualjoystick';
 import MusicKey from '../constants/MusicKey';
+import LavaBackground from '../components/LavaBackground';
 
 const ALPHA_THRESHOLD = 1;
 const MIN_BUFFER_SIZE_INTERPOLATION = 2;
@@ -47,6 +48,7 @@ export default class GameScene extends Scene {
   private isPaused = true;
   private gameScoreText!: Phaser.GameObjects.Text;
   private joystick?: VirtualJoyStick;
+  private background!: LavaBackground;
 
   constructor() {
     super(SceneKey.Game);
@@ -124,16 +126,7 @@ export default class GameScene extends Scene {
   }
 
   private initBackground(): void {
-    this.add
-      .tileSprite(
-        0,
-        0,
-        this.game.canvas.width,
-        this.game.canvas.height,
-        TextureKey.Background.Key,
-        TextureKey.Background.Frames.Main
-      )
-      .setOrigin(0);
+    this.background = new LavaBackground(this);
   }
 
   private initGameScore(): void {
@@ -333,6 +326,7 @@ export default class GameScene extends Scene {
 
     this.handlePlayerMovement();
     this.applyServerReconciliation();
+    this.background.move();
   }
 
   public destroy(): void {
