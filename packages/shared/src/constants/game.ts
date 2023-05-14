@@ -29,7 +29,7 @@ export const Room = Object.freeze({
   MaxPlayers: 2
 });
 
-const FPS = 80;
+const FPS = 60;
 const WIDTH = 800;
 const HEIGHT = 600;
 export const GameConstant = Object.freeze({

@@ -7,8 +7,6 @@ import BitmapTextButton from '../../components/Button/BitmapTextButton';
 import GUIContainer, { ROW_OFFSET } from '../../components/GUIContainer';
 import LavaBackground from '../../components/LavaBackground';
 import TitleText from '../../components/TitleText';
-import FontFamily from '../../constants/FontFamily';
-import FontSize from '../../constants/FontSize';
 import MusicKey from '../../constants/MusicKey';
 import RegistryKey from '../../constants/RegistryKey';
 import SceneKey from '../../constants/SceneKey';
@@ -17,7 +15,6 @@ import Game from '../../Game';
 import { SocketEvents } from '@hell-pong/shared/constants/socket';
 import { ClientToServerEvents, ServerToClientEvents } from '@hell-pong/shared/types/socket.io';
 import logger from '../../logger';
-import BitmapFamily from '../../constants/BitmapFamily';
 import BitmapSize from '../../constants/BitmapSize';
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
 import Table from '../../components/Table/Table';
@@ -80,10 +77,10 @@ export default class LobbyScene extends Scene {
   private initTable(): Table {
     const tablePosition: IPosition = { x: 80, y: 170 };
     const headerCells = [
-      new TableTextCell(this, 'Room ID', 220, { x: 20, y: 0 }),
+      new TableTextCell(this, 'Room ID', 220, { x: 20, y: -2 }),
       new TableImageCell(this, TextureKey.Gui.Key, TextureKey.Gui.Frames.Icon.Team, 30, { x: 30, y: 1 }),
-      new TableTextCell(this, 'Status', 120),
-      new TableTextCell(this, 'Actions', 130, { x: 20, y: 0 })
+      new TableTextCell(this, 'Status', 120, { x: 0, y: -2 }),
+      new TableTextCell(this, 'Actions', 130, { x: 20, y: -2 })
     ];
     return new Table(this, tablePosition, headerCells);
   }
@@ -254,28 +251,11 @@ export default class LobbyScene extends Scene {
 
   private initGUI() {
     this.gui = new GUIContainer(this);
-    this.gui.addToContainer(this.initIdNameTitle());
     this.gui.addToContainer([this.initCreateRoomButton()]);
   }
 
   private myId(): string {
     return this.socket.id;
-  }
-
-  private initIdNameTitle() {
-    const title = this.add
-      .bitmapText(ROW_OFFSET.x, ROW_OFFSET.y, BitmapFamily.Retro, `YOUR ID:`, BitmapSize.Small)
-      .setOrigin(0, 1.25);
-
-    const ID_OFFSET = { x: 10 };
-    const id = this.add
-      .text(title.x + title.width + ID_OFFSET.x, title.y, this.myId(), {
-        fontFamily: FontFamily.Text,
-        fontSize: FontSize.SmallText
-      })
-      .setOrigin(0, 1.65);
-
-    return [title, id];
   }
 
   private initCreateRoomButton(): BitmapTextButton {
