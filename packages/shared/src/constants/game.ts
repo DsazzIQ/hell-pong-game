@@ -38,7 +38,7 @@ export const GameConstant = Object.freeze({
   Height: HEIGHT,
   HeightCenter: HEIGHT * 0.5,
   FPS: FPS,
-  UpdateInterval: 1000 / FPS,
+  UpdateInterval: 1000 / (FPS * 2),
   Ball,
   Paddle,
   Wall,
