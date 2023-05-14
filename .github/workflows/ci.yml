@@ -43,12 +43,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Login to Heroku
-        uses: akhileshns/heroku-deploy@v3.12.14
-        with:
-          login_email: ${{ secrets.HEROKU_EMAIL }}
-          login_password: ${{ secrets.HEROKU_API_KEY }}
-
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.12.14
         with:

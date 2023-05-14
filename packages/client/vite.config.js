@@ -27,6 +27,7 @@ export default {
     ],
     define: {
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+        'process.env.SOCKET_URL': JSON.stringify(process.env.SOCKET_URL),
     },
     resolve: {
         alias: {
