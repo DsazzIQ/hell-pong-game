@@ -16,6 +16,7 @@ export default {
         //  Toggle the booleans here to enable / disable Phaser 3 features:
         replace({
             'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+            'process.env.SOCKET_URL': JSON.stringify(process.env.SOCKET_URL),
             'typeof CANVAS_RENDERER': "'true'",
             'typeof WEBGL_RENDERER': "'true'",
             'typeof EXPERIMENTAL': "'true'",
