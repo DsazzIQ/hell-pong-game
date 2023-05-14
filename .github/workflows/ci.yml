@@ -1,4 +1,4 @@
-name: Build
+name: Build and Deploy
 
 on:
   push:
@@ -34,3 +34,22 @@ jobs:
 
       - name: Lint
         run: yarn lint
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.14
+        with:
+          heroku_app_name: "hell-pong"
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          procfile: "web: yarn start:prod"
+        env:
+          HD_SOCKET_URL: ${{secrets.SOCKET_URL}}
+          HD_NODE_ENV: "production"

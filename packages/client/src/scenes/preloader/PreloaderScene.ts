@@ -13,7 +13,8 @@ import RoundedProgressBar from './components/RoundedProgressBar';
 import { SocketEvents } from '@hell-pong/shared/constants/socket';
 import { ClientToServerEvents, ServerToClientEvents } from '@hell-pong/shared/types/socket.io';
 import BitmapFamily from '../../constants/BitmapFamily';
-const SOCKET_URL = 'http://localhost:3000';
+const SOCKET_URL = process.env.SOCKET_URL || 'http://localhost:8080';
+console.log('SOCKET_URL: ', SOCKET_URL);
 
 export default class PreloaderScene extends Scene {
   private lineProgress!: RoundedProgressBar;

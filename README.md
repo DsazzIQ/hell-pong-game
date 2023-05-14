@@ -6,7 +6,6 @@
 
 Welcome to Hell Pong, a fast-paced multiplayer ping-pong game built with Lerna, TypeScript, Phaser 3, Matter.js, and Socket.io
 
-
 <div align="center">
   <img src="./screenshots/menu.gif" alt="Hell Pong Multiplayer Game">
 </div>
@@ -14,6 +13,7 @@ Welcome to Hell Pong, a fast-paced multiplayer ping-pong game built with Lerna, 
 
 ## Table of Contents
 
+- [Demo](#demo)
 - [Features](#features)
 - [Getting Started](#getting-started)
 - [Prerequisites](#prerequisites)
@@ -22,6 +22,9 @@ Welcome to Hell Pong, a fast-paced multiplayer ping-pong game built with Lerna, 
 - [Running the Game](#running-the-game)
 - [Deployment](#deployment)
 - [Contributing](#contributing)
+
+## Demo
+You can try to play the game on this [link](https://hell-pong.herokuapp.com)
 
 ## Features
 
@@ -78,7 +81,7 @@ yarn start
 arch -arm64 brew install pkg-config cairo pango libpng jpeg giflib librsvg
 
 
-This will start the client and server concurrently, accessible at [http://localhost:8080](http://localhost:8080). Open 
+This will start the client and server concurrently, accessible at [http://localhost:8000](http://localhost:8000). Open 
 the URL in your browser to start playing the game.
 
 You can also run the client and server separately with the following commands:

@@ -21,7 +21,7 @@ const io = new SocketIOServer<ClientToServerEvents, ServerToClientEvents>(server
   }
 });
 
-app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
+app.use(express.static(path.join(__dirname, '..', '..', 'client', 'dist')));
 
 const roomManager = new GameRoomHandler(io);
 
@@ -66,5 +66,5 @@ setInterval(() => {
   roomManager.updateAndEmitState(io);
 }, GameConstant.UpdateInterval);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => logger.info(`server is listening on port ${PORT}`));

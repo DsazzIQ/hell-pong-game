@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "start:prod": "pm2 start --name hell-pong --watch dist/index.js --node-args=\"-r dotenv/config\"",
+    "start:prod": "ts-node -r tsconfig-paths/register src/index.ts",
     "start": "nodemon",
     "build": "yarn workspace @hell-pong/shared build && tsc --project tsconfig.json",
     "watch": "tsc -w",
@@ -14,6 +14,10 @@
   },
   "dependencies": {
     "@hell-pong/shared": "^1.0.0",
+    "@types/express": "^4.17.17",
+    "@types/matter-js": "^0.18.3",
+    "@types/node": "^18.16.9",
+    "@types/uuid": "^9.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
@@ -22,10 +26,6 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@types/express": "^4.17.17",
-    "@types/matter-js": "^0.18.3",
-    "@types/node": "^18.16.9",
-    "@types/uuid": "^9.0.1",
     "nodemon": "^2.0.22"
   }
 }
