@@ -3,7 +3,7 @@ export const Ball = Object.freeze({
   Size: BALL_SIZE,
   Radius: BALL_SIZE * 0.5,
   MaxSpeed: 15,
-  Speed: 8,
+  Speed: 12,
   Label: 'ball'
 });
 
