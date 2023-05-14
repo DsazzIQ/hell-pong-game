@@ -8,7 +8,7 @@ export const Ball = Object.freeze({
 });
 
 export const Paddle = Object.freeze({
-  Speed: 10,
+  Speed: 15,
   Width: 18,
   Height: 62,
   Offset: 30,

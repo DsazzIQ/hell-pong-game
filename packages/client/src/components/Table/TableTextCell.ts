@@ -1,43 +1,33 @@
 import Phaser from 'phaser';
 import { TableCell } from './TableCell';
+import FontFamily from '../../constants/FontFamily';
+import FontSize from '../../constants/FontSize';
 import { IPosition } from '@hell-pong/shared/entities/component/Position';
-import BitmapFamily from '../../constants/BitmapFamily';
-import BitmapSize from '../../constants/BitmapSize';
 
 class TableTextCell extends TableCell {
   private readonly text: string;
-  private readonly fontFamily: BitmapFamily;
-  private readonly fontSize: BitmapSize;
-  private readonly content: Phaser.GameObjects.BitmapText;
+  private readonly textStyle: Phaser.Types.GameObjects.Text.TextStyle;
+  private readonly content: Phaser.GameObjects.Text;
 
   constructor(
     scene: Phaser.Scene,
     text: string,
     width: number,
     offset: IPosition = { x: 0, y: 0 },
-    fontFamily?: BitmapFamily,
-    fontSize?: BitmapSize
+    textStyle?: Phaser.Types.GameObjects.Text.TextStyle
   ) {
     super(scene, width, offset);
     this.text = text;
-    this.fontFamily = fontFamily || BitmapFamily.Retro;
-    this.fontSize = fontSize || BitmapSize.Small;
-
+    this.textStyle = textStyle || { fontFamily: FontFamily.Text, fontSize: FontSize.SmallText };
     this.content = this.createContent();
     this.add(this.content);
   }
 
-  protected createContent(): Phaser.GameObjects.BitmapText {
-    // .bitmapText(ROW_OFFSET.x, ROW_OFFSET.y, BitmapFamily.Retro, `YOUR ID:`, BitmapSize.Small)
-
-    return new Phaser.GameObjects.BitmapText(
-      this.scene,
-      this._offset.x,
-      this._offset.y,
-      this.fontFamily,
-      this.text,
-      this.fontSize
-    ).setOrigin(0, -0.5);
+  protected createContent(): Phaser.GameObjects.Text {
+    return new Phaser.GameObjects.Text(this.scene, this._offset.x, this._offset.y, this.text, this.textStyle).setOrigin(
+      0,
+      -0.5
+    );
   }
 }
 export default TableTextCell;

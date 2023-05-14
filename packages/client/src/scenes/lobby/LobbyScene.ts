@@ -28,6 +28,7 @@ import SmallButton from '../../components/Button/SmallButton';
 import Color from '@hell-pong/shared/constants/color';
 import YesNoDialog from '../../components/Dialog/YesNoDialog';
 import ToastManager from '../../components/Toast/ToastManager';
+import TableBitmapTextCell from '../../components/Table/TableBitmapTextCell';
 
 export default class LobbyScene extends Scene {
   private socket!: Socket<ServerToClientEvents, ClientToServerEvents>;
@@ -77,10 +78,10 @@ export default class LobbyScene extends Scene {
   private initTable(): Table {
     const tablePosition: IPosition = { x: 80, y: 170 };
     const headerCells = [
-      new TableTextCell(this, 'Room ID', 220, { x: 20, y: -2 }),
+      new TableBitmapTextCell(this, 'Room ID', 220, { x: 20, y: -2 }),
       new TableImageCell(this, TextureKey.Gui.Key, TextureKey.Gui.Frames.Icon.Team, 30, { x: 30, y: 1 }),
-      new TableTextCell(this, 'Status', 120, { x: 0, y: -2 }),
-      new TableTextCell(this, 'Actions', 130, { x: 20, y: -2 })
+      new TableBitmapTextCell(this, 'Status', 120, { x: 0, y: -2 }),
+      new TableBitmapTextCell(this, 'Actions', 130, { x: 20, y: -2 })
     ];
     return new Table(this, tablePosition, headerCells);
   }
