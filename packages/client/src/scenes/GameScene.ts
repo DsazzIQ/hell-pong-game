@@ -19,7 +19,7 @@ import Color, { colorToHex } from '@hell-pong/shared/constants/color';
 
 const ALPHA_THRESHOLD = 1;
 const MIN_BUFFER_SIZE_INTERPOLATION = 2;
-const MAX_BUFFER_SIZE = 10;
+const MAX_BUFFER_SIZE = 8;
 
 interface GamePlayer {
   id: string;
