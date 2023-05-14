@@ -49,7 +49,6 @@ jobs:
           heroku_app_name: "hell-pong"
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          dontuseforce: true
           procfile: "web: yarn start:prod"
         env:
           HD_SOCKET_URL: ${{secrets.SOCKET_URL}}
