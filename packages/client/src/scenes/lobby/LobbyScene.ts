@@ -241,6 +241,7 @@ export default class LobbyScene extends Scene {
     this.socket.emit(SocketEvents.Room.List);
 
     this.socket.on(SocketEvents.Game.Start, (state: IGameState) => {
+      this.stopTheme();
       startTransition(this, SceneKey.Game, state);
     });
 

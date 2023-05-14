@@ -17,6 +17,7 @@ import { ClientToServerEvents, ServerToClientEvents } from '@hell-pong/shared/ty
 import logger from '../logger';
 import Color, { colorToHex } from '@hell-pong/shared/constants/color';
 import VirtualJoyStick from 'phaser3-rex-plugins/plugins/virtualjoystick';
+import MusicKey from '../constants/MusicKey';
 
 const ALPHA_THRESHOLD = 1;
 const MIN_BUFFER_SIZE_INTERPOLATION = 2;
@@ -51,8 +52,17 @@ export default class GameScene extends Scene {
     super(SceneKey.Game);
   }
 
+  playTheme() {
+    this.sound.get(MusicKey.BattleTheme).play({ loop: true });
+  }
+
+  stopTheme() {
+    this.sound.get(MusicKey.BattleTheme).stop();
+  }
+
   private stopGame() {
     this.pauseGame();
+    this.stopTheme();
     this.pane.dispose();
     this.lastReceivedTime = null;
     this.gameStateBuffer.length = 0;
@@ -175,6 +185,7 @@ export default class GameScene extends Scene {
   }
 
   public create(): void {
+    this.playTheme();
     this.matter.world.setBounds(0, 0, GameConstants.Width, GameConstants.Height, 1);
 
     // Set up keyboard controls

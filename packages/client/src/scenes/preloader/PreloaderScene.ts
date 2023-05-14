@@ -65,6 +65,7 @@ export default class PreloaderScene extends Scene {
 
   private loadAudios() {
     this.load.audio(MusicKey.MainTheme, 'sounds/main_theme.mp3');
+    this.load.audio(MusicKey.BattleTheme, 'sounds/battle_theme.wav');
     this.load.audio(MusicKey.SecondaryTheme, 'sounds/secondary_theme.mp3');
     this.load.audio(MusicKey.SplashLogo, 'sounds/splash.mp3');
 
@@ -79,6 +80,7 @@ export default class PreloaderScene extends Scene {
 
   private registerAudios() {
     this.sound.add(MusicKey.MainTheme);
+    this.sound.add(MusicKey.BattleTheme);
     this.sound.add(MusicKey.SecondaryTheme);
     this.sound.add(MusicKey.SplashLogo);
     this.sound.add(SoundKey.ButtonClick);
