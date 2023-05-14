@@ -66,6 +66,5 @@ setInterval(() => {
   roomManager.updateAndEmitState(io);
 }, GameConstant.UpdateInterval);
 
-// const PORT = process.env.PORT || 3000;
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => logger.info(`server is listening on port ${PORT}`));
